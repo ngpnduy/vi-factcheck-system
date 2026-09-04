@@ -1,0 +1,29 @@
+# Python and uv
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Secrets and local environment
+.env
+
+# OS/editor files
+.DS_Store
+.vscode/
+.idea/
+
+# Large or generated data and experiment artifacts
+data/raw/
+data/interim/
+data/processed/
+data/internal/*
+!data/internal/README.md
+!data/internal/adjudicated/
+data/internal/adjudicated/*
+!data/internal/adjudicated/README.md
+outputs/
+
+# Keep directory documentation and small, versioned test fixtures.
+!data/**/README.md
+!tests/fixtures/
