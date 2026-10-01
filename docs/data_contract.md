@@ -61,7 +61,7 @@ remain unchanged under `data/raw/`.
 | `evidence[].source_url` | No | Original source URL, if licensed and supplied. |
 | `evidence[].position` | No | Sentence/paragraph position when known. |
 | `label` | Yes | `SUPPORTED`, `REFUTED`, or `NOT_ENOUGH_INFO`. |
-| `dataset` | Yes | Lowercase identifier, for example `vifactcheck` or `vinumfcr`. |
+| `dataset` | Yes | Lowercase identifier, for example `vifactcheck`. |
 | `split` | Yes | `train`, `validation`, or `test`. |
 | `metadata` | Yes | Dataset-specific scalar metadata. Do not put secrets or model outputs here. |
 
