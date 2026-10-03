@@ -10,23 +10,16 @@ and calculates ACC@K, mAP@K, and F1@K.
 """
 
 import argparse
-import json
 from pathlib import Path
+
 import nltk
 from tqdm import tqdm
 
 from factcheck.data.schemas import DatasetRecord
-from factcheck.retrieval.bm25 import evidence_top_n, acc_at_k, map_at_k, f1_at_k
+from factcheck.retrieval.bm25 import acc_at_k, evidence_top_n, f1_at_k, map_at_k
 
-# Ensure NLTK punkt is available for sentence tokenization
-try:
-    nltk.data.find('tokenizers/punkt')
-except LookupError:
-    nltk.download('punkt', quiet=True)
-try:
-    nltk.data.find('tokenizers/punkt_tab')
-except LookupError:
-    nltk.download('punkt_tab', quiet=True)
+# Install sentence resources explicitly: python -m nltk.downloader punkt_tab
+# Importing this module (including --help) must not download resources.
 
 def evaluate_retrieval(data_path: Path, top_k: int = 5):
     all_acc = []
@@ -65,6 +58,9 @@ def evaluate_retrieval(data_path: Path, top_k: int = 5):
         
     print(f"\n=== BM25 Retrieval Results (Top-{top_k}) ===")
     print(f"Evaluated {len(all_acc)} samples.")
+    if not all_acc:
+        print("No records with gold evidence to evaluate.")
+        return
     print(f"ACC@{top_k} : {sum(all_acc) / len(all_acc):.4f}")
     print(f"mAP@{top_k} : {sum(all_map) / len(all_map):.4f}")
     print(f"F1@{top_k}  : {sum(all_f1) / len(all_f1):.4f}")

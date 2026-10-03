@@ -18,16 +18,11 @@ from __future__ import annotations
 from factcheck.data.schemas import DatasetRecord
 
 # Alpaca prompt template — copied exactly from llm_training.py
-ALPACA_PROMPT = """Below is an instruction that describes a task, paired with an input that provides further context. Write a response that appropriately completes the request.
-
-### Instruction:
-{}
-
-### Input:
-{}
-
-### Response:
-{}"""
+ALPACA_PROMPT = (
+    "Below is an instruction that describes a task, paired with an input that provides "
+    "further context. Write a response that appropriately completes the request.\n\n"
+    "### Instruction:\n{}\n\n### Input:\n{}\n\n### Response:\n{}"
+)
 
 # Instruction text — copied exactly from llm_multi-evidence.py (line 82)
 INSTRUCTION_TEXT = (

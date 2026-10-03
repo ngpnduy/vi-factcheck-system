@@ -43,13 +43,12 @@ from pathlib import Path
 
 from datasets import Dataset
 
-from factcheck.data.schemas import DatasetRecord, VerdictLabel
 from factcheck.classification.llm.prompt import (
-    ALPACA_PROMPT,
     INSTRUCTION_TEXT,
     build_input_text,
     formatting_prompts_func,
 )
+from factcheck.data.schemas import DatasetRecord, VerdictLabel
 
 # --- Hyperparameters from original repo ---
 MAX_SEQ_LENGTH = 2048
@@ -152,9 +151,12 @@ def main() -> None:
 
     # Lazy import so the module is importable without unsloth installed
     try:
+        # Unsloth must patch transformers before importing the trainer.
+        # isort: off
         from unsloth import FastLanguageModel, is_bfloat16_supported
         from trl import SFTTrainer
         from transformers import TrainingArguments
+        # isort: on
     except ImportError:
         raise ImportError(
             "unsloth and trl are required. Install with:\n"

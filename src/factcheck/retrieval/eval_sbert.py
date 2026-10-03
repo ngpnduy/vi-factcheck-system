@@ -27,16 +27,13 @@ from factcheck.retrieval.bm25 import acc_at_k, f1_at_k, map_at_k
 from factcheck.retrieval.hybrid import HybridRetriever
 from factcheck.retrieval.sbert import SBERTRetriever
 
-try:
-    nltk.data.find("tokenizers/punkt_tab")
-except LookupError:
-    nltk.download("punkt_tab", quiet=True)
+# Install sentence resources explicitly: python -m nltk.downloader punkt_tab
 
 
 def evaluate(data_path: Path, method: str, top_k: int, bm25_candidates: int) -> None:
     # Load SBERT once (expensive)
     sbert = SBERTRetriever()
-    retriever = HybridRetriever(sbert, bm25_candidates=bm25_candidates) if method == "hybrid" else sbert
+    retriever = HybridRetriever(sbert, bm25_top_n=bm25_candidates) if method == "hybrid" else sbert
 
     all_acc, all_map, all_f1 = [], [], []
 
@@ -63,6 +60,9 @@ def evaluate(data_path: Path, method: str, top_k: int, bm25_candidates: int) -> 
     n = len(all_acc)
     print(f"\n=== {method.upper()} Retrieval Results (Top-{top_k}) ===")
     print(f"Evaluated {n} samples.")
+    if not n:
+        print("No records with gold evidence and context to evaluate.")
+        return
     print(f"ACC@{top_k} : {sum(all_acc)/n:.4f}")
     print(f"mAP@{top_k} : {sum(all_map)/n:.4f}")
     print(f"F1@{top_k}  : {sum(all_f1)/n:.4f}")

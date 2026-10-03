@@ -27,3 +27,5 @@ outputs/
 # Keep directory documentation and small, versioned test fixtures.
 !data/**/README.md
 !tests/fixtures/
+
+docs/code_learning_notes.md

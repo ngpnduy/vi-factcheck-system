@@ -42,7 +42,7 @@ class PLMClassifier(nn.Module):
         return self.classifier(self.dropout(pooled))  # [B, num_classes]
 
     @classmethod
-    def from_pretrained(cls, model_name: str, num_classes: int = 3) -> "PLMClassifier":
+    def from_pretrained(cls, model_name: str, num_classes: int = 3) -> PLMClassifier:
         """Convenience constructor from a HuggingFace model name."""
         backbone = AutoModel.from_pretrained(model_name)
         return cls(backbone, num_classes=num_classes)

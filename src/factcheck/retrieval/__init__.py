@@ -1,1 +1,1 @@
-"""Retrieval module for evidence extraction."""
+"""Paper reproduction, corpus retrieval, and within-context M0 retrieval."""

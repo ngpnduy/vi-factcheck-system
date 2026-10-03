@@ -29,7 +29,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 from transformers import AutoTokenizer
 
-from factcheck.classification.plm.dataset import FactCheckDataset, IDX2LABEL
+from factcheck.classification.plm.dataset import IDX2LABEL, FactCheckDataset
 from factcheck.classification.plm.model import PLMClassifier
 
 DEFAULT_BATCH_SIZE = 32

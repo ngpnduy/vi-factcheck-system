@@ -8,6 +8,7 @@ to ensure identical score reproduction.
 import math
 import re
 from multiprocessing import Pool, cpu_count
+
 import numpy as np
 
 
@@ -69,7 +70,9 @@ class BM25:
         raise NotImplementedError()
 
     def get_top_n(self, query, documents, n=5):
-        assert self.corpus_size == len(documents), "The documents given don't match the index corpus!"
+        assert self.corpus_size == len(documents), (
+            "The documents given don't match the index corpus!"
+        )
 
         scores = self.get_scores(query)
         min_score = np.min(scores)
@@ -116,8 +119,10 @@ class BM25Okapi(BM25):
         doc_len = np.array(self.doc_len)
         for q in query:
             q_freq = np.array([(doc.get(q) or 0) for doc in self.doc_freqs])
-            score += (self.idf.get(q) or 0) * (q_freq * (self.k1 + 1) /
-                                               (q_freq + self.k1 * (1 - self.b + self.b * doc_len / self.avgdl)))
+            score += (self.idf.get(q) or 0) * (
+                q_freq * (self.k1 + 1)
+                / (q_freq + self.k1 * (1 - self.b + self.b * doc_len / self.avgdl))
+            )
         return score
 
     def get_batch_scores(self, query, doc_ids):
@@ -126,8 +131,10 @@ class BM25Okapi(BM25):
         doc_len = np.array(self.doc_len)[doc_ids]
         for q in query:
             q_freq = np.array([(self.doc_freqs[di].get(q) or 0) for di in doc_ids])
-            score += (self.idf.get(q) or 0) * (q_freq * (self.k1 + 1) /
-                                               (q_freq + self.k1 * (1 - self.b + self.b * doc_len / self.avgdl)))
+            score += (self.idf.get(q) or 0) * (
+                q_freq * (self.k1 + 1)
+                / (q_freq + self.k1 * (1 - self.b + self.b * doc_len / self.avgdl))
+            )
         return score.tolist()
 
 

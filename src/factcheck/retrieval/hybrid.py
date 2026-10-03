@@ -20,7 +20,7 @@ import torch
 from sklearn.preprocessing import MinMaxScaler
 from torch import nn
 
-from factcheck.retrieval.bm25 import BM25Okapi, acc_at_k, f1_at_k, map_at_k
+from factcheck.retrieval.bm25 import BM25Okapi
 from factcheck.retrieval.sbert import SBERTRetriever, mean_pooling
 
 

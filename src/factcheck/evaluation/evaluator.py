@@ -105,7 +105,8 @@ def main() -> None:
     print(f"  Accuracy          : {result['accuracy']:.4f}")
     print("\n  Per-class:")
     for label, stats in result["per_class"].items():
-        print(f"    {label:<20} P={stats['precision']:.4f}  R={stats['recall']:.4f}  F1={stats['f1']:.4f}  n={stats['support']}")
+        print(f"    {label:<20} P={stats['precision']:.4f}  R={stats['recall']:.4f} "
+              f"F1={stats['f1']:.4f}  n={stats['support']}")
 
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)

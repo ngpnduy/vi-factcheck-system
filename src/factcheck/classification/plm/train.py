@@ -35,7 +35,7 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 from transformers import AutoTokenizer
 
-from factcheck.classification.plm.dataset import FactCheckDataset, IDX2LABEL, InputMode
+from factcheck.classification.plm.dataset import IDX2LABEL, FactCheckDataset
 from factcheck.classification.plm.model import PLMClassifier
 from factcheck.evaluation.metrics import compute_metrics
 
@@ -114,8 +114,12 @@ def main() -> None:
 
     # --- Data ---
     tokenizer = AutoTokenizer.from_pretrained(args.model_name)
-    train_ds = FactCheckDataset(args.data_dir / "train.jsonl", tokenizer, args.max_length, args.input_mode)
-    dev_ds   = FactCheckDataset(args.data_dir / "validation.jsonl", tokenizer, args.max_length, args.input_mode)
+    train_ds = FactCheckDataset(
+        args.data_dir / "train.jsonl", tokenizer, args.max_length, args.input_mode,
+    )
+    dev_ds = FactCheckDataset(
+        args.data_dir / "validation.jsonl", tokenizer, args.max_length, args.input_mode,
+    )
 
     train_loader = DataLoader(train_ds, batch_size=args.batch_size, shuffle=True)
     dev_loader   = DataLoader(dev_ds,   batch_size=args.batch_size)

@@ -6,12 +6,12 @@ cd "${PROJECT_DIR}"
 
 if command -v uv >/dev/null 2>&1; then
   PYTHONPATH="${PROJECT_DIR}/src${PYTHONPATH:+:${PYTHONPATH}}" \
-    exec uv run python -m factcheck.data.vinumfcr "$@"
+    exec uv run python -m factcheck.retrieval.build_corpus "$@"
 fi
 
 if [[ -x "${PROJECT_DIR}/.venv/bin/python" ]]; then
   PYTHONPATH="${PROJECT_DIR}/src${PYTHONPATH:+:${PYTHONPATH}}" \
-    exec "${PROJECT_DIR}/.venv/bin/python" -m factcheck.data.vinumfcr "$@"
+    exec "${PROJECT_DIR}/.venv/bin/python" -m factcheck.retrieval.build_corpus "$@"
 fi
 
 echo "Neither uv nor .venv/bin/python is available. Run: bash scripts/setup.sh" >&2

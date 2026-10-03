@@ -37,7 +37,7 @@ from factcheck.classification.llm.prompt import build_inference_prompt
 from factcheck.data.schemas import DatasetRecord, VerdictLabel
 
 # Label mapping: "0"→SUPPORTED, "1"→REFUTED, "2"→NOT_ENOUGH_INFO
-# (matches training output from llm_multi-evidence.py: table["output"] = table["labels"].astype(str))
+# Matches llm_multi-evidence.py: table["output"] = table["labels"].astype(str)
 INT_TO_LABEL = {
     "0": VerdictLabel.SUPPORTED,
     "1": VerdictLabel.REFUTED,
@@ -88,8 +88,11 @@ def main() -> None:
     args = parser.parse_args()
 
     try:
+        # Unsloth must patch the ML libraries before their explicit imports.
+        # isort: off
         from unsloth import FastLanguageModel
         import torch
+        # isort: on
     except ImportError:
         raise ImportError("unsloth is required. Install with: uv add unsloth")
 
