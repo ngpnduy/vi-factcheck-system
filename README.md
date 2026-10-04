@@ -7,6 +7,15 @@ and BM25/SBERT/hybrid retrieval), the M0 within-context baseline, and a separate
 corpus BM25 experiment. See [the code organization guide](docs/code_organization.md)
 for their entry points, data formats, and dependency requirements.
 
+## Rush-version: standalone M0/M1/M2 pilot
+
+The `rush/` subproject contains a separate, tested M0/M1/M2 implementation and
+the 900-claim, seed-42 deadline pilot. See [its setup and commands](rush/README.md)
+and [protocol differences](rush/docs/BRANCH_NOTES.md). It uses its own environment
+and data/artifact directories; its scores belong to its recorded protocol.
+
+The existing `src/factcheck/` workflows continue to use the setup below.
+
 ## Quick start
 
 1. Install [uv](https://docs.astral.sh/uv/getting-started/installation/).

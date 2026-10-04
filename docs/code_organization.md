@@ -18,8 +18,14 @@ riêng. Không dùng điểm của luồng này thay cho luồng kia.
 | M0 | `evaluation/evaluate_m0.py` | Verdict và sentence retrieval metrics, kiểm tra ID và alignment |
 | Corpus BM25 | `retrieval/build_corpus.py`, `retrieval/corpus_bm25.py` | Index BM25S trên corpus chunk dùng chung |
 | Corpus BM25 | `retrieval/evaluate_bm25.py` | Đánh giá chunk retrieval |
+| Rush M0/M1/M2 | `rush/vifactcheck/` (từ gốc repo) | Subproject riêng, pilot 900 claim/seed 42, test/report tự động |
 
 Các đường dẫn module trong bảng thuộc `src/factcheck/`.
+
+Riêng `rush/` nằm tại gốc repository và có `pyproject.toml`, môi trường,
+preprocessing, checkpoint và test suite riêng. Xem [hướng dẫn Rush](../rush/README.md).
+Giao thức Rush dùng PhoBERT-base, VnCoreNLP sentence boundaries, BM25Okapi và
+Adafactor; kết quả không thay thế trực tiếp cho M0 PhoBERT-base-v2 trên `main`.
 
 Trước merge, cả hai nhánh đều có `retrieval/bm25.py` với API khác nhau. Bản
 BM25Okapi trên `main` giữ tên này, nên các import của SBERT/hybrid vẫn hoạt động.
