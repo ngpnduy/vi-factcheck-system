@@ -2,6 +2,10 @@
 
 This file records the original 24-train/12-dev smoke validation. The larger 900-claim pilot was launched afterwards and was still running when this branch's source snapshot was imported. Its test results are not included in this validation record. The Rush checkout's additional pilot/report tests are separate from the original 24-test smoke milestone.
 
+The larger pilot has since completed. Its final test results are available in the
+[completed pilot report](results/pilot-900-seed42/REPORT.md) and
+[results package](results/pilot-900-seed42/README.md).
+
 ## Rush branch verification
 
 The imported checkout passed 28 tests with one skipped on 4 October 2026, using its own editable installation and environment. The skipped integration test requires downloaded VnCoreNLP assets, which are absent from this checkout. The original workspace previously passed all 29 tests with those assets available. Pilot and training command help also loaded successfully. All 13 imported Python source files match the hashes recorded in `PROVENANCE.json`; the source used by the active experiment was preserved.

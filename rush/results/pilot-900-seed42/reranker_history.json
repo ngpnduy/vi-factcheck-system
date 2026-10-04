@@ -1,0 +1,89 @@
+[
+  {
+    "epoch": 1,
+    "average_loss": 0.45989387500412154,
+    "evidence_supervised_claims": 331,
+    "optimizer_steps": 42,
+    "training_seconds": 333.1160893000015,
+    "peak_training_cuda": {
+      "allocated_mib": 2376.201171875,
+      "reserved_mib": 2548.0
+    },
+    "validation": {
+      "retrieval": {
+        "count": 271,
+        "alignment_coverage": 0.5878284923928078,
+        "alignment_status_counts": {
+          "unmatched": 293,
+          "valid": 425,
+          "ambiguous": 5
+        },
+        "hit@5": 0.959409594095941,
+        "sentence_recall@5": 0.9054823405376909,
+        "complete_gold@5": 0.8376383763837638,
+        "hit@20": 1.0,
+        "sentence_recall@20": 0.9992619926199262,
+        "complete_gold@20": 0.996309963099631,
+        "mrr": 0.9064908558749454
+      }
+    }
+  },
+  {
+    "epoch": 2,
+    "average_loss": 0.22239587259031496,
+    "evidence_supervised_claims": 331,
+    "optimizer_steps": 42,
+    "training_seconds": 410.41986069999984,
+    "peak_training_cuda": {
+      "allocated_mib": 2376.201171875,
+      "reserved_mib": 2548.0
+    },
+    "validation": {
+      "retrieval": {
+        "count": 271,
+        "alignment_coverage": 0.5878284923928078,
+        "alignment_status_counts": {
+          "unmatched": 293,
+          "valid": 425,
+          "ambiguous": 5
+        },
+        "hit@5": 0.959409594095941,
+        "sentence_recall@5": 0.9166403092602355,
+        "complete_gold@5": 0.8634686346863468,
+        "hit@20": 1.0,
+        "sentence_recall@20": 0.9992619926199262,
+        "complete_gold@20": 0.996309963099631,
+        "mrr": 0.9170685845088643
+      }
+    }
+  },
+  {
+    "epoch": 3,
+    "average_loss": 0.1726528783230353,
+    "evidence_supervised_claims": 331,
+    "optimizer_steps": 42,
+    "training_seconds": 389.3213552999987,
+    "peak_training_cuda": {
+      "allocated_mib": 2376.201171875,
+      "reserved_mib": 2548.0
+    },
+    "validation": {
+      "retrieval": {
+        "count": 271,
+        "alignment_coverage": 0.5878284923928078,
+        "alignment_status_counts": {
+          "unmatched": 293,
+          "valid": 425,
+          "ambiguous": 5
+        },
+        "hit@5": 0.9630996309963099,
+        "sentence_recall@5": 0.9263046916183447,
+        "complete_gold@5": 0.8819188191881919,
+        "hit@20": 1.0,
+        "sentence_recall@20": 0.9992619926199262,
+        "complete_gold@20": 0.996309963099631,
+        "mrr": 0.9191712602690462
+      }
+    }
+  }
+]

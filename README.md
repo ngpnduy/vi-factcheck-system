@@ -14,6 +14,9 @@ the 900-claim, seed-42 deadline pilot. See [its setup and commands](rush/README.
 and [protocol differences](rush/docs/BRANCH_NOTES.md). It uses its own environment
 and data/artifact directories; its scores belong to its recorded protocol.
 
+The completed pilot's [report](rush/results/pilot-900-seed42/REPORT.md) and
+[downloadable results package](rush/results/pilot-900-seed42/README.md) are available.
+
 The existing `src/factcheck/` workflows continue to use the setup below.
 
 ## Quick start

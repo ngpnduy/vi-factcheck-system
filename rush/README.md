@@ -14,6 +14,15 @@ The project implements the proposal's experimental configuration. It does not cl
 | M1 | BM25 top 20, PhoBERT reranker top 5 | Softmax-weighted mean | Verifier only; reranker frozen |
 | M2 | Same architecture as M1 | Softmax-weighted mean | Both encoders; verification and evidence losses |
 
+## Completed pilot results
+
+The 900-claim, seed-42 pilot completed on 4 October 2026. Test Macro-F1 was 51.01%
+for M0, 52.48% for M1 and 54.84% for M2 on all 1,447 test claims. Read the
+[finished report](results/pilot-900-seed42/REPORT.md) or
+[download the results ZIP](results/pilot-900-seed42/README.md), which includes
+per-claim predictions and the matching source snapshot. These are preliminary
+single-seed results; the full proposal experiment remains unlaunched.
+
 ## Windows setup
 
 Run commands from the project folder. Python 3.10+ and Java 8+ are required. This laptop already has Python 3.12, Java 8, and CUDA-enabled PyTorch. Its project environment reuses installed packages; it does not modify those packages.

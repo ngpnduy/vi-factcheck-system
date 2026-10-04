@@ -1,0 +1,5 @@
+# Preserve JSON artifact bytes referenced by completion checksums.
+*.json -text whitespace=cr-at-eol
+*.csv text eol=lf
+*.zip binary
+*.sha256 text eol=lf
