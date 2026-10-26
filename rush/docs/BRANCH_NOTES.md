@@ -54,7 +54,7 @@ its own `runs/` directory. Prepare its assets first as described in the README.
   own root environment and `uv.lock`.
 - Run preparation, training, tuning, evaluation, prediction and pilot commands
   from `rush/`; its README provides the complete commands.
-- Python source is copied without changes from the active experiment.
+- The original Python source was copied without changes from the pilot experiment.
   `PROVENANCE.json` records all 13 source hashes, pinned revisions, the proposal
   checksum and exact pilot training IDs. The scoped `.gitattributes` preserves
   those Python source bytes across Git checkouts.
@@ -64,6 +64,12 @@ its own `runs/` directory. Prepare its assets first as described in the README.
 - The pilot automatically creates `REPORT.md`, `results.csv`, `comparison.json`,
   per-claim predictions and paired article-cluster bootstrap intervals. These
   intervals are conditional on its one training seed.
+
+The full-data orchestrator was added on 13 October 2026. It introduces `full.py`,
+`full_reporting.py`, a CLI entry point and `scripts/start_full.ps1`. The underlying
+training implementation is preserved. This runner records its current code hashes
+and a frozen source snapshot separately from the historical pilot provenance.
+See [the full pipeline guide](../FULL_PIPELINE.md).
 
 Before merging this work into the main M0/M1 architecture, agree on a shared
 backbone, sentence/BM25 pipeline, classifier, optimizer, effective batch and fork

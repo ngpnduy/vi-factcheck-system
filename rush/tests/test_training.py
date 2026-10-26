@@ -117,3 +117,18 @@ def test_interrupted_resume_matches_uninterrupted_training(tiny, tmp_path, monke
     right = load_checkpoint(tmp_path / "resumed/m0_last.pt")
     assert all(torch.equal(left["model"][key], right["model"][key]) for key in left["model"])
     assert left["completed_epochs"] == right["completed_epochs"] == 2
+
+
+def test_completed_m2_phase_resumes_without_training_or_validation(tiny, tmp_path, monkeypatch):
+    config, rows = tiny
+    seed_everything(42)
+    trained = VerificationSystem(config, "M2", FakeTokenizer())
+    best = phase(trained, rows, rows, tmp_path, "m2", "continuation", 2)
+    expected = load_checkpoint(best)["model"]
+    before = {path.name: path.read_bytes() for path in tmp_path.glob("*.pt")}
+    restarted = VerificationSystem(config, "M2", FakeTokenizer())
+    monkeypatch.setattr(restarted, "forward", lambda *a, **k: pytest.fail("Completed M2 phase was retrained"))
+    monkeypatch.setattr("vifactcheck.training.evaluate", lambda *a, **k: pytest.fail("Completed phase was revalidated"))
+    assert phase(restarted, rows, rows, tmp_path, "m2", "continuation", 2) == best
+    assert all(torch.equal(restarted.state_dict()[key], expected[key]) for key in expected)
+    assert before == {path.name: path.read_bytes() for path in tmp_path.glob("*.pt")}

@@ -134,6 +134,12 @@ def main(argv=None):
     pilot.add_argument("--deadline-utc", help="Absolute ISO UTC deadline; preserved on resume")
     status_parser = sub.add_parser("status", help="Read pilot progress without loading models")
     status_parser.add_argument("--run", default="runs/pilot-900-seed42")
+    full = sub.add_parser("full", help="Resume full-data tuning, three-seed training and nine final evaluations")
+    full.add_argument("--output", default="runs/full-m0-m1-m2")
+    full.add_argument("--data", default="data/prepared")
+    full.add_argument("--model-path", default=".cache/phobert")
+    full.add_argument("--segmenter-path", default=".cache/vncorenlp")
+    full.add_argument("--status-dir", help="Optional project-local directory for mirrored progress and final reports")
     for name in ("train", "tune", "smoke"):
         child = sub.add_parser(name)
         add_training_arguments(child)
@@ -172,6 +178,9 @@ def main(argv=None):
             result = run_pilot(args)
         elif args.command == "status":
             result = read_json(Path(args.run) / "status.json")
+        elif args.command == "full":
+            from .full import run_full
+            result = run_full(args)
         elif args.command == "train":
             from .training import resume_checkpoint, run_experiment
             result = {"checkpoint": str(resume_checkpoint(args.resume))} if args.resume else run_experiment(configuration(args), args.output, args.models)

@@ -2,7 +2,7 @@
 
 This standalone subproject implements M0, M1, and M2 from the preserved [Proposal_v2.docx](docs/Proposal_v2.docx). A claim is checked against its supplied news article. Retrieval searches sentences inside that article; the system predicts `SUPPORTED`, `REFUTED`, or `NOT_ENOUGH_INFO`.
 
-Run all commands below from the repository's **`rush/` directory**. This subproject has its own `pyproject.toml` and `.venv`; the repository's root `uv.lock` continues to describe the separate `src/factcheck/` workflows. The copied Python source matches the running laptop pilot byte for byte; hashes and exact pilot training IDs are recorded in `PROVENANCE.json`.
+Run all commands below from the repository's **`rush/` directory**. This subproject has its own `pyproject.toml` and `.venv`; the repository's root `uv.lock` continues to describe the separate `src/factcheck/` workflows. `PROVENANCE.json` records the original pilot source snapshot and exact training IDs. The full pipeline runner was added afterwards; it saves its own frozen source snapshot and hashes.
 
 See [branch notes](docs/BRANCH_NOTES.md) before comparing these results with the existing M0. The Rush implementation uses PhoBERT-base, VnCoreNLP sentence splitting, BM25Okapi, Adafactor, effective batch eight and a linear classifier head. The existing M0 has different defaults. No datasets, caches or trained checkpoints are committed.
 
@@ -47,6 +47,11 @@ Preparation downloads pinned public dataset/model files and VnCoreNLP into `.cac
 Smoke validation uses 24 training claims and 12 dev claims, balanced across all labels. SUPPORTED/REFUTED smoke examples must have valid evidence supervision. It uses real PhoBERT models, one reranker epoch, one verifier initialization epoch, and one continuation epoch. M0 receives two verifier epochs. Test is never used by smoke validation or tuning. Smoke scores only confirm that the pipeline works.
 
 ## Full experiments
+
+The automated full-data, three-seed runner is available as `python -m vifactcheck full`.
+See [the full pipeline guide](FULL_PIPELINE.md) for its Windows background launcher,
+validation-only tuning, shared lambda initialization, resume behavior and final reports.
+It keeps the full 5,062-claim training split and has no six-hour deadline.
 
 ### Deadline pilot
 
