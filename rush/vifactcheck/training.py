@@ -14,8 +14,8 @@ import numpy as np
 import torch
 from transformers.optimization import Adafactor
 
-from .config import TrainConfig
-from .data import load_split, smoke_subset, stratified_subset
+from .config import ALL_MODELS, TrainConfig
+from .data import has_evidence_supervision, load_split, smoke_subset, stratified_subset
 from .io import read_json, sha256, write_json, write_jsonl
 from .metrics import classification_metrics, error_stage, retrieval_metrics
 from .model import PairTokenizer, VerificationSystem, evidence_loss
@@ -152,7 +152,7 @@ def phase(system, train, dev, directory, name, stage, epochs, source=None, progr
     checkpoint = None
     if last_path.exists():
         checkpoint = load_checkpoint(last_path)
-        if TrainConfig(**checkpoint["config"]).to_dict() != config.to_dict() or checkpoint["data_signature"] != data_signature or checkpoint["source_checkpoint_sha256"] != source_hash:
+        if checkpoint["mode"] != system.mode or TrainConfig(**checkpoint["config"]).to_dict() != config.to_dict() or checkpoint["data_signature"] != data_signature or checkpoint["source_checkpoint_sha256"] != source_hash:
             raise ValueError("Existing run has different configuration/data/source; choose a new output directory")
         completed, best_score, history = checkpoint["completed_epochs"], checkpoint["best_score"], checkpoint["history"]
     elif source:
@@ -231,7 +231,8 @@ def phase(system, train, dev, directory, name, stage, epochs, source=None, progr
         history.append({"epoch": epoch + 1, "average_loss": total / len(order), "evidence_supervised_claims": evidence_count, "optimizer_steps": optimizer_steps, "training_seconds": training_seconds, "peak_training_cuda": training_memory, "validation": validation})
         improved = score > best_score
         best_score = max(score, best_score)
-        payload = {"format_version": 1, "model": system.state_dict(), "optimizer": optimizer.state_dict(), "scaler": scaler.state_dict(), "rng": rng_state(), "config": config.to_dict(), "mode": system.mode, "phase": name, "stage": stage, "completed_epochs": epoch + 1, "best_score": best_score, "history": history, "data_signature": data_signature, "source_checkpoint_sha256": source_hash}
+        payload = {"format_version": 1, "model": system.state_dict(), "optimizer": optimizer.state_dict(), "scaler": scaler.state_dict(), "rng": rng_state(), "config": config.to_dict(), "mode": system.mode, "phase": name, "stage": stage, "completed_epochs": epoch + 1, "best_score": best_score, "history": history, "data_signature": data_signature, "source_checkpoint_sha256": source_hash,
+                   "source_checkpoint": str(Path(source).resolve()) if source else None}
         if progress:
             progress({"phase": name, "event": "checkpoint", "epoch": epoch + 1, "checkpoint_model_bytes": sum(t.numel() * t.element_size() for t in payload["model"].values())})
         save_checkpoint(last_path, payload)
@@ -261,22 +262,82 @@ def isolated_joint_gradient(system, row):
     return {"verification_only_reranker_head_gradient_norm": norm, "all_reranker_parameters_trainable": all(p.requires_grad for p in system.reranker.parameters()), "all_verifier_parameters_trainable": all(p.requires_grad for p in system.verifier.parameters())}
 
 
-def run_experiment(config, output, models=("M0", "M1", "M2"), progress=None):
+def isolated_stop_gradient(system, row):
+    """A2 blocks verification feedback while retaining evidence supervision."""
+    if system.mode != "A2" or not has_evidence_supervision(row):
+        raise ValueError("A2 gradient validation requires an evidence-supervised claim")
+    state = rng_state()
+    try:
+        system.configure_training("continuation")
+        output = system(row, training_stage="continuation")
+        loss = -output["log_probabilities"][row["label"]]
+        verification_gradient = torch.autograd.grad(loss, system.reranker.head.weight,
+                                                    allow_unused=True, retain_graph=True)[0]
+        if verification_gradient is not None:
+            raise AssertionError("A2 verification loss must be disconnected from the reranker")
+        evidence_gradient = torch.autograd.grad(output["evidence_loss"], system.reranker.head.weight)[0]
+        norm = float(evidence_gradient.norm())
+        if norm <= 0 or not math.isfinite(norm):
+            raise AssertionError("A2 evidence loss failed to reach the reranker")
+        return {"verification_only_reranker_head_gradient_norm": 0.0,
+                "evidence_only_reranker_head_gradient_norm": norm,
+                "all_reranker_parameters_trainable": all(p.requires_grad for p in system.reranker.parameters()),
+                "all_verifier_parameters_trainable": all(p.requires_grad for p in system.verifier.parameters())}
+    finally:
+        restore_rng(state)
+        system.zero_grad(set_to_none=True)
+
+
+def run_experiment(config, output, models=("M0", "M1", "M2"), progress=None, initialization_from=None):
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     if config.device == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("CUDA requested but unavailable; use --device cpu explicitly")
-    if not models or any(m not in ("M0", "M1", "M2") for m in models):
-        raise ValueError("Choose M0, M1, and/or M2")
+    if not models or any(m not in ALL_MODELS for m in models) or len(set(models)) != len(models):
+        raise ValueError(f"Choose distinct configurations from {ALL_MODELS}")
     train, dev = training_rows(config)
     selected_ids = {"train": [r["id"] for r in train], "dev": [r["id"] for r in dev]}
     metadata = {"config": config.to_dict(), "models": list(models), "data_manifest": read_json(Path(config.data_path) / "manifest.json"), "subset_ids": selected_ids, "packages": {p: importlib.metadata.version(p) for p in ("torch", "transformers", "numpy", "rank-bm25", "scikit-learn")}, "hardware": {"device": config.device, "gpu": torch.cuda.get_device_name() if config.device == "cuda" else None}, "purpose": "pipeline validation only; scores are not research results" if config.smoke else "full training"}
+    parent_directory = Path(initialization_from).resolve() if initialization_from else None
+    if parent_directory:
+        parent = read_json(parent_directory / "experiment.json")
+        if parent["subset_ids"] != selected_ids or parent["data_manifest"] != metadata["data_manifest"]:
+            raise ValueError("Initialization parent uses different data or splits")
+        parent_config = TrainConfig(**parent["config"]).to_dict()
+        current_config = config.to_dict()
+        for key in ("model_path", "data_path"):
+            parent_config[key] = str(Path(parent_config[key]).resolve())
+            current_config[key] = str(Path(current_config[key]).resolve())
+        # Lambda is unused in reranker pretraining and common verifier warmup.
+        for key in ("evidence_lambda", "device"):
+            parent_config.pop(key)
+            current_config.pop(key)
+        if parent_config != current_config:
+            raise ValueError("Initialization parent uses different training settings or architecture")
+        sources = {"reranker": parent_directory / "reranker_best.pt"}
+        if any(mode in models for mode in ("M1", "M2", "A2")):
+            sources["warmup"] = parent_directory / "warmup_best.pt"
+        metadata["initialization_sources"] = {name: {"path": str(path), "sha256": sha256(path)}
+                                              for name, path in sources.items()}
+        signature = hashlib.sha256("\n".join(r["id"] for r in train + dev).encode()).hexdigest()
+        ledger_path = parent_directory / "training_complete.json"
+        parent_artifacts = read_json(ledger_path)["artifacts"] if ledger_path.exists() else {}
+        for name, path in sources.items():
+            state = load_checkpoint(path)
+            if state["data_signature"] != signature or state["mode"] != "M1" or state["stage"] != name:
+                raise ValueError("Initialization checkpoint has different data, mode, or phase")
+            expected_hash = parent_artifacts.get(path.name)
+            if expected_hash and expected_hash != metadata["initialization_sources"][name]["sha256"]:
+                raise ValueError("Initialization checkpoint changed since its completion ledger")
+            if name == "warmup" and state["source_checkpoint_sha256"] != metadata["initialization_sources"]["reranker"]["sha256"]:
+                raise ValueError("Warmup does not reference the selected reranker checkpoint")
+            del state
     config_path = output / "experiment.json"
     if config.train_per_label is not None:
         metadata["purpose"] = "reduced-data single-seed pilot; not full proposal reproduction"
     if config_path.exists():
         previous = read_json(config_path)
-        if TrainConfig(**previous["config"]).to_dict() != metadata["config"] or previous["subset_ids"] != selected_ids or previous["data_manifest"] != metadata["data_manifest"]:
+        if TrainConfig(**previous["config"]).to_dict() != metadata["config"] or previous["subset_ids"] != selected_ids or previous["data_manifest"] != metadata["data_manifest"] or previous.get("models") != list(models) or previous.get("initialization_sources") != metadata.get("initialization_sources"):
             raise ValueError("Output directory belongs to different experiment")
     write_json(config_path, metadata)
     seed_everything(config.seed)
@@ -284,29 +345,39 @@ def run_experiment(config, output, models=("M0", "M1", "M2"), progress=None):
     results = {}
     # Each construction starts from identical verifier initialization. The warm
     # checkpoint contains both models plus the verifier optimizer and RNG state.
-    if any(m in models for m in ("M1", "M2")):
+    if any(m != "M0" for m in models):
         system = VerificationSystem(config, "M1", tokenizer)
         initial_verifier_hash = fingerprint(system.verifier)
-        reranker_best = phase(system, train, dev, output, "reranker", "reranker", config.reranker_epochs, progress=progress)
-        warmup_best = phase(system, train, dev, output, "warmup", "warmup", config.warmup_epochs, source=reranker_best, progress=progress)
-        warmup_hash = sha256(warmup_best)
+        if parent_directory:
+            parent_checks = read_json(parent_directory / "summary.json")["M1"]["checks"]
+            if parent_checks["verifier_initial_sha256"] != initial_verifier_hash:
+                raise ValueError("Initialization parent did not use the same initial verifier")
+            reranker_best = sources["reranker"]
+        else:
+            reranker_best = phase(system, train, dev, output, "reranker", "reranker", config.reranker_epochs, progress=progress)
+        if any(m in models for m in ("M1", "M2", "A2")):
+            warmup_best = sources["warmup"] if parent_directory else phase(system, train, dev, output, "warmup", "warmup", config.warmup_epochs, source=reranker_best, progress=progress)
+            warmup_hash = sha256(warmup_best)
         del system
         gc.collect()
         if config.device == "cuda":
             torch.cuda.empty_cache()
-        for mode in (m for m in models if m != "M0"):
+        for mode in (m for m in models if m in ("M1", "M2", "A2")):
             seed_everything(config.seed)
             system = VerificationSystem(config, mode, tokenizer)
             checkpoint = load_checkpoint(warmup_best)
             system.load_state_dict(checkpoint["model"])
             del checkpoint
             start_rank_hash = fingerprint(system.reranker)
-            checks = {"shared_warmup_checkpoint_sha256": warmup_hash, "verifier_initial_sha256": initial_verifier_hash}
+            checks = {"shared_warmup_checkpoint_sha256": warmup_hash, "verifier_initial_sha256": initial_verifier_hash,
+                      "reranker_initial_sha256": start_rank_hash}
             if mode == "M2" and config.train_per_label is not None:
                 from .pilot import backbone_probes
                 initial_probes = backbone_probes(system)
             if mode == "M2" and (config.smoke or config.train_per_label is not None):
                 checks.update(isolated_joint_gradient(system, next(r for r in train if len(r["candidate_ids"]) > 1)))
+            if mode == "A2":
+                checks.update(isolated_stop_gradient(system, next(r for r in train if has_evidence_supervision(r))))
             best = phase(system, train, dev, output, mode.lower(), "continuation", config.continuation_epochs, source=warmup_best, progress=progress)
             end_rank_hash = fingerprint(system.reranker)
             if mode == "M2" and config.train_per_label is not None:
@@ -315,10 +386,11 @@ def run_experiment(config, output, models=("M0", "M1", "M2"), progress=None):
                 if not all(checks["first_last_attention_query_changed"].values()):
                     raise AssertionError("M2 did not update first/last attention queries in both encoders")
             checks["reranker_unchanged"] = start_rank_hash == end_rank_hash
+            checks["reranker_final_sha256"] = end_rank_hash
             if mode == "M1" and not checks["reranker_unchanged"]:
                 raise AssertionError("M1 changed frozen reranker parameters")
-            if mode == "M2" and (config.smoke or config.train_per_label is not None) and checks["reranker_unchanged"]:
-                raise AssertionError("M2 failed to update its reranker")
+            if mode in ("M2", "A2") and (config.smoke or config.train_per_label is not None) and checks["reranker_unchanged"]:
+                raise AssertionError(f"{mode} failed to update its reranker")
             metrics = evaluate(system, dev, output / f"{mode.lower()}_dev", progress=(lambda event: progress({**event, "phase": f"{mode.lower()}_dev"})) if progress else None)
             write_json(output / f"{mode.lower()}_checks.json", checks)
             results[mode] = {"checkpoint": str(best), "metrics": metrics, "checks": checks}
@@ -326,6 +398,33 @@ def run_experiment(config, output, models=("M0", "M1", "M2"), progress=None):
             gc.collect()
             if config.device == "cuda":
                 torch.cuda.empty_cache()
+    if "A1" in models:
+        seed_everything(config.seed)
+        system = VerificationSystem(config, "A1", tokenizer)
+        source = load_checkpoint(reranker_best)
+        system.load_state_dict(source["model"])
+        del source
+        if fingerprint(system.verifier) != initial_verifier_hash:
+            raise AssertionError("A1 verifier must start from the common initial weights")
+        start_hash = fingerprint(system.reranker)
+        best = phase(system, train, dev, output, "a1", "a1", config.warmup_epochs + config.continuation_epochs,
+                     source=reranker_best, progress=progress)
+        final_hash = fingerprint(system.reranker)
+        if final_hash != start_hash:
+            raise AssertionError("A1 changed its frozen reranker")
+        if "M1" in results and results["M1"]["checks"]["reranker_final_sha256"] != start_hash:
+            raise AssertionError("A1 and M1 must use identical sentence selection")
+        metrics = evaluate(system, dev, output / "a1_dev",
+                           progress=(lambda event: progress({**event, "phase": "a1_dev"})) if progress else None)
+        checks = {"verifier_initial_sha256": initial_verifier_hash, "reranker_unchanged": True,
+                  "reranker_initial_sha256": start_hash, "reranker_final_sha256": final_hash,
+                  "selection_source_checkpoint_sha256": sha256(reranker_best), "aggregation": "uniform"}
+        results["A1"] = {"checkpoint": str(best), "metrics": metrics, "checks": checks}
+        write_json(output / "a1_checks.json", checks)
+        del system
+        gc.collect()
+        if config.device == "cuda":
+            torch.cuda.empty_cache()
     if "M0" in models:
         seed_everything(config.seed)
         system = VerificationSystem(config, "M0", tokenizer)
@@ -360,11 +459,12 @@ def resume_checkpoint(path):
     checkpoint = load_checkpoint(path)
     config = TrainConfig(**checkpoint["config"])
     name, stage, source_hash, mode = checkpoint["phase"], checkpoint["stage"], checkpoint["source_checkpoint_sha256"], checkpoint["mode"]
+    recorded_source = checkpoint.get("source_checkpoint")
     del checkpoint
     directory = Path(path).parent
     if Path(path).name != f"{name}_last.pt":
         raise ValueError("Resume requires the phase's *_last.pt checkpoint")
-    source = directory / ("reranker_best.pt" if stage == "warmup" else "warmup_best.pt") if source_hash else None
+    source = (Path(recorded_source) if recorded_source else directory / ("reranker_best.pt" if stage in ("warmup", "a1") else "warmup_best.pt")) if source_hash else None
     epochs = config.reranker_epochs if stage == "reranker" else config.warmup_epochs if stage == "warmup" else config.continuation_epochs if stage == "continuation" else config.warmup_epochs + config.continuation_epochs
     train, dev = training_rows(config)
     system = VerificationSystem(config, mode)

@@ -104,11 +104,14 @@ def test_initialization_and_three_seed_statistics():
         mean_std([.4, .5])
 
 
-def test_full_report_requires_nine_complete_paired_models(tmp_path, monkeypatch):
+@pytest.mark.parametrize("include_ablations", [False, True])
+def test_full_report_requires_all_complete_paired_models(tmp_path, monkeypatch, include_ablations):
     from vifactcheck import LABELS
+    from vifactcheck.config import ALL_MODELS, STANDARD_MODELS, comparison_pairs
     from vifactcheck.metrics import classification_metrics
+    models = ALL_MODELS if include_ablations else STANDARD_MODELS
     monkeypatch.setattr("vifactcheck.full_reporting.EXPECTED_COUNTS", {"train": 6, "dev": 3, "test": 3})
-    write_json(tmp_path / "full_plan.json", {"data_checksums": {"train": "fixture"}})
+    write_json(tmp_path / "full_plan.json", {"data_checksums": {"train": "fixture"}, "models": list(models)})
     write_json(tmp_path / "selected_hyperparameters.json", {"learning_rate": 1e-5, "evidence_lambda": .1})
     predictions = [{"id": str(i), "article_id": str(i), "gold_label_id": i, "label_id": i} for i in range(3)]
     classification = classification_metrics([0, 1, 2], [0, 1, 2])
@@ -118,15 +121,21 @@ def test_full_report_requires_nine_complete_paired_models(tmp_path, monkeypatch)
     for seed in (42, 13, 2026):
         folder = tmp_path / "seeds" / f"seed{seed}"
         write_json(folder / "experiment.json", {"subset_ids": {"train": list(range(6))}, "config": {"seed": seed, "smoke": False, "train_per_label": None}})
-        write_json(folder / "summary.json", {m: {"metrics": metric} for m in ("M0", "M1", "M2")})
-        for mode in ("m0", "m1", "m2"):
+        write_json(folder / "summary.json", {m: {"metrics": metric} for m in models})
+        for mode in (m.lower() for m in models):
             write_json(folder / f"{mode}_test_metrics.json", metric)
             write_jsonl(folder / f"{mode}_test_predictions.jsonl", predictions)
     result = write_full_report(tmp_path)
-    assert len(result["per_seed"]) == 9
+    assert len(result["per_seed"]) == 3 * len(models)
     assert result["models"]["M2"]["test_macro_f1"] == {"mean": 1.0, "sample_std": 0.0}
-    assert len(read_json(tmp_path / "paired_bootstrap.json")) == 6
+    assert len(read_json(tmp_path / "paired_bootstrap.json")) == 3 * len(comparison_pairs(models))
     assert "not a vote ensemble" in (tmp_path / "REPORT.md").read_text(encoding="utf-8")
+    metadata_file = tmp_path / "seeds/seed2026/experiment.json"
+    original_metadata = read_json(metadata_file)
+    write_json(metadata_file, {**original_metadata, "config": {**original_metadata["config"], "reranker_architecture": "listwise"}})
+    with pytest.raises(ValueError, match="mix reranker"):
+        write_full_report(tmp_path)
+    write_json(metadata_file, original_metadata)
     write_jsonl(tmp_path / "seeds/seed2026/m2_test_predictions.jsonl", predictions[:-1])
     with pytest.raises(ValueError, match="complete"):
         write_full_report(tmp_path)

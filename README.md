@@ -7,7 +7,7 @@ and BM25/SBERT/hybrid retrieval), the M0 within-context baseline, and a separate
 corpus BM25 experiment. See [the code organization guide](docs/code_organization.md)
 for their entry points, data formats, and dependency requirements.
 
-## Rush-version: standalone M0/M1/M2 pilot
+## Rush-version: standalone research implementation
 
 The `rush/` subproject contains a separate, tested M0/M1/M2 implementation and
 the 900-claim, seed-42 deadline pilot. See [its setup and commands](rush/README.md)
@@ -16,6 +16,9 @@ and data/artifact directories; its scores belong to its recorded protocol.
 
 The completed pilot's [report](rush/results/pilot-900-seed42/REPORT.md) and
 [downloadable results package](rush/results/pilot-900-seed42/README.md) are available.
+
+The Rush implementation also supports the 0410 slides' A1/A2 controls and optional
+list-aware candidate attention. See [the implementation and commands](rush/docs/SLIDES_0410_IMPLEMENTATION.md).
 
 The existing `src/factcheck/` workflows continue to use the setup below.
 

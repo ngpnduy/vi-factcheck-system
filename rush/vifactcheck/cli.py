@@ -5,7 +5,7 @@ from pathlib import Path
 import sys
 import time
 
-from .config import TrainConfig
+from .config import ALL_MODELS, STANDARD_MODELS, TrainConfig, comparison_pairs, reranker_options
 from .io import read_json, write_json
 
 
@@ -18,10 +18,19 @@ def add_training_arguments(parser):
     parser.add_argument("--evidence-lambda", type=float, default=0.5)
     parser.add_argument("--accumulation", type=int, default=8)
     parser.add_argument("--train-per-label", type=int, help="Stratified training subset; no evidence-alignment filtering")
+    add_reranker_arguments(parser)
+
+
+def add_reranker_arguments(parser):
+    parser.add_argument("--reranker-architecture", choices=("pairwise", "listwise"), default="pairwise")
+    parser.add_argument("--listwise-layers", type=int, default=1)
+    parser.add_argument("--listwise-heads", type=int, default=8)
+    parser.add_argument("--listwise-feedforward", type=int, default=1536)
+    parser.add_argument("--listwise-dropout", type=float, default=0.1)
 
 
 def configuration(args, smoke=False):
-    return TrainConfig(seed=args.seed, learning_rate=args.lr, evidence_lambda=args.evidence_lambda, accumulation_steps=args.accumulation, device=args.device, model_path=args.model_path, data_path=args.data, reranker_epochs=1 if smoke else args.reranker_epochs, warmup_epochs=1 if smoke else args.warmup_epochs, continuation_epochs=1 if smoke else args.continuation_epochs, smoke=smoke, train_per_label=args.train_per_label)
+    return TrainConfig(seed=args.seed, learning_rate=args.lr, evidence_lambda=args.evidence_lambda, accumulation_steps=args.accumulation, device=args.device, model_path=args.model_path, data_path=args.data, reranker_epochs=1 if smoke else args.reranker_epochs, warmup_epochs=1 if smoke else args.warmup_epochs, continuation_epochs=1 if smoke else args.continuation_epochs, smoke=smoke, train_per_label=args.train_per_label, **reranker_options(args))
 
 
 def predict_record(system, claim, context, segmenter_path=".cache/vncorenlp"):
@@ -37,12 +46,12 @@ def predict_record(system, claim, context, segmenter_path=".cache/vncorenlp"):
     return system.prediction(row)
 
 
-def smoke_run(config, output):
+def smoke_run(config, output, models=STANDARD_MODELS):
     from .data import load_split
     from .training import run_experiment, system_from_checkpoint
     import torch
     started = time.perf_counter()
-    results = run_experiment(config, output)
+    results = run_experiment(config, output, models)
     # Check loaded checkpoints using actual full models, and raw-input prediction
     # using a real validation article; no gold enters this prediction path.
     rows = {r["id"]: r for r in load_split(config.data_path, "dev")}
@@ -74,7 +83,8 @@ def smoke_run(config, output):
 
 
 def tune(args):
-    from .training import run_experiment
+    from .training import run_experiment, training_rows
+    from .full import lambda_job
     output = Path(args.output)
     base = configuration(args)
     base.seed = 42
@@ -84,10 +94,12 @@ def tune(args):
         result = run_experiment(cfg, output / f"lr_{lr}", ("M1",))
         trials.append({"learning_rate": lr, "validation_macro_f1": result["M1"]["metrics"]["classification"]["macro_f1"]})
     chosen_lr = max(trials, key=lambda trial: trial["validation_macro_f1"])["learning_rate"]
+    parent_directory = output / f"lr_{chosen_lr}"
+    train, dev = training_rows(base)
     lambda_trials = []
     for weight in (0.1, 0.5, 1.0):
         cfg = TrainConfig(**{**base.to_dict(), "learning_rate": chosen_lr, "evidence_lambda": weight})
-        result = run_experiment(cfg, output / f"lambda_{weight}", ("M2",))
+        result = lambda_job(cfg, output / f"lambda_{weight}", parent_directory, lambda event: None, train, dev)
         lambda_trials.append({"evidence_lambda": weight, "validation_macro_f1": result["M2"]["metrics"]["classification"]["macro_f1"]})
     choice = {"seed": 42, "split": "dev", "learning_rate": chosen_lr, "evidence_lambda": max(lambda_trials, key=lambda trial: trial["validation_macro_f1"])["evidence_lambda"], "learning_rate_trials": trials, "lambda_trials": lambda_trials}
     write_json(output / "selected_hyperparameters.json", choice)
@@ -97,9 +109,15 @@ def tune(args):
 def compare(args):
     import numpy as np
     records = {}
+    architecture = None
     for directory in args.runs:
         summary = read_json(Path(directory) / "summary.json")
         experiment = read_json(Path(directory) / "experiment.json")
+        current_architecture = TrainConfig(**experiment["config"]).to_dict()
+        current_architecture = {key: current_architecture[key] for key in reranker_options(argparse.Namespace())}
+        if architecture is not None and current_architecture != architecture:
+            raise ValueError("Do not combine pairwise/list-aware architectures or attention settings in one comparison")
+        architecture = current_architecture
         if experiment["config"]["smoke"]:
             raise ValueError("Smoke runs cannot be aggregated as research experiments")
         seed = experiment["config"]["seed"]
@@ -108,7 +126,7 @@ def compare(args):
                 raise ValueError(f"Duplicate {mode} seed {seed}")
             records[mode][seed] = result["metrics"]["classification"]["macro_f1"]
     report = {"models": {mode: {"per_seed_macro_f1": values, "mean": float(np.mean(list(values.values()))), "sample_std": float(np.std(list(values.values()), ddof=1)) if len(values) > 1 else None} for mode, values in records.items()}, "paired_seed_differences": {}}
-    for left, right in (("M1", "M0"), ("M2", "M1")):
+    for left, right in comparison_pairs(records):
         if left in records and right in records:
             seeds = sorted(set(records[left]) & set(records[right]))
             report["paired_seed_differences"][f"{left}-{right}"] = {str(seed): records[left][seed] - records[right][seed] for seed in seeds}
@@ -120,7 +138,7 @@ def main(argv=None):
     os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
-    parser = argparse.ArgumentParser(description="Reproduce article-conditioned ViFactCheck M0/M1/M2")
+    parser = argparse.ArgumentParser(description="Article-conditioned ViFactCheck M0/M1/A1/M2/A2")
     sub = parser.add_subparsers(dest="command", required=True)
     prep = sub.add_parser("prepare", help="Download pinned assets and preprocess all official splits")
     prep.add_argument("--output", default="data/prepared")
@@ -140,6 +158,8 @@ def main(argv=None):
     full.add_argument("--model-path", default=".cache/phobert")
     full.add_argument("--segmenter-path", default=".cache/vncorenlp")
     full.add_argument("--status-dir", help="Optional project-local directory for mirrored progress and final reports")
+    full.add_argument("--include-ablations", action="store_true", help="Include A1/A2 and evaluate all 15 configuration-seed combinations")
+    add_reranker_arguments(full)
     for name in ("train", "tune", "smoke"):
         child = sub.add_parser(name)
         add_training_arguments(child)
@@ -148,9 +168,11 @@ def main(argv=None):
             child.add_argument("--reranker-epochs", type=int, default=3)
             child.add_argument("--warmup-epochs", type=int, default=3)
             child.add_argument("--continuation-epochs", type=int, default=2)
+        if name in ("train", "smoke"):
+            child.add_argument("--models", nargs="+", choices=ALL_MODELS, default=list(STANDARD_MODELS))
         if name == "train":
-            child.add_argument("--models", nargs="+", choices=("M0", "M1", "M2"), default=["M0", "M1", "M2"])
             child.add_argument("--resume", help="Resume a locally generated *_last.pt phase checkpoint")
+            child.add_argument("--initialization-from", help="Reuse reranker_best.pt and warmup_best.pt from a matching earlier experiment")
     ev = sub.add_parser("evaluate")
     ev.add_argument("--checkpoint", required=True)
     ev.add_argument("--data", default="data/prepared")
@@ -183,9 +205,11 @@ def main(argv=None):
             result = run_full(args)
         elif args.command == "train":
             from .training import resume_checkpoint, run_experiment
-            result = {"checkpoint": str(resume_checkpoint(args.resume))} if args.resume else run_experiment(configuration(args), args.output, args.models)
+            if args.resume and args.initialization_from:
+                raise ValueError("Use --resume alone; its checkpoint records the initialization source")
+            result = {"checkpoint": str(resume_checkpoint(args.resume))} if args.resume else run_experiment(configuration(args), args.output, args.models, initialization_from=args.initialization_from)
         elif args.command == "smoke":
-            result = smoke_run(configuration(args, smoke=True), args.output)
+            result = smoke_run(configuration(args, smoke=True), args.output, args.models)
         elif args.command == "tune":
             result = tune(args)
         elif args.command == "evaluate":

@@ -8,12 +8,12 @@ import shutil
 
 import torch
 
-from .config import DATASET_REVISION, EXPECTED_COUNTS, MODEL_REVISION, TrainConfig
+from .config import ALL_MODELS, DATASET_REVISION, EXPECTED_COUNTS, MODEL_REVISION, TrainConfig, reranker_options
 from .data import has_evidence_supervision, load_split
 from .io import read_json, read_jsonl, sha256, write_json
 from .model import PairTokenizer, VerificationSystem
 from .pilot import backbone_probes, keep_awake, profile_long_claims, release_gpu, require_space
-from .training import (evaluate, fingerprint, isolated_joint_gradient, load_checkpoint,
+from .training import (evaluate, fingerprint, isolated_joint_gradient, isolated_stop_gradient, load_checkpoint,
                        phase, run_experiment, seed_everything, system_from_checkpoint)
 
 SEEDS = (42, 13, 2026)
@@ -101,8 +101,8 @@ def seal_training(directory, results, parents=()):
 
 
 def joint_checks(checkpoint_path, warmup_path, row):
-    system = system_from_checkpoint(checkpoint_path, "cuda")
-    checks = isolated_joint_gradient(system, row)
+    system = system_from_checkpoint(checkpoint_path)
+    checks = isolated_stop_gradient(system, row) if getattr(system, "mode", "M2") == "A2" else isolated_joint_gradient(system, row)
     end = backbone_probes(system)
     warmup = load_checkpoint(warmup_path)
     start = {}
@@ -115,31 +115,33 @@ def joint_checks(checkpoint_path, warmup_path, row):
     del warmup
     checks["first_last_attention_query_changed"] = {key: start[key] != end[key] for key in end}
     if not all(checks["first_last_attention_query_changed"].values()):
-        raise AssertionError("M2 did not update both encoders' first/last attention query matrices")
+        raise AssertionError("Joint training did not update both encoders' first/last attention query matrices")
     del system
     release_gpu()
     return checks
 
 
-def training_job(config, directory, models, progress, train):
+def training_job(config, directory, models, progress, train, initialization_from=None):
     directory = Path(directory)
     if (directory / "training_complete.json").exists():
         result = verify_completed_training(directory)
-        checkpoint_cleanup(directory, [f"{name}_last.pt" for name in ("reranker", "warmup", "m0", "m1", "m2")])
+        checkpoint_cleanup(directory, [f"{name}_last.pt" for name in ("reranker", "warmup", "m0", "m1", "m2", "a1", "a2")])
         return result
-    result = run_experiment(config, directory, models, progress=progress)
-    if "M2" in result:
-        checks = joint_checks(directory / "m2_best.pt", directory / "warmup_best.pt", next(r for r in train if len(r["candidate_ids"]) > 1))
-        result["M2"]["checks"].update(checks)
-        if result["M2"]["checks"]["reranker_unchanged"]:
-            raise AssertionError("M2 reranker did not change")
-        write_json(directory / "m2_checks.json", result["M2"]["checks"])
+    result = run_experiment(config, directory, models, progress=progress, initialization_from=initialization_from)
+    for mode in (m for m in ("M2", "A2") if m in result):
+        parent = Path(initialization_from) if initialization_from else directory
+        row = next(r for r in train if has_evidence_supervision(r)) if mode == "A2" else next(r for r in train if len(r["candidate_ids"]) > 1)
+        checks = joint_checks(directory / f"{mode.lower()}_best.pt", parent / "warmup_best.pt", row)
+        result[mode]["checks"].update(checks)
+        if result[mode]["checks"]["reranker_unchanged"]:
+            raise AssertionError(f"{mode} reranker did not change")
+        write_json(directory / f"{mode.lower()}_checks.json", result[mode]["checks"])
         write_json(directory / "summary.json", result)
-    parents = ("reranker_best.pt", "warmup_best.pt") if "M1" in result else ()
+    parents = ("reranker_best.pt", "warmup_best.pt") if "M1" in result and not initialization_from else ()
     seal_training(directory, result, parents)
     # Keep the parent best checkpoints used by resume/provenance. Last states
     # are discarded only after the completed-job ledger is durable.
-    checkpoint_cleanup(directory, [f"{name}_last.pt" for name in ("reranker", "warmup", "m0", "m1", "m2")])
+    checkpoint_cleanup(directory, [f"{name}_last.pt" for name in ("reranker", "warmup", "m0", "m1", "m2", "a1", "a2")])
     return result
 
 
@@ -159,9 +161,11 @@ def lambda_job(config, directory, parent_directory, progress, train, dev):
     del state
     start_hash = fingerprint(system.reranker)
     checkpoint = phase(system, train, dev, directory, "m2", "continuation", config.continuation_epochs, source=source, progress=progress)
+    final_hash = fingerprint(system.reranker)
     checks = {"verifier_initial_sha256": parent["checks"]["verifier_initial_sha256"],
               "shared_warmup_checkpoint_sha256": sha256(source),
-              "reranker_unchanged": start_hash == fingerprint(system.reranker)}
+              "reranker_unchanged": start_hash == final_hash,
+              "reranker_initial_sha256": start_hash, "reranker_final_sha256": final_hash}
     if checks["reranker_unchanged"]:
         raise AssertionError("M2 reranker did not change during lambda tuning")
     metrics = evaluate(system, dev, directory / "m2_dev", progress=lambda event: progress({**event, "phase": "m2_dev"}))
@@ -206,8 +210,8 @@ def collect_seed42(directory, sources, config):
                 shutil.copy2(source_dir / name, target)
         result[mode] = {**result[mode], "checkpoint": str(directory / f"{mode.lower()}_best.pt"), "training_source": str(source_dir)}
     metadata = read_json(Path(sources["M0"]) / "experiment.json")
-    metadata.update({"config": config.to_dict(), "models": list(MODELS), "purpose": "full-data selected seed-42 models; tuning winners reused",
-                     "training_sources": {m: str(p) for m, p in sources.items()}, "evidence_lambda_applies_to": ["M2"]})
+    metadata.update({"config": config.to_dict(), "models": list(sources), "purpose": "full-data selected seed-42 models; tuning winners reused",
+                     "training_sources": {m: str(p) for m, p in sources.items()}, "evidence_lambda_applies_to": [m for m in ("M2", "A2") if m in sources]})
     write_json(directory / "experiment.json", metadata)
     write_json(directory / "summary.json", result)
     seal_training(directory, result)
@@ -215,12 +219,19 @@ def collect_seed42(directory, sources, config):
 
 
 def verify_initialization(summary):
-    if len({summary[m]["checks"]["verifier_initial_sha256"] for m in MODELS}) != 1:
-        raise AssertionError("The three models did not share initial verifier weights")
+    if len({summary[m]["checks"]["verifier_initial_sha256"] for m in summary}) != 1:
+        raise AssertionError("The models did not share initial verifier weights")
     if summary["M1"]["checks"]["shared_warmup_checkpoint_sha256"] != summary["M2"]["checks"]["shared_warmup_checkpoint_sha256"]:
         raise AssertionError("M1 and M2 did not share their initialization checkpoint")
     if not summary["M1"]["checks"]["reranker_unchanged"]:
         raise AssertionError("M1 changed its frozen reranker")
+    if "A1" in summary:
+        a1 = summary["A1"]["checks"]
+        m1 = summary["M1"]["checks"]
+        if not a1["reranker_unchanged"] or a1["reranker_final_sha256"] != m1["reranker_final_sha256"]:
+            raise AssertionError("A1 must use M1's identical frozen sentence selector")
+    if "A2" in summary and summary["A2"]["checks"]["shared_warmup_checkpoint_sha256"] != summary["M1"]["checks"]["shared_warmup_checkpoint_sha256"]:
+        raise AssertionError("A2 did not share the M1/M2 initialization checkpoint")
 
 
 def run_full(args):
@@ -235,18 +246,19 @@ def _run_full(args, output):
     from .full_reporting import write_full_report
     mirror = Path(args.status_dir).resolve() if args.status_dir else output
     mirror.mkdir(parents=True, exist_ok=True)
-    config = TrainConfig(model_path=str(Path(args.model_path).resolve()), data_path=str(Path(args.data).resolve()))
+    models = ALL_MODELS if getattr(args, "include_ablations", False) else MODELS
+    config = TrainConfig(model_path=str(Path(args.model_path).resolve()), data_path=str(Path(args.data).resolve()), **reranker_options(args))
     manifest = read_json(Path(config.data_path) / "manifest.json")
-    plan = {"format_version": 1, "study": "full-data M0/M1/M2 experiment", "seeds": list(SEEDS), "models": list(MODELS),
+    plan = {"format_version": 1, "study": "full-data " + "/".join(models) + " experiment", "seeds": list(SEEDS), "models": list(models),
             "learning_rates": list(LEARNING_RATES), "evidence_lambdas": list(LAMBDAS), "tuning_seed": 42, "selection_split": "dev",
             "config_defaults": config.to_dict(), "data_checksums": manifest["prepared_file_sha256"],
             "source_code_sha256": {p.name: sha256(p) for p in Path(__file__).parent.glob("*.py")},
             "segmenter_path": str(Path(args.segmenter_path).resolve()),
             "output": str(output), "lambda_initialization": "same selected-LR warmup checkpoint for all three lambda trials",
             "seed42_reuse": "selected M1/M2 tuning checkpoints are reused; M0 trains independently from identical initial weights",
-            "test_protocol": "all training and settings finalized before nine test evaluations; test never selects hyperparameters",
+            "test_protocol": f"all training and settings finalized before {len(models) * len(SEEDS)} test evaluations; test never selects hyperparameters",
             "checkpoint_policy": "completed jobs keep their best checkpoints and required parent best checkpoints; incomplete jobs retain resume states",
-            "excluded": ["A1", "A2", "D0", "manual contradiction annotation"]}
+            "excluded": (["A1", "A2"] if models == MODELS else []) + ["D0", "manual contradiction annotation"]}
     plan_path = output / "full_plan.json"
     if plan_path.exists() and read_json(plan_path) != plan:
         raise ValueError("Full experiment code/configuration/data changed; use a new output folder")
@@ -267,7 +279,7 @@ def _run_full(args, output):
         for seed in SEEDS:
             location = output / "seeds" / f"seed{seed}"
             verify_completed_training(location)
-            for mode in MODELS:
+            for mode in models:
                 record = read_json(location / f"{mode.lower()}_test_complete.json")
                 if sha256(location / f"{mode.lower()}_best.pt") != record["checkpoint_sha256"] or any(sha256(location / name) != checksum for name, checksum in record["artifact_sha256"].items()):
                     raise ValueError("Completed test artifact changed")
@@ -283,8 +295,9 @@ def _run_full(args, output):
         return completed
     status.update({"status": "running", "pid": os.getpid(), "started_utc": status.get("started_utc", now()), "updated_utc": now(),
                    "output": str(output), "train_count": EXPECTED_COUNTS["train"], "validation_count": EXPECTED_COUNTS["dev"],
-                   "test_count": EXPECTED_COUNTS["test"], "total_training_tasks": 8, "completed_training_tasks": 0})
-    status["initial_estimated_total_hours"] = [60, 80]
+                   "test_count": EXPECTED_COUNTS["test"], "total_training_tasks": 9 if "A1" in models else 8, "completed_training_tasks": 0})
+    status["initial_estimated_total_hours"] = None
+    status["runtime_estimate_note"] = "Estimate from measured phase throughput; no fixed ETA for new architectures or ablations"
 
     def progress(event):
         if (mirror / "STOP_REQUESTED").exists() or (output / "STOP_REQUESTED").exists():
@@ -357,20 +370,26 @@ def _run_full(args, output):
             m0_directory = output / "seeds" / "seed42-m0"
             training_job(final_config, m0_directory, ("M0",), task("seed42_m0", final_config), train)
             finish_task()
-            collect_seed42(output / "seeds" / "seed42", {"M0": m0_directory, "M1": parent_directory,
-                           "M2": output / "tuning" / f"lambda_{chosen_lambda}"}, final_config)
+            sources = {"M0": m0_directory, "M1": parent_directory, "M2": output / "tuning" / f"lambda_{chosen_lambda}"}
+            if "A1" in models:
+                ablation_directory = output / "seeds" / "seed42-ablations"
+                training_job(final_config, ablation_directory, ("A1", "A2"), task("seed42_ablations", final_config),
+                             train, initialization_from=parent_directory)
+                sources.update({"A1": ablation_directory, "A2": ablation_directory})
+                finish_task()
+            collect_seed42(output / "seeds" / "seed42", {m: sources[m] for m in models}, final_config)
             for seed in (13, 2026):
                 cfg = TrainConfig(**{**final_config.to_dict(), "seed": seed})
-                training_job(cfg, output / "seeds" / f"seed{seed}", MODELS, task(f"seed{seed}", cfg), train)
+                training_job(cfg, output / "seeds" / f"seed{seed}", models, task(f"seed{seed}", cfg), train)
                 finish_task()
             # Test records are loaded only after hyperparameters and all models
             # have been finalized. No test-driven retries or checkpoint selection.
             test = load_split(config.data_path, "test")
-            progress({"task": "final_evaluation", "phase": "checking", "event": "checking", "completed_test_models": 0, "total_test_models": 9})
+            progress({"task": "final_evaluation", "phase": "checking", "event": "checking", "completed_test_models": 0, "total_test_models": len(models) * len(SEEDS)})
             for seed in SEEDS:
                 directory = output / "seeds" / f"seed{seed}"
                 verify_initialization(verify_completed_training(directory))
-                for mode in MODELS:
+                for mode in models:
                     name = mode.lower()
                     checkpoint_path = directory / f"{name}_best.pt"
                     marker = directory / f"{name}_test_complete.json"
@@ -406,7 +425,7 @@ def _run_full(args, output):
             progress({"task": "report", "phase": "report", "event": "analysis"})
             write_full_report(output)
             completed = {"status": "complete", "started_utc": status["started_utc"], "completed_utc": now(), "seeds": list(SEEDS),
-                         "models": list(MODELS), "selected_hyperparameters": selected, "report": str(output / "REPORT.md"),
+                         "models": list(models), "selected_hyperparameters": selected, "report": str(output / "REPORT.md"),
                          "report_checksums": {n: sha256(output / n) for n in ("REPORT.md", "results.csv", "comparison.json", "paired_bootstrap.json")}}
             write_json(output / "completion.json", completed)
             status.update({"status": "complete", "phase": "complete", "event": "complete", "updated_utc": now()})

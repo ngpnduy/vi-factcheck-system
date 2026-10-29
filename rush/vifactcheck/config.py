@@ -5,6 +5,16 @@ DATASET_REVISION = "2df623632299a3459ad95feeff9ac67d7205a42a"
 MODEL_ID = "vinai/phobert-base"
 MODEL_REVISION = "01daacda68afe13d83023d16ec647239e344a1e6"
 EXPECTED_COUNTS = {"train": 5062, "dev": 723, "test": 1447}
+STANDARD_MODELS = ("M0", "M1", "M2")
+ALL_MODELS = ("M0", "M1", "A1", "M2", "A2")
+
+
+def comparison_pairs(models):
+    """Contrasts that isolate retrieval, weighting, and verification feedback."""
+    pairs = (("A1", "M0"), ("M1", "A1"), ("M2", "M1"), ("M2", "A2"))
+    if not {"A1", "A2"}.issubset(models):
+        pairs = (("M1", "M0"), ("M2", "M1")) + pairs[:2] + pairs[3:]
+    return tuple((a, b) for a, b in pairs if a in models and b in models)
 
 
 @dataclass
@@ -28,6 +38,11 @@ class TrainConfig:
     smoke: bool = False
     train_per_label: int | None = None
     optimizer: str = "adafactor"
+    reranker_architecture: str = "pairwise"
+    listwise_layers: int = 1
+    listwise_heads: int = 8
+    listwise_feedforward: int = 1536
+    listwise_dropout: float = 0.1
 
     def __post_init__(self):
         if self.device not in ("cuda", "cpu"):
@@ -42,6 +57,15 @@ class TrainConfig:
             raise ValueError("Each training phase needs at least one epoch")
         if self.train_per_label is not None and (self.train_per_label < 1 or self.smoke):
             raise ValueError("A training subset needs a positive per-label count and cannot be smoke")
+        if self.reranker_architecture not in ("pairwise", "listwise"):
+            raise ValueError("reranker_architecture must be pairwise or listwise")
+        if min(self.listwise_layers, self.listwise_heads, self.listwise_feedforward) < 1 or not 0 <= self.listwise_dropout < 1:
+            raise ValueError("Invalid list-aware attention settings")
 
     def to_dict(self):
         return asdict(self)
+
+
+def reranker_options(args):
+    names = ("reranker_architecture", "listwise_layers", "listwise_heads", "listwise_feedforward", "listwise_dropout")
+    return {name: getattr(args, name, TrainConfig.__dataclass_fields__[name].default) for name in names}

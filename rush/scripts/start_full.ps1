@@ -3,7 +3,10 @@ param(
     [string]$StatusDirectory = '',
     [string]$DataDirectory = '',
     [string]$ModelDirectory = '',
-    [string]$SegmenterDirectory = ''
+    [string]$SegmenterDirectory = '',
+    [switch]$IncludeAblations,
+    [ValidateSet('pairwise', 'listwise')]
+    [string]$RerankerArchitecture = 'pairwise'
 )
 $ErrorActionPreference = 'Stop'
 $projectRoot = Split-Path -Parent $PSScriptRoot
@@ -54,7 +57,9 @@ $argumentList = @('-u', '-m', 'vifactcheck', 'full',
     '--status-dir', (Quote-PathArgument $resolvedStatus),
     '--data', (Quote-PathArgument (Resolve-Path -LiteralPath $DataDirectory).Path),
     '--model-path', (Quote-PathArgument (Resolve-Path -LiteralPath $ModelDirectory).Path),
-    '--segmenter-path', (Quote-PathArgument (Resolve-Path -LiteralPath $SegmenterDirectory).Path))
+    '--segmenter-path', (Quote-PathArgument (Resolve-Path -LiteralPath $SegmenterDirectory).Path),
+    '--reranker-architecture', $RerankerArchitecture)
+if ($IncludeAblations) { $argumentList += '--include-ablations' }
 $stamp = [DateTime]::UtcNow.ToString('yyyyMMddTHHmmssZ')
 $consolePath = Join-Path $resolvedStatus "console-$stamp.log"
 $errorPath = Join-Path $resolvedStatus "stderr-$stamp.log"

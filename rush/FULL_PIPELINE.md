@@ -3,7 +3,10 @@
 The full runner uses all 5,062 train, 723 dev and 1,447 test claims. It preserves the
 256/96 token and 20/5 evidence limits, separate PhoBERT-base parameters, Adafactor,
 eight-claim accumulation, mixed precision and activation checkpointing. M2 trains
-both encoders. A1, A2, D0 and manual annotation remain outside this run.
+both encoders. The default run covers M0/M1/M2. Add `--include-ablations` for
+A1/A2 and fifteen final models; D0 and manual annotation remain outside this run.
+The [slide implementation guide](docs/SLIDES_0410_IMPLEMENTATION.md) describes
+the five-mode protocol, optional list-aware architecture, and initializer reuse.
 
 ## Execution order
 
@@ -70,6 +73,7 @@ logs. Final report and comparison files are mirrored there after completion.
 `LOCATION.json` records the physical output path, including any Windows packaged-app
 AppData redirection. The launcher reuses that recorded location when resuming.
 The output directory holds all trial/seed checkpoints, exact configurations,
-source/data hashes, metrics, predictions and completion ledgers. Runtime requires
-roughly 60–80 hours on the pilot laptop; this estimate depends on current throughput.
+source/data hashes, metrics, predictions and completion ledgers. Estimate runtime
+from measured per-epoch throughput. The earlier three-mode estimate does not
+establish the cost of new ablations or list-aware attention.
 Keep the laptop plugged in. There is no six-hour deadline or training subset.
