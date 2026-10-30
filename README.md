@@ -20,6 +20,9 @@ The completed pilot's [report](rush/results/pilot-900-seed42/REPORT.md) and
 The Rush implementation also supports the 0410 slides' A1/A2 controls and optional
 list-aware candidate attention. See [the implementation and commands](rush/docs/SLIDES_0410_IMPLEMENTATION.md).
 
+The full-data, seed-42 list-aware study completed all five configurations on
+30 October 2026. See the [report and downloadable results archive](rush/results/full-five-listwise-seed42-20261030/README.md).
+
 The existing `src/factcheck/` workflows continue to use the setup below.
 
 ## Quick start

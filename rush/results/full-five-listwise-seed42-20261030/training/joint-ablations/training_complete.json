@@ -1,0 +1,19 @@
+{
+  "completed_utc": "2026-10-30T02:19:08.207481+00:00",
+  "artifacts": {
+    "summary.json": "69085e1b1382ed079b6a62040115b020835181ff1726f9848931d9773e9ee975",
+    "experiment.json": "84380cc46b587253cdc5f8a1c953a6bbf4f127fbf7877285b9891f7f40a71624",
+    "m2_best.pt": "9d9e1cee6a954bcd4531ce8f063e040bcc355559c40aae48439fd1b04943e5ab",
+    "m2_dev_metrics.json": "c1c43dadcb63d8f7c9a4cea68c1895a9de874b4e302efb5dbcff405b35b469f1",
+    "m2_dev_predictions.jsonl": "b2e925154551111677609ac5cfbc96d9cd6435fef98fc03652f113cce8891158",
+    "m2_checks.json": "dff842e561266639ad0299ad431cd140f387fc83a270640408ae121b06d8e53a",
+    "a2_best.pt": "807f295563c44b665d358fc97e476580f2bc32b7bfed3b2e79c9528a70422e7f",
+    "a2_dev_metrics.json": "8d298de08847d7d84317d04fc953348d6723655f162fd6b5d39761cfa57c1760",
+    "a2_dev_predictions.jsonl": "49df0c09a9ee74a37322237928f7ce9a3cc596e6e857f7c35cc3293c24973c78",
+    "a2_checks.json": "fcd47f67d0fd3acca4c181906b4a09e662705b5cb153d5bb17869616e375579c",
+    "a1_best.pt": "d33448e8b1b7230c7adf03b5584c81d89d47eb69790451eff7a85c36cbaf0f6c",
+    "a1_dev_metrics.json": "04e703c38a976114b47842801de164cb97f8806490be12168ffeedf5dfacc241",
+    "a1_dev_predictions.jsonl": "5ce13195a0bdb1f52920d88de82dc8324d9a53fb478c434240e6ecf72d4069e4",
+    "a1_checks.json": "a50bcb8e4d23d360638ff0c617c5df9e2c3e990ceff65241f63b817bbe20056b"
+  }
+}

@@ -32,7 +32,11 @@ per-claim predictions and the matching source snapshot. These are preliminary
 single-seed results. The original three-configuration full-data experiment finished
 on 20 October 2026; mean test Macro-F1 was 59.73% / 68.42% / 69.70% for M0 / M1 /
 M2 across seeds 13, 42, and 2026. Those are pairwise measurements without A1/A2.
-The new ablations and list-aware study have not been run as full experiments.
+The full-data, seed-42 list-aware study completed M0/M1/A1/M2/A2 on 30 October
+2026. Test Macro-F1 was 57.71% / 67.68% / 58.62% / 70.46% / 66.42%, respectively.
+See the [completed report and results ZIP](results/full-five-listwise-seed42-20261030/README.md).
+This is a separate single-seed study with fixed hyperparameters, not a three-seed
+comparison of the new architecture.
 
 ## Windows setup
 

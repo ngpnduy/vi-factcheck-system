@@ -1,0 +1,17 @@
+{
+  "shared_warmup_checkpoint_sha256": "36f9d6b5567e9d16c93d8b3f45ec189c93972bbae6812050554ae2bc554d1d82",
+  "verifier_initial_sha256": "42aa89506b12a1ea1b8226737af39e4dbef2fe8f7dc423368bf3505cd7d13db6",
+  "reranker_initial_sha256": "e48a9751e4a5c6b0e6ec78b952ce07de79a9d16a4ae02031f386c96d962a68bb",
+  "verification_only_reranker_head_gradient_norm": 0.0,
+  "evidence_only_reranker_head_gradient_norm": 0.014941097237169743,
+  "all_reranker_parameters_trainable": true,
+  "all_verifier_parameters_trainable": true,
+  "reranker_unchanged": false,
+  "reranker_final_sha256": "5857cdfc303a31f7db257d1d700ed7cdc332bd876fae47f0f5064be055b07b0b",
+  "first_last_attention_query_changed": {
+    "verifier.encoder.layer.0.attention.self.query.weight": true,
+    "verifier.encoder.layer.11.attention.self.query.weight": true,
+    "reranker.encoder.layer.0.attention.self.query.weight": true,
+    "reranker.encoder.layer.11.attention.self.query.weight": true
+  }
+}
