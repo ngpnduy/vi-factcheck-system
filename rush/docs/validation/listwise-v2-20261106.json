@@ -1,0 +1,431 @@
+{
+  "validated_utc": "2026-11-06T03:53:15.408771+00:00",
+  "protocol_version": 2,
+  "branch": "listwise-best5-three-seeds",
+  "purpose": "pipeline and control validation only; no new full-data three-seed benchmark scores",
+  "unit_tests": {
+    "tests": "85",
+    "failures": "0",
+    "errors": "0",
+    "skipped": "0",
+    "time": "38.311"
+  },
+  "full_worker_stub_test": "13 staged training jobs, fresh two-stage tuning, winner reuse, 15 test evaluations, completed resume without repeated training/evaluation",
+  "smoke": {
+    "status": "passed",
+    "training_count": 24,
+    "validation_count": 12,
+    "seconds": 572.1406335999491,
+    "config": {
+      "protocol_version": 2,
+      "seed": 42,
+      "learning_rate": 2e-05,
+      "evidence_lambda": 0.5,
+      "reranker_epochs": 1,
+      "warmup_epochs": 1,
+      "continuation_epochs": 1,
+      "accumulation_steps": 8,
+      "max_length": 256,
+      "claim_max_tokens": 96,
+      "candidate_count": 20,
+      "evidence_count": 5,
+      "device": "cuda",
+      "mixed_precision": true,
+      "gradient_checkpointing": true,
+      "model_path": "E:\\Bean\\hcmut\\documents(real)\\programming inergration project\\.cache\\phobert",
+      "data_path": "E:\\Bean\\hcmut\\documents(real)\\programming inergration project\\data\\prepared",
+      "smoke": true,
+      "train_per_label": null,
+      "optimizer": "adafactor",
+      "reranker_architecture": "listwise",
+      "listwise_layers": 1,
+      "listwise_heads": 8,
+      "listwise_feedforward": 1536,
+      "listwise_dropout": 0.1
+    },
+    "subset_ids": {
+      "train": [
+        "train:18864768:6000",
+        "train:18799382:3223",
+        "train:18854146:6484",
+        "train:18418774:2424",
+        "train:18318855:2467",
+        "train:18292342:797",
+        "train:18981846:1541",
+        "train:19183358:133",
+        "train:19986539:4281",
+        "train:18224258:4060",
+        "train:18473850:83",
+        "train:19809913:3430",
+        "train:19728584:1643",
+        "train:19031197:1396",
+        "train:19418784:5103",
+        "train:18680583:5092",
+        "train:19824005:6752",
+        "train:19763463:4218",
+        "train:19008317:1222",
+        "train:19337928:598",
+        "train:19488283:3792",
+        "train:19049054:6153",
+        "train:18537674:5435",
+        "train:18773881:4134"
+      ],
+      "dev": [
+        "dev:18397377:1538",
+        "dev:18569663:2914",
+        "dev:19449328:5135",
+        "dev:18621446:420",
+        "dev:18369089:4322",
+        "dev:18930870:6591",
+        "dev:18224258:4109",
+        "dev:19643541:5450",
+        "dev:18242918:6634",
+        "dev:19021700:1471",
+        "dev:19669930:3401",
+        "dev:18807488:470"
+      ]
+    },
+    "models": {
+      "M0": {
+        "reload_max_probability_difference": 0.0,
+        "raw_input_max_probability_difference": 0.0,
+        "validation_macro_f1": 0.4148148148148148,
+        "selection": {
+          "selected_global_epoch": 1,
+          "selected_stage": "m0",
+          "selected_validation_macro_f1": 0.4148148148148148,
+          "checkpoint_sha256": "7191a6210a6db8fb6582957681998a20f24da565462fb8ab31d0103bafb1e662",
+          "initialization_checkpoint_sha256": null,
+          "selected_source_checkpoint_sha256": "7191a6210a6db8fb6582957681998a20f24da565462fb8ab31d0103bafb1e662",
+          "protocol_version": 2
+        },
+        "training_cost": {
+          "training_seconds": 14.658951599965803,
+          "peak_training_allocated_mib": 1807.2900390625,
+          "peak_training_reserved_mib": 1938.0,
+          "note": "Includes shared preparation for per-model comparison; do not sum model costs for workflow time"
+        }
+      },
+      "M1": {
+        "reload_max_probability_difference": 0.0,
+        "raw_input_max_probability_difference": 0.0,
+        "validation_macro_f1": 0.3277777777777778,
+        "selection": {
+          "selected_global_epoch": 2,
+          "selected_stage": "continuation",
+          "selected_validation_macro_f1": 0.3277777777777778,
+          "checkpoint_sha256": "ad6cdca1ccb8c56547b07457a8a425f74a7e44e2a29dec71c0c8a76d566a1835",
+          "initialization_checkpoint_sha256": "baebc0b682d3ebd5f035409d78e8f18148b9689be889c4c590f82f0710f5d93d",
+          "selected_source_checkpoint_sha256": "ad6cdca1ccb8c56547b07457a8a425f74a7e44e2a29dec71c0c8a76d566a1835",
+          "protocol_version": 2
+        },
+        "training_cost": {
+          "training_seconds": 37.38546470005531,
+          "peak_training_allocated_mib": 2407.06982421875,
+          "peak_training_reserved_mib": 2576.0,
+          "note": "Includes shared preparation for per-model comparison; do not sum model costs for workflow time"
+        }
+      },
+      "A1": {
+        "reload_max_probability_difference": 0.0,
+        "raw_input_max_probability_difference": 0.0,
+        "validation_macro_f1": 0.3277777777777778,
+        "selection": {
+          "selected_global_epoch": 2,
+          "selected_stage": "a1",
+          "selected_validation_macro_f1": 0.3277777777777778,
+          "checkpoint_sha256": "ac34cb58008ed6130fa71c0a13802d582f94ce4ea47dd51204b33800b72d9ee0",
+          "initialization_checkpoint_sha256": "1effafe800f0773cb0860c82f798081d9b0e2b20288a174928da50dd0b0b97a0",
+          "selected_source_checkpoint_sha256": "ac34cb58008ed6130fa71c0a13802d582f94ce4ea47dd51204b33800b72d9ee0",
+          "protocol_version": 2
+        },
+        "training_cost": {
+          "training_seconds": 38.35848590009846,
+          "peak_training_allocated_mib": 2407.06982421875,
+          "peak_training_reserved_mib": 2576.0,
+          "note": "Includes shared preparation for per-model comparison; do not sum model costs for workflow time"
+        }
+      },
+      "M2": {
+        "reload_max_probability_difference": 0.0,
+        "raw_input_max_probability_difference": 0.0,
+        "validation_macro_f1": 0.3267195767195767,
+        "selection": {
+          "selected_global_epoch": 2,
+          "selected_stage": "continuation",
+          "selected_validation_macro_f1": 0.3267195767195767,
+          "checkpoint_sha256": "d2b9901d638c9a88180ff4ad80153fac962681137f531ce86fbfef7c60fe1292",
+          "initialization_checkpoint_sha256": "baebc0b682d3ebd5f035409d78e8f18148b9689be889c4c590f82f0710f5d93d",
+          "selected_source_checkpoint_sha256": "d2b9901d638c9a88180ff4ad80153fac962681137f531ce86fbfef7c60fe1292",
+          "protocol_version": 2
+        },
+        "training_cost": {
+          "training_seconds": 53.34880899998825,
+          "peak_training_allocated_mib": 2948.8515625,
+          "peak_training_reserved_mib": 3136.0,
+          "note": "Includes shared preparation for per-model comparison; do not sum model costs for workflow time"
+        }
+      },
+      "A2": {
+        "reload_max_probability_difference": 0.0,
+        "raw_input_max_probability_difference": 0.0,
+        "validation_macro_f1": 0.3267195767195767,
+        "selection": {
+          "selected_global_epoch": 2,
+          "selected_stage": "continuation",
+          "selected_validation_macro_f1": 0.3267195767195767,
+          "checkpoint_sha256": "6f78af5a1cc8e643767014b29c51dc8165ca0c20ba38e816546cd778d55cde30",
+          "initialization_checkpoint_sha256": "baebc0b682d3ebd5f035409d78e8f18148b9689be889c4c590f82f0710f5d93d",
+          "selected_source_checkpoint_sha256": "6f78af5a1cc8e643767014b29c51dc8165ca0c20ba38e816546cd778d55cde30",
+          "protocol_version": 2
+        },
+        "training_cost": {
+          "training_seconds": 49.601425400120206,
+          "peak_training_allocated_mib": 2953.46142578125,
+          "peak_training_reserved_mib": 3138.0,
+          "note": "Includes shared preparation for per-model comparison; do not sum model costs for workflow time"
+        }
+      }
+    },
+    "behavior_checks": {
+      "M1": {
+        "shared_warmup_checkpoint_sha256": "baebc0b682d3ebd5f035409d78e8f18148b9689be889c4c590f82f0710f5d93d",
+        "verifier_initial_sha256": "42aa89506b12a1ea1b8226737af39e4dbef2fe8f7dc423368bf3505cd7d13db6",
+        "reranker_initial_sha256": "c90ea15c44c055d1ae0a99e4516dced86892b039508f983a9842c2be732a3352",
+        "reranker_unchanged": true,
+        "reranker_final_sha256": "c90ea15c44c055d1ae0a99e4516dced86892b039508f983a9842c2be732a3352",
+        "trained_reranker_unchanged": true,
+        "trained_reranker_final_sha256": "c90ea15c44c055d1ae0a99e4516dced86892b039508f983a9842c2be732a3352"
+      },
+      "M2": {
+        "shared_warmup_checkpoint_sha256": "baebc0b682d3ebd5f035409d78e8f18148b9689be889c4c590f82f0710f5d93d",
+        "verifier_initial_sha256": "42aa89506b12a1ea1b8226737af39e4dbef2fe8f7dc423368bf3505cd7d13db6",
+        "reranker_initial_sha256": "c90ea15c44c055d1ae0a99e4516dced86892b039508f983a9842c2be732a3352",
+        "verification_only_reranker_head_gradient_norm": 0.31888505816459656,
+        "all_reranker_parameters_trainable": true,
+        "all_verifier_parameters_trainable": true,
+        "reranker_unchanged": false,
+        "reranker_final_sha256": "a6e0ce33432e411adac1a4151c7d26d546d17668a6f31cb5b323c9d1dfbc14d8",
+        "trained_reranker_unchanged": false,
+        "trained_reranker_final_sha256": "a6e0ce33432e411adac1a4151c7d26d546d17668a6f31cb5b323c9d1dfbc14d8",
+        "first_last_attention_query_changed": {
+          "verifier.encoder.layer.0.attention.self.query.weight": true,
+          "verifier.encoder.layer.11.attention.self.query.weight": true,
+          "reranker.encoder.layer.0.attention.self.query.weight": true,
+          "reranker.encoder.layer.11.attention.self.query.weight": true
+        },
+        "checked_state": "terminal continuation state, independent of selected best epoch"
+      },
+      "A2": {
+        "shared_warmup_checkpoint_sha256": "baebc0b682d3ebd5f035409d78e8f18148b9689be889c4c590f82f0710f5d93d",
+        "verifier_initial_sha256": "42aa89506b12a1ea1b8226737af39e4dbef2fe8f7dc423368bf3505cd7d13db6",
+        "reranker_initial_sha256": "c90ea15c44c055d1ae0a99e4516dced86892b039508f983a9842c2be732a3352",
+        "verification_only_reranker_head_gradient_norm": 0.0,
+        "evidence_only_reranker_head_gradient_norm": 2.8849196434020996,
+        "all_reranker_parameters_trainable": true,
+        "all_verifier_parameters_trainable": true,
+        "reranker_unchanged": false,
+        "reranker_final_sha256": "30de94498fef426d56031303f0476a7a8d154e6989dc70915e89ec3bf7abee6d",
+        "trained_reranker_unchanged": false,
+        "trained_reranker_final_sha256": "30de94498fef426d56031303f0476a7a8d154e6989dc70915e89ec3bf7abee6d",
+        "first_last_attention_query_changed": {
+          "verifier.encoder.layer.0.attention.self.query.weight": true,
+          "verifier.encoder.layer.11.attention.self.query.weight": true,
+          "reranker.encoder.layer.0.attention.self.query.weight": true,
+          "reranker.encoder.layer.11.attention.self.query.weight": true
+        },
+        "checked_state": "terminal continuation state, independent of selected best epoch"
+      },
+      "A1": {
+        "verifier_initial_sha256": "42aa89506b12a1ea1b8226737af39e4dbef2fe8f7dc423368bf3505cd7d13db6",
+        "reranker_unchanged": true,
+        "reranker_initial_sha256": "c90ea15c44c055d1ae0a99e4516dced86892b039508f983a9842c2be732a3352",
+        "reranker_final_sha256": "c90ea15c44c055d1ae0a99e4516dced86892b039508f983a9842c2be732a3352",
+        "selection_source_checkpoint_sha256": "1effafe800f0773cb0860c82f798081d9b0e2b20288a174928da50dd0b0b97a0",
+        "aggregation": "uniform"
+      },
+      "M0": {
+        "verifier_initial_sha256": "42aa89506b12a1ea1b8226737af39e4dbef2fe8f7dc423368bf3505cd7d13db6"
+      }
+    },
+    "packages": {
+      "torch": "2.6.0+cu124",
+      "transformers": "5.12.1",
+      "numpy": "2.3.5",
+      "rank-bm25": "0.2.2",
+      "scikit-learn": "1.6.1"
+    },
+    "data_assets": {
+      "dataset_id": "tranthaihoa/vifactcheck",
+      "dataset_revision": "2df623632299a3459ad95feeff9ac67d7205a42a",
+      "model_id": "vinai/phobert-base",
+      "model_revision": "01daacda68afe13d83023d16ec647239e344a1e6",
+      "segmenter_revision": "62bbc58fe5d113c898eae112656be97dcf50b3a0",
+      "files": [
+        {
+          "path": "dataset/train.parquet",
+          "url": "https://huggingface.co/datasets/tranthaihoa/vifactcheck/resolve/2df623632299a3459ad95feeff9ac67d7205a42a/data/train-00000-of-00001.parquet",
+          "sha256": "ff054bc61afb59e3c9aa1dd402f0eb44700a30866c75ee6c66e117517bd510e8",
+          "bytes": 8071153
+        },
+        {
+          "path": "dataset/dev.parquet",
+          "url": "https://huggingface.co/datasets/tranthaihoa/vifactcheck/resolve/2df623632299a3459ad95feeff9ac67d7205a42a/data/dev-00000-of-00001.parquet",
+          "sha256": "16b6d8b244ec07be1a6d80fcb389486c2f26e5c10cdc66f6cab72bd159920454",
+          "bytes": 1225466
+        },
+        {
+          "path": "dataset/test.parquet",
+          "url": "https://huggingface.co/datasets/tranthaihoa/vifactcheck/resolve/2df623632299a3459ad95feeff9ac67d7205a42a/data/test-00000-of-00001.parquet",
+          "sha256": "d797eb5a3797f12c052d4c8dbdda0b9cf7174f3dfce91050f95354b044816214",
+          "bytes": 2484723
+        },
+        {
+          "path": "phobert/config.json",
+          "url": "https://huggingface.co/vinai/phobert-base/resolve/01daacda68afe13d83023d16ec647239e344a1e6/config.json",
+          "sha256": "71df79a67a65b1ee472938d0dff77297c0d77e20fef1af41e0013b1d384efb0d",
+          "bytes": 557
+        },
+        {
+          "path": "phobert/vocab.txt",
+          "url": "https://huggingface.co/vinai/phobert-base/resolve/01daacda68afe13d83023d16ec647239e344a1e6/vocab.txt",
+          "sha256": "dffd7543c401fb6567253ae7c3313004532c33d062525250049c616544bad777",
+          "bytes": 895321
+        },
+        {
+          "path": "phobert/bpe.codes",
+          "url": "https://huggingface.co/vinai/phobert-base/resolve/01daacda68afe13d83023d16ec647239e344a1e6/bpe.codes",
+          "sha256": "9dfe53fb8abbddd3387da99641c36e00bee757a3679aad9cf0a7cdc4b30f6ef8",
+          "bytes": 1135173
+        },
+        {
+          "path": "phobert/pytorch_model.bin",
+          "url": "https://huggingface.co/vinai/phobert-base/resolve/01daacda68afe13d83023d16ec647239e344a1e6/pytorch_model.bin",
+          "sha256": "a0b0f0912c710147fbaac015b0a4011216a0061a56c03b840b639e40d3bb49cc",
+          "bytes": 542923308
+        },
+        {
+          "path": "vncorenlp/VnCoreNLP-1.2.jar",
+          "url": "https://raw.githubusercontent.com/vncorenlp/VnCoreNLP/62bbc58fe5d113c898eae112656be97dcf50b3a0/VnCoreNLP-1.2.jar",
+          "sha256": "9e2811cdbc2ddfc71d04be5dc36e185c88dcd1ad4d5d69e4ff2e1369dccf7793",
+          "bytes": 27412703
+        },
+        {
+          "path": "vncorenlp/models/wordsegmenter/vi-vocab",
+          "url": "https://raw.githubusercontent.com/vncorenlp/VnCoreNLP/62bbc58fe5d113c898eae112656be97dcf50b3a0/models/wordsegmenter/vi-vocab",
+          "sha256": "0a47c5b55bbce163029d37730a67b9479740388695c29c106c112b815613eaa5",
+          "bytes": 526544
+        },
+        {
+          "path": "vncorenlp/models/wordsegmenter/wordsegmenter.rdr",
+          "url": "https://raw.githubusercontent.com/vncorenlp/VnCoreNLP/62bbc58fe5d113c898eae112656be97dcf50b3a0/models/wordsegmenter/wordsegmenter.rdr",
+          "sha256": "9e62f96bd93e37a24f364238e8d8ae986fa5dad6dbc9f4eae622ab3651b7fa06",
+          "bytes": 128508
+        }
+      ]
+    },
+    "prepared_file_sha256": {
+      "train": "0dcceb37266f303af12648932f42f95f112fd5d5db7c4db4556c6a20bdc7fa87",
+      "dev": "8df8d83dde0b61a226ddb68cf2d1b898adee9796f8311431fa80f1678a6b9621",
+      "test": "7d0317bf5ec1c425e7010086c743f69a36b665258b64d76b61a8c9292ebb1ce6"
+    }
+  },
+  "legacy_real_phobert_reload": {
+    "status": "passed",
+    "inferred_protocol_version": 1,
+    "checkpoint_sha256": "fb3795860c4d1f65263e82d04b45694c0954e9b3625a01150f1474d2326480c1",
+    "claim_id": "dev:18220511:6040",
+    "ranking_identical": true,
+    "max_probability_difference": 0.0,
+    "checkpoint_modified": false
+  },
+  "final_checkpoint_write_roundtrips": {
+    "status": "passed",
+    "models": {
+      "M1": {
+        "status": "passed",
+        "bytes": 1095919750,
+        "model_optimizer_scaler_rng_metadata_equal": true
+      },
+      "M2": {
+        "status": "passed",
+        "bytes": 1097544926,
+        "model_optimizer_scaler_rng_metadata_equal": true
+      },
+      "A2": {
+        "status": "passed",
+        "bytes": 1097544926,
+        "model_optimizer_scaler_rng_metadata_equal": true
+      },
+      "A1": {
+        "status": "passed",
+        "bytes": 1095918470,
+        "model_optimizer_scaler_rng_metadata_equal": true
+      },
+      "M0": {
+        "status": "passed",
+        "bytes": 539286892,
+        "model_optimizer_scaler_rng_metadata_equal": true
+      }
+    },
+    "note": "Added universal pre-write capacity guard after GPU smoke; this checks all five real payloads without training or changing their source checkpoints."
+  },
+  "source_sha256_at_gpu_smoke": {
+    "assets.py": "d93f04cfe24001a5a8d3bb1640fe5c9ef193118b85160b2f597d44716a2e22d7",
+    "cli.py": "db6f304d2748e55d431c7db21d5e9d6ffaf916cca95c4a83ba3bc8ae8331abce",
+    "config.py": "b52a4ae206d192a37ccc9918acd1d882fb32caaeff4adf5ea246487293be4889",
+    "data.py": "e3b329b2be877a894b57526ffd47368617ac02615d4a3f3d15e404cf6a85624a",
+    "full.py": "f67bafb5355283f8592a71caace803ce84ee0e14865ae71e683d340074076884",
+    "full_reporting.py": "55220c6ddd6f0031be959520d0e3fb84398609e3eee4e115ed2339dfd3dc622d",
+    "io.py": "77b6b13716d2c0b9a5c62b30dd99fd8c5156320e822ef51a82c00998601f460b",
+    "metrics.py": "a2a1aa8d78ee0a2c0c7c14345c0d25efdee0172b4d32a6430dc215bc6b9e4393",
+    "model.py": "44c5b0a5e27e45ba39df63d41ad68f77fe610de0280a1ca561aeff3308597434",
+    "pilot.py": "ef091c59a44e3d24c334a78a867b0a14382e8a7b3f589eb64f8e6b195653523b",
+    "reporting.py": "d4ea6c7472214ec1af8d622033b6ea03c114086f2de476ecd4ed249681b8b951",
+    "text.py": "40f8ff648368e0b63abdf0308c7aefd2d570eb74613cd3ab14432b1fc9b76311",
+    "training.py": "b679b69e10812fe5f617619a41dbd84a73da5fcd0d092ab1bea56ba5cd579691",
+    "__init__.py": "e8a6520d4213e806147567f59d27abfeb58a639da99d46c90e150ddb532df725",
+    "__main__.py": "6d8b7d7846a845059d7a3107143f11131f63c5511d669b44085b15ec5e3d2279"
+  },
+  "final_source_sha256": {
+    "assets.py": "d93f04cfe24001a5a8d3bb1640fe5c9ef193118b85160b2f597d44716a2e22d7",
+    "cli.py": "db6f304d2748e55d431c7db21d5e9d6ffaf916cca95c4a83ba3bc8ae8331abce",
+    "config.py": "b52a4ae206d192a37ccc9918acd1d882fb32caaeff4adf5ea246487293be4889",
+    "data.py": "e3b329b2be877a894b57526ffd47368617ac02615d4a3f3d15e404cf6a85624a",
+    "full.py": "f67bafb5355283f8592a71caace803ce84ee0e14865ae71e683d340074076884",
+    "full_reporting.py": "55220c6ddd6f0031be959520d0e3fb84398609e3eee4e115ed2339dfd3dc622d",
+    "io.py": "77b6b13716d2c0b9a5c62b30dd99fd8c5156320e822ef51a82c00998601f460b",
+    "metrics.py": "a2a1aa8d78ee0a2c0c7c14345c0d25efdee0172b4d32a6430dc215bc6b9e4393",
+    "model.py": "44c5b0a5e27e45ba39df63d41ad68f77fe610de0280a1ca561aeff3308597434",
+    "pilot.py": "ef091c59a44e3d24c334a78a867b0a14382e8a7b3f589eb64f8e6b195653523b",
+    "reporting.py": "d4ea6c7472214ec1af8d622033b6ea03c114086f2de476ecd4ed249681b8b951",
+    "text.py": "40f8ff648368e0b63abdf0308c7aefd2d570eb74613cd3ab14432b1fc9b76311",
+    "training.py": "33775d69a7ab0ac99cc1dfe56543d2e446e13d43ad110434f4b4803f684a95c1",
+    "__init__.py": "e8a6520d4213e806147567f59d27abfeb58a639da99d46c90e150ddb532df725",
+    "__main__.py": "6d8b7d7846a845059d7a3107143f11131f63c5511d669b44085b15ec5e3d2279"
+  },
+  "post_smoke_change": "Universal pre-write capacity check added to save_checkpoint; tested with low-space refusal and full-state roundtrips of all five actual smoke payloads. Numerical model/training/selection behavior unchanged.",
+  "published_results_hashes_unchanged": true,
+  "full_experiment": {
+    "status": "needs_space",
+    "protocol_version": 2,
+    "checked_utc": "2026-11-06T03:53:15.0479156Z",
+    "required_start_free_gib": 35,
+    "free_disk_gib": 6.0754547119140625,
+    "output": "C:\\Users\\HI\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\ViFactCheck\\full-five-listwise-best5-v2",
+    "models": [
+      "M0",
+      "M1",
+      "A1",
+      "M2",
+      "A2"
+    ],
+    "seeds": [
+      42,
+      13,
+      2026
+    ],
+    "architecture": "listwise",
+    "message": "Free at least 35 GiB on the output drive, then rerun this command. Existing checkpoints are preserved."
+  }
+}

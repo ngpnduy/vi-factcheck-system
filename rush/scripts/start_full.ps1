@@ -40,7 +40,7 @@ if (Test-Path -LiteralPath $locationPath) {
 $statusPath = Join-Path $resolvedStatus 'status.json'
 if (Test-Path -LiteralPath $statusPath) {
     $oldStatus = Get-Content -LiteralPath $statusPath -Raw | ConvertFrom-Json
-    $oldProcess = Get-Process -Id $oldStatus.pid -ErrorAction SilentlyContinue
+    $oldProcess = if ($oldStatus.pid) { Get-Process -Id $oldStatus.pid -ErrorAction SilentlyContinue } else { $null }
     if ($oldStatus.status -eq 'running' -and $oldProcess -and $oldProcess.ProcessName -eq 'python') {
         throw "Full experiment already running as process $($oldStatus.pid)."
     }

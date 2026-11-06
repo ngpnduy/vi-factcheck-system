@@ -1,5 +1,7 @@
 # Implementation of the 0410 progress slides
 
+**Protocol v2 supersedes the warmup-best initialization and legacy checkpoint reuse commands below.** New runs branch from the final warmup epoch, select best across all verifier epochs, and reject v1 initialization. Use the [current guide](../LISTWISE_V2.md). The slide implementation notes below describe the original v1 protocol.
+
 Run commands from `vi-factcheck-system/rush/`. This updates the standalone Rush
 research implementation. The main `src/factcheck/` package has a separate protocol.
 

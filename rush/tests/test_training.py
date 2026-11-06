@@ -233,7 +233,7 @@ def test_all_five_models_share_initialization_resume_and_external_parents(tiny, 
     verify_initialization(results)
     assert set(results) == set(ALL_MODELS)
     assert len(read_json(source / "a1_history.json")) == len(read_json(source / "m0_history.json")) == 3
-    assert len(read_json(source / "a2_history.json")) == 2
+    assert len(read_json(source / "a2_history.json")) == 3
     assert results["A2"]["checks"]["verification_only_reranker_head_gradient_norm"] == 0
     for name in ("a1", "a2"):
         before = (source / f"{name}_last.pt").read_bytes()

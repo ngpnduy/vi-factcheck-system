@@ -1,5 +1,7 @@
 # Vietnamese Fact-Checking System
 
+Protocol v2 now selects M1/M2/A2 checkpoints across all five verifier epochs, tunes listwise settings on validation, and supports the complete three-seed study. See [the protocol and launch guide](rush/LISTWISE_V2.md).
+
 Research code for evidence-based Vietnamese fact-checking.
 
 The repository includes the ViFactCheck paper reproduction (PLM/LLM classifiers

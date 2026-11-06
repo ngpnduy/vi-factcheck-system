@@ -46,39 +46,67 @@ def predict_record(system, claim, context, segmenter_path=".cache/vncorenlp"):
     return system.prediction(row)
 
 
-def smoke_run(config, output, models=STANDARD_MODELS):
+def smoke_run(config, output, models=STANDARD_MODELS, segmenter_path=".cache/vncorenlp"):
     from .data import load_split
-    from .training import run_experiment, system_from_checkpoint
-    import torch
+    from .full import training_job, verify_initialization
+    from .pilot import require_space, release_gpu
+    from .training import training_rows, system_from_checkpoint
+    from .io import read_jsonl
+    import shutil
+    output = Path(output)
+    output.mkdir(parents=True, exist_ok=True)
     started = time.perf_counter()
-    results = run_experiment(config, output, models)
-    # Check loaded checkpoints using actual full models, and raw-input prediction
-    # using a real validation article; no gold enters this prediction path.
+    train, _ = training_rows(config)
+    status = {"status": "running", "protocol_version": config.protocol_version, "models": list(models)}
+    def progress(event):
+        require_space(output, int(event.get("checkpoint_model_bytes", 0) * 1.15))
+        status.update(event)
+        write_json(output / "status.json", status)
+    results, sources = {}, {}
+    parent = output / "jobs" / "parent"
+    if any(mode != "M0" for mode in models):
+        initial = training_job(config, parent, ("M1",), progress, train)
+        if "M1" in models:
+            results["M1"], sources["M1"] = initial["M1"], parent
+    # Seal individual branches and release obsolete last states before the next
+    # model. The best/end warmup needed by later branches stays pinned.
+    for mode in (m for m in ("M2", "A2", "A1", "M0") if m in models):
+        directory = output / "jobs" / mode.lower()
+        result = training_job(config, directory, (mode,), progress, train,
+                              initialization_from=parent if mode != "M0" else None)
+        results[mode], sources[mode] = result[mode], directory
+    if {"M0", "M1", "M2"}.issubset(results):
+        verify_initialization(results)
     rows = {r["id"]: r for r in load_split(config.data_path, "dev")}
     reload_checks = {}
-    for mode, result in results.items():
-        reference = read_json(Path(output) / f"{mode.lower()}_dev_metrics.json")
-        from .io import read_jsonl
-        predictions = read_jsonl(Path(output) / f"{mode.lower()}_dev_predictions.jsonl")
+    for mode in models:
+        result, directory = results[mode], sources[mode]
+        predictions = read_jsonl(directory / f"{mode.lower()}_dev_predictions.jsonl")
         row = rows[predictions[0]["id"]]
         system = system_from_checkpoint(result["checkpoint"], config.device)
         loaded = system.prediction(row)
         difference = max(abs(loaded["probabilities"][label] - predictions[0]["probabilities"][label]) for label in loaded["probabilities"])
-        if difference > 1e-6:
-            raise AssertionError("Reloaded checkpoint changed prediction")
-        predicted = predict_record(system, row["claim"], row["context"])
+        predicted = predict_record(system, row["claim"], row["context"], segmenter_path)
         raw_difference = max(abs(loaded["probabilities"][label] - predicted["probabilities"][label]) for label in loaded["probabilities"])
-        if raw_difference > 1e-6:
-            raise AssertionError("Raw-input prediction differs from prepared article")
-        write_json(Path(output) / f"{mode.lower()}_example_prediction.json", predicted)
-        reload_checks[mode] = {"reload_max_probability_difference": difference, "raw_input_max_probability_difference": raw_difference, "validation_macro_f1": reference["classification"]["macro_f1"]}
+        if max(difference, raw_difference) > 1e-6:
+            raise AssertionError("Checkpoint reload/raw-input prediction changed probabilities")
+        write_json(output / f"{mode.lower()}_example_prediction.json", predicted)
+        for suffix in ("dev_metrics.json", "dev_predictions.jsonl", "checks.json", "selection.json"):
+            shutil.copy2(directory / f"{mode.lower()}_{suffix}", output / f"{mode.lower()}_{suffix}")
+        reload_checks[mode] = {"reload_max_probability_difference": difference,
+                               "raw_input_max_probability_difference": raw_difference,
+                               "validation_macro_f1": result["metrics"]["classification"]["macro_f1"],
+                               "selection": result["selection"], "training_cost": result["training_cost"]}
         del system
-        import gc
-        gc.collect()
-        if config.device == "cuda":
-            torch.cuda.empty_cache()
-    report = {"status": "passed", "purpose": "pipeline validation only; not full-data research results", "training_count": 24, "validation_count": 12, "seed": config.seed, "total_seconds": time.perf_counter() - started, "models": results, "reload_and_prediction_checks": reload_checks}
-    write_json(Path(output) / "smoke_report.json", report)
+        release_gpu()
+    write_json(output / "summary.json", results)
+    report = {"status": "passed", "protocol_version": config.protocol_version,
+              "purpose": "pipeline validation only; not full-data research results",
+              "training_count": 24, "validation_count": 12, "seed": config.seed,
+              "total_seconds": time.perf_counter() - started, "models": results,
+              "reload_and_prediction_checks": reload_checks}
+    write_json(output / "smoke_report.json", report)
+    progress({"status": "complete", "event": "complete"})
     return report
 
 
@@ -102,6 +130,7 @@ def tune(args):
         result = lambda_job(cfg, output / f"lambda_{weight}", parent_directory, lambda event: None, train, dev)
         lambda_trials.append({"evidence_lambda": weight, "validation_macro_f1": result["M2"]["metrics"]["classification"]["macro_f1"]})
     choice = {"seed": 42, "split": "dev", "learning_rate": chosen_lr, "evidence_lambda": max(lambda_trials, key=lambda trial: trial["validation_macro_f1"])["evidence_lambda"], "learning_rate_trials": trials, "lambda_trials": lambda_trials}
+    choice.update(protocol_version=base.protocol_version, reranker_architecture=base.reranker_architecture, selection_metric="best dev Macro-F1 over all verifier epochs")
     write_json(output / "selected_hyperparameters.json", choice)
     return choice
 
@@ -152,7 +181,7 @@ def main(argv=None):
     pilot.add_argument("--deadline-utc", help="Absolute ISO UTC deadline; preserved on resume")
     status_parser = sub.add_parser("status", help="Read pilot progress without loading models")
     status_parser.add_argument("--run", default="runs/pilot-900-seed42")
-    full = sub.add_parser("full", help="Resume full-data tuning, three-seed training and nine final evaluations")
+    full = sub.add_parser("full", help="Protocol v2: architecture-specific tuning, three-seed training and final evaluation")
     full.add_argument("--output", default="runs/full-m0-m1-m2")
     full.add_argument("--data", default="data/prepared")
     full.add_argument("--model-path", default=".cache/phobert")
@@ -168,6 +197,8 @@ def main(argv=None):
             child.add_argument("--reranker-epochs", type=int, default=3)
             child.add_argument("--warmup-epochs", type=int, default=3)
             child.add_argument("--continuation-epochs", type=int, default=2)
+        if name == "smoke":
+            child.add_argument("--segmenter-path", default=".cache/vncorenlp")
         if name in ("train", "smoke"):
             child.add_argument("--models", nargs="+", choices=ALL_MODELS, default=list(STANDARD_MODELS))
         if name == "train":
@@ -209,7 +240,7 @@ def main(argv=None):
                 raise ValueError("Use --resume alone; its checkpoint records the initialization source")
             result = {"checkpoint": str(resume_checkpoint(args.resume))} if args.resume else run_experiment(configuration(args), args.output, args.models, initialization_from=args.initialization_from)
         elif args.command == "smoke":
-            result = smoke_run(configuration(args, smoke=True), args.output, args.models)
+            result = smoke_run(configuration(args, smoke=True), args.output, args.models, segmenter_path=args.segmenter_path)
         elif args.command == "tune":
             result = tune(args)
         elif args.command == "evaluate":

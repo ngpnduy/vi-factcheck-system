@@ -1,5 +1,7 @@
 # Rush-version: M0/M1/A1/M2/A2 with BM25 and PhoBERT
 
+**Current training protocol: v2.** M1/M2/A2 branch from the final warmup epoch and select best across all verifier epochs. Fresh listwise tuning and the three-seed launcher are documented in [LISTWISE_V2.md](LISTWISE_V2.md). Existing published results remain historical v1 measurements.
+
 This standalone subproject implements M0, M1, A1, M2, and A2 from the preserved [Proposal_v2.docx](docs/Proposal_v2.docx) and the 0410 progress slides. A claim is checked against its supplied news article. Retrieval searches sentences inside that article; the system predicts `SUPPORTED`, `REFUTED`, or `NOT_ENOUGH_INFO`. See the [slide implementation guide](docs/SLIDES_0410_IMPLEMENTATION.md) for the ablations, optional list-aware attention, and checkpoint reuse.
 
 Run all commands below from the repository's **`rush/` directory**. This subproject has its own `pyproject.toml` and `.venv`; the repository's root `uv.lock` continues to describe the separate `src/factcheck/` workflows. `PROVENANCE.json` records the original pilot source snapshot and exact training IDs. The full pipeline runner was added afterwards; it saves its own frozen source snapshot and hashes.

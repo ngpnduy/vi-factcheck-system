@@ -45,7 +45,7 @@ def test_full_cli_routes_fifteen_model_protocol(monkeypatch, tmp_path):
 
 def test_smoke_cli_accepts_all_slide_models(monkeypatch, tmp_path):
     seen = {}
-    def capture(config, output, models):
+    def capture(config, output, models, **kwargs):
         seen.update(models=models, config=config)
         return {"status": "captured"}
     monkeypatch.setattr("vifactcheck.cli.smoke_run", capture)

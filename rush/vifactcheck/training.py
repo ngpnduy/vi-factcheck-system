@@ -14,7 +14,7 @@ import numpy as np
 import torch
 from transformers.optimization import Adafactor
 
-from .config import ALL_MODELS, TrainConfig
+from .config import ALL_MODELS, PROTOCOL_VERSION, TrainConfig
 from .data import has_evidence_supervision, load_split, smoke_subset, stratified_subset
 from .io import read_json, sha256, write_json, write_jsonl
 from .metrics import classification_metrics, error_stage, retrieval_metrics
@@ -60,9 +60,34 @@ def fingerprint(module):
 
 def save_checkpoint(path, payload):
     path = Path(path)
+    model_bytes = sum(value.numel() * value.element_size() for value in payload.get("model", {}).values())
+    free = shutil.disk_usage(path.parent).free
+    required = 2 * 1024**3 + int(model_bytes * 1.15)
+    if free < required:
+        raise RuntimeError(f"Insufficient checkpoint space: {free / 1024**3:.2f} GiB free; require 2 GiB reserve plus space for the temporary checkpoint")
     temporary = path.with_suffix(".tmp")
-    torch.save(payload, temporary)
+    with temporary.open("wb") as stream:
+        torch.save(payload, stream)
+        stream.flush()
+        os.fsync(stream.fileno())
     os.replace(temporary, path)
+
+
+def require_v2(checkpoint):
+    if checkpoint.get("protocol_version", 1) != PROTOCOL_VERSION:
+        raise ValueError("Protocol v1 checkpoints support prediction/evaluation only; start a new protocol v2 run")
+
+
+def checkpoint_selection(path):
+    """Selection provenance lives outside the hashed checkpoint itself."""
+    state = load_checkpoint(path)
+    checksum = sha256(path)
+    result = {key: state[key] for key in ("selected_global_epoch", "selected_stage", "selected_validation_macro_f1")}
+    result.update(checkpoint_sha256=checksum,
+                  initialization_checkpoint_sha256=state.get("source_checkpoint_sha256"),
+                  selected_source_checkpoint_sha256=state.get("selected_source_checkpoint_sha256") or checksum,
+                  protocol_version=state["protocol_version"])
+    return result
 
 
 def copy_checkpoint(source, destination):
@@ -138,25 +163,77 @@ def evaluate_ranker(system, rows, progress=None):
     return {"retrieval": retrieval_metrics(rows, rankings)}
 
 
-def phase(system, train, dev, directory, name, stage, epochs, source=None, progress=None):
+def phase(system, train, dev, directory, name, stage, epochs, source=None, progress=None, selection_source=None):
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=True)
     last_path, best_path = directory / f"{name}_last.pt", directory / f"{name}_best.pt"
     config = system.config
+    if config.protocol_version != PROTOCOL_VERSION:
+        raise ValueError("Training requires protocol v2; legacy checkpoints are inference-only")
     system.configure_training(stage)
     optimizer = make_optimizer(system, config)
     scaler = torch.amp.GradScaler("cuda", enabled=config.device == "cuda" and config.mixed_precision)
     completed, best_score, history = 0, -math.inf, []
     data_signature = hashlib.sha256("\n".join(r["id"] for r in train + dev).encode()).hexdigest()
     source_hash = sha256(source) if source else None
+    selection_hash = sha256(selection_source) if selection_source else None
+    selected = {}
     checkpoint = None
     if last_path.exists():
         checkpoint = load_checkpoint(last_path)
+        require_v2(checkpoint)
         if checkpoint["mode"] != system.mode or TrainConfig(**checkpoint["config"]).to_dict() != config.to_dict() or checkpoint["data_signature"] != data_signature or checkpoint["source_checkpoint_sha256"] != source_hash:
             raise ValueError("Existing run has different configuration/data/source; choose a new output directory")
         completed, best_score, history = checkpoint["completed_epochs"], checkpoint["best_score"], checkpoint["history"]
+        if checkpoint.get("selection_baseline_sha256") != selection_hash:
+            raise ValueError("Existing run has a different warmup selection baseline")
+        selected = {key: checkpoint[key] for key in ("selected_global_epoch", "selected_stage", "selected_validation_macro_f1", "selected_source_checkpoint_sha256")}
+        # Recover a power loss between committing last.pt and linking best.pt.
+        # An earlier lost winner cannot be invented from a later worse state.
+        valid_best = False
+        if best_path.exists():
+            try:
+                saved_best = load_checkpoint(best_path)
+                valid_best = (saved_best.get("protocol_version") == PROTOCOL_VERSION and saved_best["mode"] == system.mode
+                              and saved_best["selected_global_epoch"] == selected["selected_global_epoch"]
+                              and saved_best["best_score"] == best_score)
+                del saved_best
+            except (OSError, RuntimeError, ValueError, KeyError, EOFError):
+                valid_best = False
+        if not valid_best:
+            if selected["selected_global_epoch"] == checkpoint["global_epoch"]:
+                copy_checkpoint(last_path, best_path)
+            elif selected["selected_stage"] == "warmup" and selection_source:
+                baseline = load_checkpoint(selection_source)
+                require_v2(baseline)
+                baseline.update(mode=system.mode, config=config.to_dict(), **selected,
+                                source_checkpoint_sha256=source_hash,
+                                source_checkpoint=str(Path(source).resolve()),
+                                selection_baseline_sha256=selection_hash,
+                                selection_source_checkpoint=str(Path(selection_source).resolve()))
+                save_checkpoint(best_path, baseline)
+                del baseline
+            else:
+                raise ValueError("Best checkpoint is missing or inconsistent; audit saved files before resuming")
     elif source:
         checkpoint = load_checkpoint(source)
+        require_v2(checkpoint)
+        if checkpoint["data_signature"] != data_signature:
+            raise ValueError("Initialization checkpoint has different data")
+        saved_config = TrainConfig.from_saved(checkpoint["config"]).to_dict()
+        current_config = config.to_dict()
+        for key in ("evidence_lambda", "device"):
+            saved_config.pop(key)
+            current_config.pop(key)
+        for key in ("model_path", "data_path"):
+            saved_config[key] = str(Path(saved_config[key]).resolve())
+            current_config[key] = str(Path(current_config[key]).resolve())
+        if saved_config != current_config:
+            raise ValueError("Initialization checkpoint has different training settings or architecture")
+        if stage == "continuation":
+            if checkpoint["stage"] != "warmup" or checkpoint["completed_epochs"] != config.warmup_epochs:
+                raise ValueError("Continuation must start from the final warmup epoch")
+            history = list(checkpoint["history"])
     if checkpoint:
         system.load_state_dict(checkpoint["model"])
         if checkpoint["stage"] == stage or (checkpoint["stage"] == "warmup" and stage == "continuation"):
@@ -164,6 +241,23 @@ def phase(system, train, dev, directory, name, stage, epochs, source=None, progr
             scaler.load_state_dict(checkpoint["scaler"])
         restore_rng(checkpoint["rng"])
         del checkpoint
+    if stage == "continuation" and selection_source and not last_path.exists():
+        baseline = load_checkpoint(selection_source)
+        require_v2(baseline)
+        if baseline["stage"] != "warmup" or baseline["data_signature"] != data_signature:
+            raise ValueError("Warmup selection baseline has different data or phase")
+        best_score = baseline["best_score"]
+        selected = {"selected_global_epoch": baseline["selected_global_epoch"], "selected_stage": "warmup",
+                    "selected_validation_macro_f1": best_score, "selected_source_checkpoint_sha256": selection_hash}
+        # The selected weights can precede branching. Give them the target mode
+        # and configuration so M2/A2 inference remains correctly identified.
+        baseline.update(mode=system.mode, config=config.to_dict(), **selected,
+                        source_checkpoint_sha256=source_hash,
+                        source_checkpoint=str(Path(source).resolve()),
+                        selection_baseline_sha256=selection_hash,
+                        selection_source_checkpoint=str(Path(selection_source).resolve()))
+        save_checkpoint(best_path, baseline)
+        del baseline
     system.configure_training(stage)
     if config.device == "cuda":
         torch.cuda.reset_peak_memory_stats()
@@ -181,8 +275,11 @@ def phase(system, train, dev, directory, name, stage, epochs, source=None, progr
             raise ValueError("No eligible examples for this training phase")
         started, total, evidence_count, optimizer_steps = time.perf_counter(), 0.0, 0, 0
         optimizer.zero_grad(set_to_none=True)
+        epoch_metadata = {"phase": name, "epoch": epoch + 1, "total_epochs": epochs,
+                          "global_epoch": order_epoch + 1,
+                          "total_verifier_epochs": config.warmup_epochs + config.continuation_epochs if stage != "reranker" else None}
         if progress:
-            progress({"phase": name, "event": "training", "epoch": epoch + 1, "total_epochs": epochs, "completed_claims": 0, "total_claims": len(order)})
+            progress({**epoch_metadata, "event": "training", "completed_claims": 0, "total_claims": len(order)})
         for group_start in range(0, len(order), config.accumulation_steps):
             group = order[group_start:group_start + config.accumulation_steps]
             # Warm up to the configured explicit LR over the first 10% of
@@ -219,23 +316,31 @@ def phase(system, train, dev, directory, name, stage, epochs, source=None, progr
             optimizer.zero_grad(set_to_none=True)
             optimizer_steps += 1
             if progress:
-                progress({"phase": name, "event": "training", "epoch": epoch + 1, "total_epochs": epochs, "completed_claims": min(group_start + len(group), len(order)), "total_claims": len(order), "epoch_training_seconds": time.perf_counter() - started})
+                progress({**epoch_metadata, "event": "training", "completed_claims": min(group_start + len(group), len(order)), "total_claims": len(order), "epoch_training_seconds": time.perf_counter() - started})
             print(f"{name} epoch {epoch + 1}/{epochs}: {min(group_start + len(group), len(order))}/{len(order)} claims", flush=True)
         training_seconds = time.perf_counter() - started
         training_memory = {"allocated_mib": torch.cuda.max_memory_allocated() / 1024**2, "reserved_mib": torch.cuda.max_memory_reserved() / 1024**2} if config.device == "cuda" else None
-        validation_progress = (lambda event: progress({**event, "phase": name, "event": "validation", "epoch": epoch + 1, "total_epochs": epochs})) if progress else None
+        validation_progress = (lambda event: progress({**event, **epoch_metadata, "event": "validation"})) if progress else None
         validation = evaluate_ranker(system, dev, validation_progress) if stage == "reranker" else evaluate(system, dev, progress=validation_progress)
         score = validation["retrieval"]["mrr"] if stage == "reranker" else validation["classification"]["macro_f1"]
         if score is None:
             raise ValueError("Validation has no aligned evidence for reranker selection")
-        history.append({"epoch": epoch + 1, "average_loss": total / len(order), "evidence_supervised_claims": evidence_count, "optimizer_steps": optimizer_steps, "training_seconds": training_seconds, "peak_training_cuda": training_memory, "validation": validation})
+        global_epoch = order_epoch + 1
+        history.append({"epoch": epoch + 1, "global_epoch": global_epoch, "stage": stage, "phase": name, "average_loss": total / len(order), "evidence_supervised_claims": evidence_count, "optimizer_steps": optimizer_steps, "training_seconds": training_seconds, "peak_training_cuda": training_memory, "validation": validation})
         improved = score > best_score
         best_score = max(score, best_score)
-        payload = {"format_version": 1, "model": system.state_dict(), "optimizer": optimizer.state_dict(), "scaler": scaler.state_dict(), "rng": rng_state(), "config": config.to_dict(), "mode": system.mode, "phase": name, "stage": stage, "completed_epochs": epoch + 1, "best_score": best_score, "history": history, "data_signature": data_signature, "source_checkpoint_sha256": source_hash,
-                   "source_checkpoint": str(Path(source).resolve()) if source else None}
+        if improved:
+            selected = {"selected_global_epoch": global_epoch, "selected_stage": stage,
+                        "selected_validation_macro_f1": score if stage != "reranker" else None,
+                        "selected_source_checkpoint_sha256": None}
+        payload = {"format_version": 2, "protocol_version": PROTOCOL_VERSION, "model": system.state_dict(), "optimizer": optimizer.state_dict(), "scaler": scaler.state_dict(), "rng": rng_state(), "config": config.to_dict(), "mode": system.mode, "phase": name, "stage": stage, "completed_epochs": epoch + 1, "global_epoch": global_epoch, "best_score": best_score, "history": history, "data_signature": data_signature, "source_checkpoint_sha256": source_hash,
+                   "source_checkpoint": str(Path(source).resolve()) if source else None,
+                   "selection_baseline_sha256": selection_hash,
+                   "selection_source_checkpoint": str(Path(selection_source).resolve()) if selection_source else None, **selected}
         if progress:
-            progress({"phase": name, "event": "checkpoint", "epoch": epoch + 1, "checkpoint_model_bytes": sum(t.numel() * t.element_size() for t in payload["model"].values())})
+            progress({**epoch_metadata, "event": "checkpoint", "checkpoint_model_bytes": sum(t.numel() * t.element_size() for t in payload["model"].values())})
         save_checkpoint(last_path, payload)
+        del payload
         if improved:
             copy_checkpoint(last_path, best_path)
         write_json(directory / f"{name}_history.json", history)
@@ -245,7 +350,23 @@ def phase(system, train, dev, directory, name, stage, epochs, source=None, progr
     payload = load_checkpoint(best_path)
     system.load_state_dict(payload["model"])
     del payload, optimizer
+    write_json(directory / f"{name}_selection.json", checkpoint_selection(best_path))
     return best_path
+
+
+def training_cost(config, output, mode, parent=None):
+    """Include shared phases for model cost comparisons, without double warmup."""
+    output, parent = Path(output), Path(parent) if parent else Path(output)
+    files = [(output / f"{mode.lower()}_history.json", "continuation" if mode in ("M1", "M2", "A2") else None)]
+    if mode != "M0":
+        files.insert(0, (parent / "reranker_history.json", None))
+    if mode in ("M1", "M2", "A2"):
+        files.insert(1, (parent / "warmup_history.json", None))
+    records = [e for path, stage in files for e in read_json(path) if stage is None or e["stage"] == stage]
+    return {"training_seconds": sum(e["training_seconds"] for e in records),
+            "peak_training_allocated_mib": max((e.get("peak_training_cuda") or {}).get("allocated_mib", 0) for e in records) if config.device == "cuda" else None,
+            "peak_training_reserved_mib": max((e.get("peak_training_cuda") or {}).get("reserved_mib", 0) for e in records) if config.device == "cuda" else None,
+            "note": "Includes shared preparation for per-model comparison; do not sum model costs for workflow time"}
 
 
 def isolated_joint_gradient(system, row):
@@ -289,6 +410,8 @@ def isolated_stop_gradient(system, row):
 
 
 def run_experiment(config, output, models=("M0", "M1", "M2"), progress=None, initialization_from=None):
+    if config.protocol_version != PROTOCOL_VERSION:
+        raise ValueError("Training requires protocol v2; use a new output directory")
     output = Path(output)
     output.mkdir(parents=True, exist_ok=True)
     if config.device == "cuda" and not torch.cuda.is_available():
@@ -301,6 +424,8 @@ def run_experiment(config, output, models=("M0", "M1", "M2"), progress=None, ini
     parent_directory = Path(initialization_from).resolve() if initialization_from else None
     if parent_directory:
         parent = read_json(parent_directory / "experiment.json")
+        if parent.get("protocol_version", parent["config"].get("protocol_version", 1)) != PROTOCOL_VERSION:
+            raise ValueError("Protocol v1 initialization cannot be reused in protocol v2")
         if parent["subset_ids"] != selected_ids or parent["data_manifest"] != metadata["data_manifest"]:
             raise ValueError("Initialization parent uses different data or splits")
         parent_config = TrainConfig(**parent["config"]).to_dict()
@@ -316,7 +441,8 @@ def run_experiment(config, output, models=("M0", "M1", "M2"), progress=None, ini
             raise ValueError("Initialization parent uses different training settings or architecture")
         sources = {"reranker": parent_directory / "reranker_best.pt"}
         if any(mode in models for mode in ("M1", "M2", "A2")):
-            sources["warmup"] = parent_directory / "warmup_best.pt"
+            sources["warmup"] = parent_directory / "warmup_end.pt"
+            sources["warmup_best"] = parent_directory / "warmup_best.pt"
         metadata["initialization_sources"] = {name: {"path": str(path), "sha256": sha256(path)}
                                               for name, path in sources.items()}
         signature = hashlib.sha256("\n".join(r["id"] for r in train + dev).encode()).hexdigest()
@@ -324,15 +450,21 @@ def run_experiment(config, output, models=("M0", "M1", "M2"), progress=None, ini
         parent_artifacts = read_json(ledger_path)["artifacts"] if ledger_path.exists() else {}
         for name, path in sources.items():
             state = load_checkpoint(path)
-            if state["data_signature"] != signature or state["mode"] != "M1" or state["stage"] != name:
+            require_v2(state)
+            expected_stage = "warmup" if name.startswith("warmup") else name
+            if state["data_signature"] != signature or state["mode"] != "M1" or state["stage"] != expected_stage:
                 raise ValueError("Initialization checkpoint has different data, mode, or phase")
+            if name == "warmup" and state["completed_epochs"] != config.warmup_epochs:
+                raise ValueError("Initialization must use the final warmup epoch")
             expected_hash = parent_artifacts.get(path.name)
             if expected_hash and expected_hash != metadata["initialization_sources"][name]["sha256"]:
                 raise ValueError("Initialization checkpoint changed since its completion ledger")
-            if name == "warmup" and state["source_checkpoint_sha256"] != metadata["initialization_sources"]["reranker"]["sha256"]:
+            if name.startswith("warmup") and state["source_checkpoint_sha256"] != metadata["initialization_sources"]["reranker"]["sha256"]:
                 raise ValueError("Warmup does not reference the selected reranker checkpoint")
             del state
     config_path = output / "experiment.json"
+    metadata["protocol_version"] = PROTOCOL_VERSION
+    metadata["checkpoint_selection"] = "dev_macro_f1_over_all_verifier_epochs; ties favor earlier global epoch"
     if config.train_per_label is not None:
         metadata["purpose"] = "reduced-data single-seed pilot; not full proposal reproduction"
     if config_path.exists():
@@ -356,8 +488,17 @@ def run_experiment(config, output, models=("M0", "M1", "M2"), progress=None, ini
         else:
             reranker_best = phase(system, train, dev, output, "reranker", "reranker", config.reranker_epochs, progress=progress)
         if any(m in models for m in ("M1", "M2", "A2")):
-            warmup_best = sources["warmup"] if parent_directory else phase(system, train, dev, output, "warmup", "warmup", config.warmup_epochs, source=reranker_best, progress=progress)
-            warmup_hash = sha256(warmup_best)
+            if parent_directory:
+                warmup_best, warmup_end = sources["warmup_best"], sources["warmup"]
+            else:
+                warmup_best = phase(system, train, dev, output, "warmup", "warmup", config.warmup_epochs, source=reranker_best, progress=progress)
+                warmup_end = output / "warmup_end.pt"
+                if warmup_end.exists():
+                    if sha256(warmup_end) != sha256(output / "warmup_last.pt"):
+                        raise ValueError("Pinned final warmup checkpoint changed")
+                else:
+                    copy_checkpoint(output / "warmup_last.pt", warmup_end)
+            warmup_hash = sha256(warmup_end)
         del system
         gc.collect()
         if config.device == "cuda":
@@ -365,7 +506,7 @@ def run_experiment(config, output, models=("M0", "M1", "M2"), progress=None, ini
         for mode in (m for m in models if m in ("M1", "M2", "A2")):
             seed_everything(config.seed)
             system = VerificationSystem(config, mode, tokenizer)
-            checkpoint = load_checkpoint(warmup_best)
+            checkpoint = load_checkpoint(warmup_end)
             system.load_state_dict(checkpoint["model"])
             del checkpoint
             start_rank_hash = fingerprint(system.reranker)
@@ -378,22 +519,33 @@ def run_experiment(config, output, models=("M0", "M1", "M2"), progress=None, ini
                 checks.update(isolated_joint_gradient(system, next(r for r in train if len(r["candidate_ids"]) > 1)))
             if mode == "A2":
                 checks.update(isolated_stop_gradient(system, next(r for r in train if has_evidence_supervision(r))))
-            best = phase(system, train, dev, output, mode.lower(), "continuation", config.continuation_epochs, source=warmup_best, progress=progress)
+            best = phase(system, train, dev, output, mode.lower(), "continuation", config.continuation_epochs,
+                         source=warmup_end, progress=progress, selection_source=warmup_best)
+            selected_rank_hash = fingerprint(system.reranker)
+            terminal = load_checkpoint(output / f"{mode.lower()}_last.pt")
+            system.load_state_dict(terminal["model"])
+            del terminal
             end_rank_hash = fingerprint(system.reranker)
             if mode == "M2" and config.train_per_label is not None:
                 end_probes = backbone_probes(system)
                 checks["first_last_attention_query_changed"] = {key: initial_probes[key] != end_probes[key] for key in initial_probes}
                 if not all(checks["first_last_attention_query_changed"].values()):
                     raise AssertionError("M2 did not update first/last attention queries in both encoders")
-            checks["reranker_unchanged"] = start_rank_hash == end_rank_hash
-            checks["reranker_final_sha256"] = end_rank_hash
+            checks["reranker_unchanged"] = start_rank_hash == selected_rank_hash
+            checks["reranker_final_sha256"] = selected_rank_hash
+            checks["trained_reranker_unchanged"] = start_rank_hash == end_rank_hash
+            checks["trained_reranker_final_sha256"] = end_rank_hash
             if mode == "M1" and not checks["reranker_unchanged"]:
                 raise AssertionError("M1 changed frozen reranker parameters")
-            if mode in ("M2", "A2") and (config.smoke or config.train_per_label is not None) and checks["reranker_unchanged"]:
+            if mode in ("M2", "A2") and checks["trained_reranker_unchanged"]:
                 raise AssertionError(f"{mode} failed to update its reranker")
+            selected_state = load_checkpoint(best)
+            system.load_state_dict(selected_state["model"])
+            del selected_state
             metrics = evaluate(system, dev, output / f"{mode.lower()}_dev", progress=(lambda event: progress({**event, "phase": f"{mode.lower()}_dev"})) if progress else None)
             write_json(output / f"{mode.lower()}_checks.json", checks)
-            results[mode] = {"checkpoint": str(best), "metrics": metrics, "checks": checks}
+            results[mode] = {"checkpoint": str(best), "metrics": metrics, "checks": checks,
+                             "selection": read_json(output / f"{mode.lower()}_selection.json")}
             del system
             gc.collect()
             if config.device == "cuda":
@@ -419,7 +571,7 @@ def run_experiment(config, output, models=("M0", "M1", "M2"), progress=None, ini
         checks = {"verifier_initial_sha256": initial_verifier_hash, "reranker_unchanged": True,
                   "reranker_initial_sha256": start_hash, "reranker_final_sha256": final_hash,
                   "selection_source_checkpoint_sha256": sha256(reranker_best), "aggregation": "uniform"}
-        results["A1"] = {"checkpoint": str(best), "metrics": metrics, "checks": checks}
+        results["A1"] = {"checkpoint": str(best), "metrics": metrics, "checks": checks, "selection": read_json(output / "a1_selection.json")}
         write_json(output / "a1_checks.json", checks)
         del system
         gc.collect()
@@ -435,17 +587,20 @@ def run_experiment(config, output, models=("M0", "M1", "M2"), progress=None, ini
         metrics = evaluate(system, dev, output / "m0_dev", progress=(lambda event: progress({**event, "phase": "m0_dev"})) if progress else None)
         results["M0"] = {"checkpoint": str(best), "metrics": metrics, "checks": {"verifier_initial_sha256": initial_hash}}
         write_json(output / "m0_checks.json", results["M0"]["checks"])
+        results["M0"]["selection"] = read_json(output / "m0_selection.json")
         del system
         gc.collect()
         if config.device == "cuda":
             torch.cuda.empty_cache()
+    for mode, result in results.items():
+        result["training_cost"] = training_cost(config, output, mode, parent_directory)
     write_json(output / "summary.json", results)
     return results
 
 
 def system_from_checkpoint(path, device=None):
     checkpoint = load_checkpoint(path)
-    config = TrainConfig(**checkpoint["config"])
+    config = TrainConfig.from_saved(checkpoint["config"])
     if device:
         config.device = device
     system = VerificationSystem(config, checkpoint["mode"])
@@ -457,9 +612,11 @@ def system_from_checkpoint(path, device=None):
 
 def resume_checkpoint(path):
     checkpoint = load_checkpoint(path)
+    require_v2(checkpoint)
     config = TrainConfig(**checkpoint["config"])
     name, stage, source_hash, mode = checkpoint["phase"], checkpoint["stage"], checkpoint["source_checkpoint_sha256"], checkpoint["mode"]
     recorded_source = checkpoint.get("source_checkpoint")
+    selection_source = checkpoint.get("selection_source_checkpoint")
     del checkpoint
     directory = Path(path).parent
     if Path(path).name != f"{name}_last.pt":
@@ -468,6 +625,6 @@ def resume_checkpoint(path):
     epochs = config.reranker_epochs if stage == "reranker" else config.warmup_epochs if stage == "warmup" else config.continuation_epochs if stage == "continuation" else config.warmup_epochs + config.continuation_epochs
     train, dev = training_rows(config)
     system = VerificationSystem(config, mode)
-    best = phase(system, train, dev, directory, name, stage, epochs, source=source)
+    best = phase(system, train, dev, directory, name, stage, epochs, source=source, selection_source=selection_source)
     evaluate(system, dev, directory / f"{name}_resumed_dev")
     return best

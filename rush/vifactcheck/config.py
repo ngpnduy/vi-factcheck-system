@@ -7,6 +7,7 @@ MODEL_REVISION = "01daacda68afe13d83023d16ec647239e344a1e6"
 EXPECTED_COUNTS = {"train": 5062, "dev": 723, "test": 1447}
 STANDARD_MODELS = ("M0", "M1", "M2")
 ALL_MODELS = ("M0", "M1", "A1", "M2", "A2")
+PROTOCOL_VERSION = 2
 
 
 def comparison_pairs(models):
@@ -19,6 +20,7 @@ def comparison_pairs(models):
 
 @dataclass
 class TrainConfig:
+    protocol_version: int = PROTOCOL_VERSION
     seed: int = 42
     learning_rate: float = 2e-5
     evidence_lambda: float = 0.5
@@ -45,6 +47,8 @@ class TrainConfig:
     listwise_dropout: float = 0.1
 
     def __post_init__(self):
+        if self.protocol_version not in (1, PROTOCOL_VERSION):
+            raise ValueError("Unsupported training protocol version")
         if self.device not in ("cuda", "cpu"):
             raise ValueError("device must be cuda or cpu")
         if not 0 < self.evidence_count <= self.candidate_count:
@@ -64,6 +68,11 @@ class TrainConfig:
 
     def to_dict(self):
         return asdict(self)
+
+    @classmethod
+    def from_saved(cls, value):
+        """Unversioned checkpoints retain their historical inference protocol."""
+        return cls(**{"protocol_version": 1, **value})
 
 
 def reranker_options(args):

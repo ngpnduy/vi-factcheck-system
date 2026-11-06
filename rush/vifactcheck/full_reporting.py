@@ -6,7 +6,7 @@ from pathlib import Path
 import numpy as np
 
 from . import LABELS
-from .config import ALL_MODELS, EXPECTED_COUNTS, TrainConfig, comparison_pairs, reranker_options
+from .config import ALL_MODELS, EXPECTED_COUNTS, PROTOCOL_VERSION, TrainConfig, comparison_pairs, reranker_options
 from .io import read_json, read_jsonl, write_json
 from .reporting import paired_article_bootstrap
 
@@ -25,6 +25,7 @@ def write_full_report(directory):
     plan = read_json(directory / "full_plan.json")
     selected = read_json(directory / "selected_hyperparameters.json")
     models = tuple(plan.get("models", MODELS))
+    protocol = plan.get("protocol_version", 1)
     if models not in (MODELS, ALL_MODELS):
         raise ValueError("Full report requires either the three main models or all five slide configurations")
     pairs = comparison_pairs(models)
@@ -34,6 +35,11 @@ def write_full_report(directory):
         location = directory / "seeds" / f"seed{seed}"
         summary = read_json(location / "summary.json")
         metadata = read_json(location / "experiment.json")
+        if protocol == PROTOCOL_VERSION:
+            if metadata.get("protocol_version") != PROTOCOL_VERSION or metadata["config"].get("protocol_version") != PROTOCOL_VERSION:
+                raise ValueError("A v2 report cannot include legacy training protocols")
+            if (metadata["config"]["learning_rate"], metadata["config"]["evidence_lambda"]) != (selected["learning_rate"], selected["evidence_lambda"]):
+                raise ValueError("Seeds must use the validation-selected hyperparameters")
         if reranker_options(TrainConfig(**metadata["config"])) != expected_architecture:
             raise ValueError("A full report cannot mix reranker architectures or attention settings")
         if len(metadata["subset_ids"]["train"]) != EXPECTED_COUNTS["train"] or metadata["config"].get("train_per_label") is not None or metadata["config"]["smoke"]:
@@ -56,6 +62,20 @@ def write_full_report(directory):
                          **{f"{label.lower()}_f1": c["per_label"][label]["f1"] for label in LABELS},
                          **{key: r[key] for key in ("count", "alignment_coverage", "hit@5", "hit@20", "sentence_recall@5", "sentence_recall@20", "mrr", "complete_gold@5", "complete_gold@20")},
                          "inference_seconds_per_claim": metric["cost"]["prepared_input_seconds_per_claim"]})
+            if protocol == PROTOCOL_VERSION:
+                selection = summary[mode]["selection"]
+                if selection["protocol_version"] != PROTOCOL_VERSION or not 1 <= selection["selected_global_epoch"] <= 5:
+                    raise ValueError("Invalid v2 checkpoint selection metadata")
+                if mode in ("M1", "M2", "A2"):
+                    expected_stage = "warmup" if selection["selected_global_epoch"] <= 3 else "continuation"
+                else:
+                    expected_stage = mode.lower()
+                if selection["selected_stage"] != expected_stage:
+                    raise ValueError("Selected stage disagrees with the model/global epoch")
+                if abs(selection["selected_validation_macro_f1"] - rows[-1]["dev_macro_f1"]) > 1e-12:
+                    raise ValueError("Selected checkpoint and validation score disagree")
+                rows[-1].update(selected_global_epoch=selection["selected_global_epoch"], selected_stage=selection["selected_stage"],
+                                **{key: summary[mode]["training_cost"][key] for key in ("training_seconds", "peak_training_allocated_mib", "peak_training_reserved_mib")})
         for a, b in pairs:
             bootstrap[f"seed{seed}:{a}-{b}"] = paired_article_bootstrap(predictions[seed][a], predictions[seed][b])
     # Check pairing across seeds too; each seed evaluates the same 1,447 claims.
@@ -66,6 +86,8 @@ def write_full_report(directory):
                 raise ValueError("Seeds/models evaluated different test claims or labels")
     aggregate = {}
     score_keys = ("dev_macro_f1", "test_macro_f1", "accuracy", "supported_f1", "refuted_f1", "not_enough_info_f1", "hit@5", "hit@20", "sentence_recall@5", "sentence_recall@20", "mrr", "complete_gold@5", "complete_gold@20", "inference_seconds_per_claim")
+    if protocol == PROTOCOL_VERSION:
+        score_keys += ("training_seconds", "peak_training_allocated_mib", "peak_training_reserved_mib")
     for mode in models:
         model_rows = [r for r in rows if r["model"] == mode]
         aggregate[mode] = {key: mean_std([r[key] for r in model_rows]) for key in score_keys}
@@ -78,7 +100,7 @@ def write_full_report(directory):
     writer.writeheader()
     writer.writerows(rows)
     (directory / "results.csv").write_bytes(buffer.getvalue().encode("utf-8-sig"))
-    comparison = {"study": "full-data three-seed experiment", "seeds": list(SEEDS), "selected_hyperparameters": selected,
+    comparison = {"study": "full-data three-seed experiment", "protocol_version": protocol, "seeds": list(SEEDS), "selected_hyperparameters": selected,
                   "per_seed": rows, "models": aggregate, "paired_seed_macro_f1_differences": differences,
                   "test_metrics": metrics, "bootstrap_note": "Per-seed article bootstrap intervals are conditional on each fitted model. Three-seed sample SD measures observed training variation; test claims are not independent repeated samples across seeds."}
     write_json(directory / "comparison.json", comparison)
@@ -92,6 +114,9 @@ def write_full_report(directory):
              "| Model | Dev Macro-F1 | Test Macro-F1 | Test accuracy |", "|---|---:|---:|---:|"]
     def display(stat):
         return f"{stat['mean']:.4f} +/- {stat['sample_std']:.4f}"
+    if protocol == PROTOCOL_VERSION:
+        old_protocol = next(line for line in lines if line.startswith("Reranker: three epochs"))
+        lines[lines.index(old_protocol)] = "Protocol v2: reranker pretraining is selected by dev MRR. M1/M2/A2 share the final epoch-three verifier/optimizer/scaler/RNG state, then train epochs four and five. Their final checkpoint maximizes dev Macro-F1 over all five epochs, including warmup; ties favor the earlier global epoch. M0/A1 train five verifier epochs from common initial verifier weights. Learning-rate and lambda searches run afresh for the configured architecture on seed-42 validation only; selected M1/M2 tuning checkpoints are reused."
     if "A1" in models:
         lines[lines.index("## Aggregate scores"):lines.index("## Aggregate scores")] = [
             "A1 keeps M1's frozen reranker and selected sentence set, but trains its verifier with uniform pooling for five epochs from the common initial verifier. A2 branches from the same weighted warmup checkpoint as M1/M2; its verification weights are detached, while evidence BCE still updates the reranker. M2 and A2 use the same selected lambda.", ""]
@@ -102,6 +127,11 @@ def write_full_report(directory):
     lines += ["", "## Per-seed scores", "", "| Seed | Model | Dev Macro-F1 | Test Macro-F1 | Accuracy |", "|---|---|---:|---:|---:|"]
     for row in rows:
         lines.append(f"| {row['seed']} | {row['model']} | {row['dev_macro_f1']:.4f} | {row['test_macro_f1']:.4f} | {row['accuracy']:.4f} |")
+    if protocol == PROTOCOL_VERSION:
+        lines += ["", "## Selected checkpoints", "", "A warmup checkpoint may legitimately win for M2/A2. Gradient and encoder-update checks concern the terminal trained state, independently of the selected prediction checkpoint.", "",
+                  "| Seed | Model | Selected global epoch | Selected stage |", "|---|---|---:|---|"]
+        for row in rows:
+            lines.append(f"| {row['seed']} | {row['model']} | {row['selected_global_epoch']} | {row['selected_stage']} |")
     lines += ["", "## Per-label F1", "", "| Model | SUPPORTED | REFUTED | NOT_ENOUGH_INFO |", "|---|---:|---:|---:|"]
     for mode in models:
         lines.append(f"| {mode} | {display(aggregate[mode]['supported_f1'])} | {display(aggregate[mode]['refuted_f1'])} | {display(aggregate[mode]['not_enough_info_f1'])} |")
@@ -137,6 +167,8 @@ def write_full_report(directory):
     histories = sorted(directory.glob("tuning/*/*_history.json")) + sorted(directory.glob("seeds/*/*_history.json"))
     for path in histories:
         history = read_json(path)
+        if protocol == PROTOCOL_VERSION and path.stem in ("m1_history", "m2_history", "a2_history"):
+            history = [e for e in history if e["stage"] == "continuation"]
         minutes = sum(e["training_seconds"] for e in history) / 60
         allocated = max((e.get("peak_training_cuda") or {}).get("allocated_mib", 0) for e in history)
         reserved = max((e.get("peak_training_cuda") or {}).get("reserved_mib", 0) for e in history)
