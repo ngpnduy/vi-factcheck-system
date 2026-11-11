@@ -1,8 +1,0 @@
-{
-  "verifier_initial_sha256": "42aa89506b12a1ea1b8226737af39e4dbef2fe8f7dc423368bf3505cd7d13db6",
-  "reranker_unchanged": true,
-  "reranker_initial_sha256": "e48a9751e4a5c6b0e6ec78b952ce07de79a9d16a4ae02031f386c96d962a68bb",
-  "reranker_final_sha256": "e48a9751e4a5c6b0e6ec78b952ce07de79a9d16a4ae02031f386c96d962a68bb",
-  "selection_source_checkpoint_sha256": "366bb886973b0819b67317010272631861605b0d7b7fa2cc706aa83a8e503abf",
-  "aggregation": "uniform"
-}

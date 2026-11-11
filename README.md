@@ -1,96 +1,44 @@
-# Vietnamese Fact-Checking System
+# ViFactCheck — pipeline thí nghiệm v2
 
-Protocol v2 now selects M1/M2/A2 checkpoints across all five verifier epochs, tunes listwise settings on validation, and supports the complete three-seed study. See [the protocol and launch guide](rush/LISTWISE_V2.md).
+Repo này có **một pipeline chính** tại [`src/vifactcheck/`](src/vifactcheck/): BM25 chọn câu trong bài báo, PhoBERT rerank tối đa 20 câu thành 5 câu, rồi verifier dự đoán `SUPPORTED`, `REFUTED` hoặc `NOT_ENOUGH_INFO`. Các cấu hình M0, M1, A1, M2, A2 và protocol v2 được giải thích trong [hướng dẫn thí nghiệm](docs/protocol/v2.md).
 
-Research code for evidence-based Vietnamese fact-checking.
+## Kết quả hiện có
 
-The repository includes the ViFactCheck paper reproduction (PLM/LLM classifiers
-and BM25/SBERT/hybrid retrieval), the M0 within-context baseline, and a separate
-corpus BM25 experiment. See [the code organization guide](docs/code_organization.md)
-for their entry points, data formats, and dependency requirements.
+M2 listwise đạt **0.7046 test Macro-F1** trong thí nghiệm full-data **một seed (42)** ngày 30/10/2026; đây là điểm cao nhất trong năm cấu hình của thí nghiệm đó. [Báo cáo và bảng điểm](reports/experiments/listwise-seed42/) ghi rõ giao thức và giới hạn. [Pilot 900 claim](reports/experiments/pilot-900-seed42/) là một thí nghiệm trước đó, không dùng điểm pilot thay cho điểm full-data.
 
-## Rush-version: standalone research implementation
+V2 chạy lại năm cấu hình trên các seed 42, 13, 2026, chọn learning rate/lambda bằng validation và chọn checkpoint tốt nhất trong năm epoch verifier. **Chưa có báo cáo kết quả full v2 được đưa vào nhánh này.** Không lấy điểm smoke hoặc điểm tháng 10 làm kết quả v2. Checkpoint weights không nằm trong Git; [trạng thái checkpoint](reports/MODELS.md) ghi rõ khả năng chạy inference.
 
-The `rush/` subproject contains a separate, tested M0/M1/M2 implementation and
-the 900-claim, seed-42 deadline pilot. See [its setup and commands](rush/README.md)
-and [protocol differences](rush/docs/BRANCH_NOTES.md). It uses its own environment
-and data/artifact directories; its scores belong to its recorded protocol.
+## Cấu trúc
 
-The completed pilot's [report](rush/results/pilot-900-seed42/REPORT.md) and
-[downloadable results package](rush/results/pilot-900-seed42/README.md) are available.
+| Nơi | Nội dung |
+|---|---|
+| `src/vifactcheck/` | Source chính của pipeline v2 |
+| `scripts/` | Setup và launcher Windows cho v2 |
+| `tests/` | Kiểm tra cho code chính |
+| `docs/protocol/` | Giao thức, cách chạy và bằng chứng validation |
+| `docs/research/` | Ghi chú paper phục vụ báo cáo |
+| `reports/` | Proposal, slide và báo cáo kết quả |
 
-The Rush implementation also supports the 0410 slides' A1/A2 controls and optional
-list-aware candidate attention. See [the implementation and commands](rush/docs/SLIDES_0410_IMPLEMENTATION.md).
+Source tái hiện paper, M0 độc lập, pilot/slides scripts và dữ liệu thí nghiệm chi tiết được giữ tại commit [`baa0bdc`](https://github.com/ngpnduy/vi-factcheck-system/tree/baa0bdc80379d26e661bd1dcf5e37b3b48ba14a8) trên nhánh `archive/pre-release-v2`. Lịch sử này được giữ nguyên để truy vết; nhánh An dùng để train v2 vẫn ở commit gốc.
 
-The full-data, seed-42 list-aware study completed all five configurations on
-30 October 2026. See the [report and downloadable results archive](rush/results/full-five-listwise-seed42-20261030/README.md).
+## Chạy trên Windows GPU
 
-The existing `src/factcheck/` workflows continue to use the setup below.
+Yêu cầu Python 3.10+, Java, GPU CUDA phù hợp và đủ dung lượng checkpoint. Các lệnh chạy từ **gốc repo**:
 
-## Quick start
-
-1. Install [uv](https://docs.astral.sh/uv/getting-started/installation/).
-2. Run `bash scripts/setup.sh`.
-3. Activate the virtual environment:
-   - On macOS/Linux: `source .venv/bin/activate`
-   - On Windows: `.venv\Scripts\activate`
-4. Run tests to verify the setup: `pytest`
-
-*(Note: When you are done working, you can exit the virtual environment by running `deactivate`)*
-
-## ViFactCheck data pipeline
-
-Download, normalize, validate, and publish the official ViFactCheck splits:
-
-```bash
-bash scripts/download_vifactcheck.sh
-bash scripts/preprocess_vifactcheck.sh
-pytest
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\setup.ps1
+.\.venv\Scripts\python.exe -m vifactcheck prepare
+.\.venv\Scripts\python.exe -m vifactcheck smoke --models M0 M1 A1 M2 A2 --reranker-architecture listwise --output runs\smoke-listwise-v2
+powershell -ExecutionPolicy Bypass -File scripts\start_listwise_v2.ps1 -CheckOnly
+powershell -ExecutionPolicy Bypass -File scripts\start_listwise_v2.ps1
 ```
 
-Raw source files are written to `data/raw/vifactcheck/`; normalized intermediate
-files to `data/interim/vifactcheck/`; and the validated public artifacts to
-`data/processed/vifactcheck/`. The dataset files are intentionally ignored by Git.
+Launcher giữ checkpoint ở `%LOCALAPPDATA%\ViFactCheck\full-five-listwise-best5-v2` và ghi trạng thái vào `runs\full-five-listwise-best5-v2`. Chạy lại **cùng lệnh, cùng source và dữ liệu** để resume. Có thể truyền `-DataDirectory`, `-ModelDirectory`, `-SegmenterDirectory`, `-OutputDirectory` và `-StatusDirectory` khi dùng vị trí khác. [Chi tiết protocol và resume](docs/protocol/v2.md).
 
-The private internal test set is frozen only after adjudication;
-the procedure is in `docs/internal_testset_guideline.md`.
+Để dự đoán bằng checkpoint đã có:
 
-The environment is locked in `uv.lock`; do not edit that file manually.
-
-## M0: within-context BM25 + PhoBERT
-
-See [the M0 guide](docs/m0.md) for the protocol, configuration, artifacts, and
-current experiment status. M0 retrieves sentences only from each claim's own
-context and averages the verifier's per-sentence probabilities.
-
-```bash
-bash scripts/setup_m0.sh             # Download pinned public models; requires Java 11+
-bash scripts/run_m0.sh prepare       # Prepare train and validation
-bash scripts/run_m0.sh train --smoke # Small technical check, not a research score
-bash scripts/run_m0.sh train --seed 42
+```powershell
+.\.venv\Scripts\python.exe -m vifactcheck predict --checkpoint <duong-dan-checkpoint> --input examples\claim.json --output runs\prediction.json
 ```
 
-Training uses the existing baseline dependency group. Full runs select checkpoints
-on validation only. The current learning rate is provisional pending M1 selection;
-official three-seed test results have not yet been produced.
-
-## ViFactCheck paper reproduction
-
-After the common setup and data preparation above:
-
-```bash
-bash scripts/train_plm.sh --model-name vinai/phobert-base --input-mode gold_evidence
-```
-
-Generate predictions with the PLM inference module, then evaluate them with
-`scripts/eval_plm.sh`; see the [complete workflow](docs/code_organization.md). Paper sentence-retrieval
-evaluation uses NLTK; download its tokenizer resources explicitly before running:
-
-```bash
-.venv/bin/python -m nltk.downloader punkt_tab
-PYTHONPATH=src .venv/bin/python -m factcheck.retrieval.eval_bm25 \
-  --gold data/processed/vifactcheck/validation.jsonl
-```
-
-LLM training/inference additionally require a compatible Unsloth/TRL GPU
-environment; those optional dependencies are not included in the shared lockfile.
+Run An đang huấn luyện cần tiếp tục trên checkout và launcher cũ, với checkpoint/data/config/output path đã ghi nhận. Các file Python được chuyển **nguyên byte**, nhưng đường dẫn package và launcher ở nhánh release khác; dùng nhánh này cho lần chạy mới sau khi run cũ hoàn tất.
