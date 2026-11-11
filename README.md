@@ -19,7 +19,7 @@ V2 chạy lại năm cấu hình trên các seed 42, 13, 2026, chọn learning r
 | `docs/research/` | Ghi chú paper phục vụ báo cáo |
 | `reports/` | Proposal, slide và báo cáo kết quả |
 
-Source tái hiện paper, M0 độc lập, pilot/slides scripts và dữ liệu thí nghiệm chi tiết được giữ tại commit [`baa0bdc`](https://github.com/ngpnduy/vi-factcheck-system/tree/baa0bdc80379d26e661bd1dcf5e37b3b48ba14a8) trên nhánh `archive/pre-release-v2`. Lịch sử này được giữ nguyên để truy vết; nhánh An dùng để train v2 vẫn ở commit gốc.
+Source tái hiện paper, M0 độc lập, pilot/slides scripts và dữ liệu thí nghiệm chi tiết được giữ tại commit [`baa0bdc`](https://github.com/ngpnduy/vi-factcheck-system/tree/baa0bdc80379d26e661bd1dcf5e37b3b48ba14a8) trong lịch sử nhánh listwise. Các báo cáo dẫn thẳng tới commit này để truy vết khi nhánh tiếp tục phát triển.
 
 ## Chạy trên Windows GPU
 
