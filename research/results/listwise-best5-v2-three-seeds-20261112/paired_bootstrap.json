@@ -1,0 +1,278 @@
+{
+  "seed42:A1-M0": {
+    "iterations": 2000,
+    "bootstrap_seed": 2026,
+    "claim_count": 1447,
+    "article_count": 758,
+    "method": "paired article-cluster percentile bootstrap; conditional on this training sample and seed",
+    "metrics": {
+      "macro_f1": {
+        "difference": 0.018337156294170986,
+        "ci95": [
+          -0.006479899530081206,
+          0.04259223701627015
+        ]
+      },
+      "refuted_f1": {
+        "difference": 0.07207130730050931,
+        "ci95": [
+          0.035871568818588585,
+          0.11054861462977171
+        ]
+      }
+    }
+  },
+  "seed42:M1-A1": {
+    "iterations": 2000,
+    "bootstrap_seed": 2026,
+    "claim_count": 1447,
+    "article_count": 758,
+    "method": "paired article-cluster percentile bootstrap; conditional on this training sample and seed",
+    "metrics": {
+      "macro_f1": {
+        "difference": 0.06992066207234682,
+        "ci95": [
+          0.04203910797319301,
+          0.09710146308909402
+        ]
+      },
+      "refuted_f1": {
+        "difference": 0.09867172675521829,
+        "ci95": [
+          0.056377408675234275,
+          0.14184235259909878
+        ]
+      }
+    }
+  },
+  "seed42:M2-M1": {
+    "iterations": 2000,
+    "bootstrap_seed": 2026,
+    "claim_count": 1447,
+    "article_count": 758,
+    "method": "paired article-cluster percentile bootstrap; conditional on this training sample and seed",
+    "metrics": {
+      "macro_f1": {
+        "difference": 0.04417884335194666,
+        "ci95": [
+          0.02658837822999805,
+          0.06205036759618821
+        ]
+      },
+      "refuted_f1": {
+        "difference": 0.05187860268074174,
+        "ci95": [
+          0.025562526953234035,
+          0.07799504083979737
+        ]
+      }
+    }
+  },
+  "seed42:M2-A2": {
+    "iterations": 2000,
+    "bootstrap_seed": 2026,
+    "claim_count": 1447,
+    "article_count": 758,
+    "method": "paired article-cluster percentile bootstrap; conditional on this training sample and seed",
+    "metrics": {
+      "macro_f1": {
+        "difference": 0.026513011246851903,
+        "ci95": [
+          0.008961038277998304,
+          0.04375590228941535
+        ]
+      },
+      "refuted_f1": {
+        "difference": 0.02148327302784503,
+        "ci95": [
+          -0.005298041164792153,
+          0.048727812123121016
+        ]
+      }
+    }
+  },
+  "seed13:A1-M0": {
+    "iterations": 2000,
+    "bootstrap_seed": 2026,
+    "claim_count": 1447,
+    "article_count": 758,
+    "method": "paired article-cluster percentile bootstrap; conditional on this training sample and seed",
+    "metrics": {
+      "macro_f1": {
+        "difference": 0.0010252834042966397,
+        "ci95": [
+          -0.014698450974750348,
+          0.017169901434140815
+        ]
+      },
+      "refuted_f1": {
+        "difference": -0.00836236933797907,
+        "ci95": [
+          -0.032619847684733735,
+          0.014678435111660684
+        ]
+      }
+    }
+  },
+  "seed13:M1-A1": {
+    "iterations": 2000,
+    "bootstrap_seed": 2026,
+    "claim_count": 1447,
+    "article_count": 758,
+    "method": "paired article-cluster percentile bootstrap; conditional on this training sample and seed",
+    "metrics": {
+      "macro_f1": {
+        "difference": 0.08427311832600226,
+        "ci95": [
+          0.05545728577203794,
+          0.11222481442274271
+        ]
+      },
+      "refuted_f1": {
+        "difference": 0.145186104067473,
+        "ci95": [
+          0.10512580685217318,
+          0.18511448255311533
+        ]
+      }
+    }
+  },
+  "seed13:M2-M1": {
+    "iterations": 2000,
+    "bootstrap_seed": 2026,
+    "claim_count": 1447,
+    "article_count": 758,
+    "method": "paired article-cluster percentile bootstrap; conditional on this training sample and seed",
+    "metrics": {
+      "macro_f1": {
+        "difference": 0.02674926449773163,
+        "ci95": [
+          0.005544928877451003,
+          0.04750116059652031
+        ]
+      },
+      "refuted_f1": {
+        "difference": 0.03049369115626166,
+        "ci95": [
+          0.003570191895742625,
+          0.05797466560753307
+        ]
+      }
+    }
+  },
+  "seed13:M2-A2": {
+    "iterations": 2000,
+    "bootstrap_seed": 2026,
+    "claim_count": 1447,
+    "article_count": 758,
+    "method": "paired article-cluster percentile bootstrap; conditional on this training sample and seed",
+    "metrics": {
+      "macro_f1": {
+        "difference": 0.025144773173090273,
+        "ci95": [
+          0.0066574132444930266,
+          0.043364668119714046
+        ]
+      },
+      "refuted_f1": {
+        "difference": 0.022119057328098934,
+        "ci95": [
+          -0.003728013250481099,
+          0.04752631670499528
+        ]
+      }
+    }
+  },
+  "seed2026:A1-M0": {
+    "iterations": 2000,
+    "bootstrap_seed": 2026,
+    "claim_count": 1447,
+    "article_count": 758,
+    "method": "paired article-cluster percentile bootstrap; conditional on this training sample and seed",
+    "metrics": {
+      "macro_f1": {
+        "difference": -0.004990846511182645,
+        "ci95": [
+          -0.024024905276194167,
+          0.013462754347372603
+        ]
+      },
+      "refuted_f1": {
+        "difference": -0.016550522648083543,
+        "ci95": [
+          -0.044982518852749113,
+          0.00842496324288233
+        ]
+      }
+    }
+  },
+  "seed2026:M1-A1": {
+    "iterations": 2000,
+    "bootstrap_seed": 2026,
+    "claim_count": 1447,
+    "article_count": 758,
+    "method": "paired article-cluster percentile bootstrap; conditional on this training sample and seed",
+    "metrics": {
+      "macro_f1": {
+        "difference": 0.08999322918891339,
+        "ci95": [
+          0.061158077682261024,
+          0.11891039178362191
+        ]
+      },
+      "refuted_f1": {
+        "difference": 0.1328412494651262,
+        "ci95": [
+          0.09397903301593459,
+          0.1755438366497256
+        ]
+      }
+    }
+  },
+  "seed2026:M2-M1": {
+    "iterations": 2000,
+    "bootstrap_seed": 2026,
+    "claim_count": 1447,
+    "article_count": 758,
+    "method": "paired article-cluster percentile bootstrap; conditional on this training sample and seed",
+    "metrics": {
+      "macro_f1": {
+        "difference": 0.028781256261688815,
+        "ci95": [
+          0.011240986193191721,
+          0.04596434682203891
+        ]
+      },
+      "refuted_f1": {
+        "difference": 0.024766383312232465,
+        "ci95": [
+          -0.0006469866356417579,
+          0.049219622698132855
+        ]
+      }
+    }
+  },
+  "seed2026:M2-A2": {
+    "iterations": 2000,
+    "bootstrap_seed": 2026,
+    "claim_count": 1447,
+    "article_count": 758,
+    "method": "paired article-cluster percentile bootstrap; conditional on this training sample and seed",
+    "metrics": {
+      "macro_f1": {
+        "difference": 0.02824122294850251,
+        "ci95": [
+          0.01050943852855529,
+          0.04676753832658469
+        ]
+      },
+      "refuted_f1": {
+        "difference": 0.016255082888223416,
+        "ci95": [
+          -0.009704474351744477,
+          0.04120833742731071
+        ]
+      }
+    }
+  }
+}

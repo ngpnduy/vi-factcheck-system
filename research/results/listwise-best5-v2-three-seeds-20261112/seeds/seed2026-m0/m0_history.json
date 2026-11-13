@@ -1,0 +1,595 @@
+[
+  {
+    "epoch": 1,
+    "global_epoch": 1,
+    "stage": "m0",
+    "phase": "m0",
+    "average_loss": 1.062341030879908,
+    "evidence_supervised_claims": 0,
+    "optimizer_steps": 633,
+    "training_seconds": 2415.3952067999635,
+    "peak_training_cuda": {
+      "allocated_mib": 1814.3759765625,
+      "reserved_mib": 1952.0
+    },
+    "validation": {
+      "classification": {
+        "count": 723,
+        "accuracy": 0.5103734439834025,
+        "macro_f1": 0.4668553391546691,
+        "per_label": {
+          "SUPPORTED": {
+            "precision": 0.5208333333333334,
+            "recall": 0.78125,
+            "f1": 0.625,
+            "support": 256
+          },
+          "REFUTED": {
+            "precision": 0.6,
+            "recall": 0.1598360655737705,
+            "f1": 0.2524271844660194,
+            "support": 244
+          },
+          "NOT_ENOUGH_INFO": {
+            "precision": 0.4744525547445255,
+            "recall": 0.5829596412556054,
+            "f1": 0.5231388329979879,
+            "support": 223
+          }
+        },
+        "confusion_matrix": [
+          [
+            200,
+            14,
+            42
+          ],
+          [
+            103,
+            39,
+            102
+          ],
+          [
+            81,
+            12,
+            130
+          ]
+        ],
+        "label_order": [
+          "SUPPORTED",
+          "REFUTED",
+          "NOT_ENOUGH_INFO"
+        ]
+      },
+      "retrieval": {
+        "count": 271,
+        "alignment_coverage": 0.5878284923928078,
+        "alignment_status_counts": {
+          "unmatched": 293,
+          "valid": 425,
+          "ambiguous": 5
+        },
+        "hit@5": 0.9630996309963099,
+        "sentence_recall@5": 0.9288525742400281,
+        "complete_gold@5": 0.8856088560885609,
+        "hit@20": 1.0,
+        "sentence_recall@20": 0.9992619926199262,
+        "complete_gold@20": 0.996309963099631,
+        "mrr": 0.9247802931268024
+      },
+      "bm25_retrieval": {
+        "count": 271,
+        "alignment_coverage": 0.5878284923928078,
+        "alignment_status_counts": {
+          "unmatched": 293,
+          "valid": 425,
+          "ambiguous": 5
+        },
+        "hit@5": 0.9630996309963099,
+        "sentence_recall@5": 0.9288525742400281,
+        "complete_gold@5": 0.8856088560885609,
+        "hit@20": 1.0,
+        "sentence_recall@20": 0.9992619926199262,
+        "complete_gold@20": 0.996309963099631,
+        "mrr": 0.9247802931268024
+      },
+      "error_stages": {
+        "alignment_unavailable": 125,
+        "verification_with_complete_gold": 117,
+        "correct": 369,
+        "nei_verification_error": 93,
+        "bm25_incomplete_gold": 1,
+        "selection_incomplete_gold": 18
+      },
+      "truncation": {
+        "claim_count": 723,
+        "claim_truncated_count": 2,
+        "candidate_pair_count": 11245,
+        "candidate_sentence_truncated_count": 2,
+        "selected_pair_count": 3607,
+        "selected_sentence_truncated_count": 2
+      },
+      "cost": {
+        "evaluation_seconds": 68.08561350009404,
+        "seconds_per_claim": 0.09417097302917571,
+        "peak_cuda_allocated_mib": 1814.3759765625,
+        "peak_cuda_reserved_mib": 1952.0,
+        "prepared_input_inference_seconds": 65.40618339995854,
+        "prepared_input_seconds_per_claim": 0.09046498395568263
+      }
+    }
+  },
+  {
+    "epoch": 2,
+    "global_epoch": 2,
+    "stage": "m0",
+    "phase": "m0",
+    "average_loss": 0.9058949008425061,
+    "evidence_supervised_claims": 0,
+    "optimizer_steps": 633,
+    "training_seconds": 2441.563862999901,
+    "peak_training_cuda": {
+      "allocated_mib": 1814.3759765625,
+      "reserved_mib": 1952.0
+    },
+    "validation": {
+      "classification": {
+        "count": 723,
+        "accuracy": 0.5518672199170125,
+        "macro_f1": 0.549538138171359,
+        "per_label": {
+          "SUPPORTED": {
+            "precision": 0.722972972972973,
+            "recall": 0.41796875,
+            "f1": 0.5297029702970297,
+            "support": 256
+          },
+          "REFUTED": {
+            "precision": 0.5095785440613027,
+            "recall": 0.5450819672131147,
+            "f1": 0.5267326732673268,
+            "support": 244
+          },
+          "NOT_ENOUGH_INFO": {
+            "precision": 0.5063694267515924,
+            "recall": 0.7130044843049327,
+            "f1": 0.5921787709497207,
+            "support": 223
+          }
+        },
+        "confusion_matrix": [
+          [
+            107,
+            77,
+            72
+          ],
+          [
+            28,
+            133,
+            83
+          ],
+          [
+            13,
+            51,
+            159
+          ]
+        ],
+        "label_order": [
+          "SUPPORTED",
+          "REFUTED",
+          "NOT_ENOUGH_INFO"
+        ]
+      },
+      "retrieval": {
+        "count": 271,
+        "alignment_coverage": 0.5878284923928078,
+        "alignment_status_counts": {
+          "unmatched": 293,
+          "valid": 425,
+          "ambiguous": 5
+        },
+        "hit@5": 0.9630996309963099,
+        "sentence_recall@5": 0.9288525742400281,
+        "complete_gold@5": 0.8856088560885609,
+        "hit@20": 1.0,
+        "sentence_recall@20": 0.9992619926199262,
+        "complete_gold@20": 0.996309963099631,
+        "mrr": 0.9247802931268024
+      },
+      "bm25_retrieval": {
+        "count": 271,
+        "alignment_coverage": 0.5878284923928078,
+        "alignment_status_counts": {
+          "unmatched": 293,
+          "valid": 425,
+          "ambiguous": 5
+        },
+        "hit@5": 0.9630996309963099,
+        "sentence_recall@5": 0.9288525742400281,
+        "complete_gold@5": 0.8856088560885609,
+        "hit@20": 1.0,
+        "sentence_recall@20": 0.9992619926199262,
+        "complete_gold@20": 0.996309963099631,
+        "mrr": 0.9247802931268024
+      },
+      "error_stages": {
+        "correct": 399,
+        "alignment_unavailable": 131,
+        "verification_with_complete_gold": 112,
+        "selection_incomplete_gold": 16,
+        "nei_verification_error": 64,
+        "bm25_incomplete_gold": 1
+      },
+      "truncation": {
+        "claim_count": 723,
+        "claim_truncated_count": 2,
+        "candidate_pair_count": 11245,
+        "candidate_sentence_truncated_count": 2,
+        "selected_pair_count": 3607,
+        "selected_sentence_truncated_count": 2
+      },
+      "cost": {
+        "evaluation_seconds": 73.53740640007891,
+        "seconds_per_claim": 0.10171148879678964,
+        "peak_cuda_allocated_mib": 1814.3759765625,
+        "peak_cuda_reserved_mib": 1952.0,
+        "prepared_input_inference_seconds": 70.97268199990503,
+        "prepared_input_seconds_per_claim": 0.09816415214371374
+      }
+    }
+  },
+  {
+    "epoch": 3,
+    "global_epoch": 3,
+    "stage": "m0",
+    "phase": "m0",
+    "average_loss": 0.7077246721508662,
+    "evidence_supervised_claims": 0,
+    "optimizer_steps": 633,
+    "training_seconds": 2438.0675470000133,
+    "peak_training_cuda": {
+      "allocated_mib": 1814.3759765625,
+      "reserved_mib": 1952.0
+    },
+    "validation": {
+      "classification": {
+        "count": 723,
+        "accuracy": 0.6127247579529738,
+        "macro_f1": 0.6134238194332554,
+        "per_label": {
+          "SUPPORTED": {
+            "precision": 0.7297297297297297,
+            "recall": 0.52734375,
+            "f1": 0.6122448979591837,
+            "support": 256
+          },
+          "REFUTED": {
+            "precision": 0.5508771929824562,
+            "recall": 0.6434426229508197,
+            "f1": 0.5935727788279773,
+            "support": 244
+          },
+          "NOT_ENOUGH_INFO": {
+            "precision": 0.5968379446640316,
+            "recall": 0.6771300448430493,
+            "f1": 0.634453781512605,
+            "support": 223
+          }
+        },
+        "confusion_matrix": [
+          [
+            135,
+            74,
+            47
+          ],
+          [
+            32,
+            157,
+            55
+          ],
+          [
+            18,
+            54,
+            151
+          ]
+        ],
+        "label_order": [
+          "SUPPORTED",
+          "REFUTED",
+          "NOT_ENOUGH_INFO"
+        ]
+      },
+      "retrieval": {
+        "count": 271,
+        "alignment_coverage": 0.5878284923928078,
+        "alignment_status_counts": {
+          "unmatched": 293,
+          "valid": 425,
+          "ambiguous": 5
+        },
+        "hit@5": 0.9630996309963099,
+        "sentence_recall@5": 0.9288525742400281,
+        "complete_gold@5": 0.8856088560885609,
+        "hit@20": 1.0,
+        "sentence_recall@20": 0.9992619926199262,
+        "complete_gold@20": 0.996309963099631,
+        "mrr": 0.9247802931268024
+      },
+      "bm25_retrieval": {
+        "count": 271,
+        "alignment_coverage": 0.5878284923928078,
+        "alignment_status_counts": {
+          "unmatched": 293,
+          "valid": 425,
+          "ambiguous": 5
+        },
+        "hit@5": 0.9630996309963099,
+        "sentence_recall@5": 0.9288525742400281,
+        "complete_gold@5": 0.8856088560885609,
+        "hit@20": 1.0,
+        "sentence_recall@20": 0.9992619926199262,
+        "complete_gold@20": 0.996309963099631,
+        "mrr": 0.9247802931268024
+      },
+      "error_stages": {
+        "correct": 443,
+        "alignment_unavailable": 105,
+        "verification_with_complete_gold": 92,
+        "nei_verification_error": 72,
+        "selection_incomplete_gold": 11
+      },
+      "truncation": {
+        "claim_count": 723,
+        "claim_truncated_count": 2,
+        "candidate_pair_count": 11245,
+        "candidate_sentence_truncated_count": 2,
+        "selected_pair_count": 3607,
+        "selected_sentence_truncated_count": 2
+      },
+      "cost": {
+        "evaluation_seconds": 63.64012729981914,
+        "seconds_per_claim": 0.08802230608550365,
+        "peak_cuda_allocated_mib": 1814.3759765625,
+        "peak_cuda_reserved_mib": 1952.0,
+        "prepared_input_inference_seconds": 60.7839763998054,
+        "prepared_input_seconds_per_claim": 0.08407188990291203
+      }
+    }
+  },
+  {
+    "epoch": 4,
+    "global_epoch": 4,
+    "stage": "m0",
+    "phase": "m0",
+    "average_loss": 0.5162903272507455,
+    "evidence_supervised_claims": 0,
+    "optimizer_steps": 633,
+    "training_seconds": 2123.0846482999623,
+    "peak_training_cuda": {
+      "allocated_mib": 1814.3759765625,
+      "reserved_mib": 1954.0
+    },
+    "validation": {
+      "classification": {
+        "count": 723,
+        "accuracy": 0.6113416320885201,
+        "macro_f1": 0.6007043493572812,
+        "per_label": {
+          "SUPPORTED": {
+            "precision": 0.5626666666666666,
+            "recall": 0.82421875,
+            "f1": 0.6687797147385103,
+            "support": 256
+          },
+          "REFUTED": {
+            "precision": 0.6708074534161491,
+            "recall": 0.4426229508196721,
+            "f1": 0.5333333333333333,
+            "support": 244
+          },
+          "NOT_ENOUGH_INFO": {
+            "precision": 0.6577540106951871,
+            "recall": 0.5515695067264574,
+            "f1": 0.6,
+            "support": 223
+          }
+        },
+        "confusion_matrix": [
+          [
+            211,
+            24,
+            21
+          ],
+          [
+            93,
+            108,
+            43
+          ],
+          [
+            71,
+            29,
+            123
+          ]
+        ],
+        "label_order": [
+          "SUPPORTED",
+          "REFUTED",
+          "NOT_ENOUGH_INFO"
+        ]
+      },
+      "retrieval": {
+        "count": 271,
+        "alignment_coverage": 0.5878284923928078,
+        "alignment_status_counts": {
+          "unmatched": 293,
+          "valid": 425,
+          "ambiguous": 5
+        },
+        "hit@5": 0.9630996309963099,
+        "sentence_recall@5": 0.9288525742400281,
+        "complete_gold@5": 0.8856088560885609,
+        "hit@20": 1.0,
+        "sentence_recall@20": 0.9992619926199262,
+        "complete_gold@20": 0.996309963099631,
+        "mrr": 0.9247802931268024
+      },
+      "bm25_retrieval": {
+        "count": 271,
+        "alignment_coverage": 0.5878284923928078,
+        "alignment_status_counts": {
+          "unmatched": 293,
+          "valid": 425,
+          "ambiguous": 5
+        },
+        "hit@5": 0.9630996309963099,
+        "sentence_recall@5": 0.9288525742400281,
+        "complete_gold@5": 0.8856088560885609,
+        "hit@20": 1.0,
+        "sentence_recall@20": 0.9992619926199262,
+        "complete_gold@20": 0.996309963099631,
+        "mrr": 0.9247802931268024
+      },
+      "error_stages": {
+        "correct": 442,
+        "alignment_unavailable": 94,
+        "verification_with_complete_gold": 72,
+        "nei_verification_error": 100,
+        "bm25_incomplete_gold": 1,
+        "selection_incomplete_gold": 14
+      },
+      "truncation": {
+        "claim_count": 723,
+        "claim_truncated_count": 2,
+        "candidate_pair_count": 11245,
+        "candidate_sentence_truncated_count": 2,
+        "selected_pair_count": 3607,
+        "selected_sentence_truncated_count": 2
+      },
+      "cost": {
+        "evaluation_seconds": 57.55691640009172,
+        "seconds_per_claim": 0.0796084597511642,
+        "peak_cuda_allocated_mib": 1814.3759765625,
+        "peak_cuda_reserved_mib": 1954.0,
+        "prepared_input_inference_seconds": 55.043918299954385,
+        "prepared_input_seconds_per_claim": 0.07613266708154133
+      }
+    }
+  },
+  {
+    "epoch": 5,
+    "global_epoch": 5,
+    "stage": "m0",
+    "phase": "m0",
+    "average_loss": 0.3401199120959007,
+    "evidence_supervised_claims": 0,
+    "optimizer_steps": 633,
+    "training_seconds": 2392.130277500022,
+    "peak_training_cuda": {
+      "allocated_mib": 1814.3759765625,
+      "reserved_mib": 1954.0
+    },
+    "validation": {
+      "classification": {
+        "count": 723,
+        "accuracy": 0.5905947441217151,
+        "macro_f1": 0.5902612591326667,
+        "per_label": {
+          "SUPPORTED": {
+            "precision": 0.6650246305418719,
+            "recall": 0.52734375,
+            "f1": 0.5882352941176471,
+            "support": 256
+          },
+          "REFUTED": {
+            "precision": 0.5661157024793388,
+            "recall": 0.5614754098360656,
+            "f1": 0.5637860082304527,
+            "support": 244
+          },
+          "NOT_ENOUGH_INFO": {
+            "precision": 0.5575539568345323,
+            "recall": 0.695067264573991,
+            "f1": 0.6187624750499002,
+            "support": 223
+          }
+        },
+        "confusion_matrix": [
+          [
+            135,
+            63,
+            58
+          ],
+          [
+            42,
+            137,
+            65
+          ],
+          [
+            26,
+            42,
+            155
+          ]
+        ],
+        "label_order": [
+          "SUPPORTED",
+          "REFUTED",
+          "NOT_ENOUGH_INFO"
+        ]
+      },
+      "retrieval": {
+        "count": 271,
+        "alignment_coverage": 0.5878284923928078,
+        "alignment_status_counts": {
+          "unmatched": 293,
+          "valid": 425,
+          "ambiguous": 5
+        },
+        "hit@5": 0.9630996309963099,
+        "sentence_recall@5": 0.9288525742400281,
+        "complete_gold@5": 0.8856088560885609,
+        "hit@20": 1.0,
+        "sentence_recall@20": 0.9992619926199262,
+        "complete_gold@20": 0.996309963099631,
+        "mrr": 0.9247802931268024
+      },
+      "bm25_retrieval": {
+        "count": 271,
+        "alignment_coverage": 0.5878284923928078,
+        "alignment_status_counts": {
+          "unmatched": 293,
+          "valid": 425,
+          "ambiguous": 5
+        },
+        "hit@5": 0.9630996309963099,
+        "sentence_recall@5": 0.9288525742400281,
+        "complete_gold@5": 0.8856088560885609,
+        "hit@20": 1.0,
+        "sentence_recall@20": 0.9992619926199262,
+        "complete_gold@20": 0.996309963099631,
+        "mrr": 0.9247802931268024
+      },
+      "error_stages": {
+        "correct": 427,
+        "alignment_unavailable": 113,
+        "verification_with_complete_gold": 100,
+        "selection_incomplete_gold": 15,
+        "nei_verification_error": 68
+      },
+      "truncation": {
+        "claim_count": 723,
+        "claim_truncated_count": 2,
+        "candidate_pair_count": 11245,
+        "candidate_sentence_truncated_count": 2,
+        "selected_pair_count": 3607,
+        "selected_sentence_truncated_count": 2
+      },
+      "cost": {
+        "evaluation_seconds": 66.81353759998456,
+        "seconds_per_claim": 0.0924115319501861,
+        "peak_cuda_allocated_mib": 1814.3759765625,
+        "peak_cuda_reserved_mib": 1954.0,
+        "prepared_input_inference_seconds": 64.33620089991018,
+        "prepared_input_seconds_per_claim": 0.08898506348535296
+      }
+    }
+  }
+]

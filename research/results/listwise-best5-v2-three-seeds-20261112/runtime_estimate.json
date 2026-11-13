@@ -1,0 +1,8 @@
+{
+  "first_lr_training_seconds": 28126.723239500076,
+  "estimated_total_compute_hours": [
+    90.2716454564582,
+    110.33201111344891
+  ],
+  "basis": "first listwise LR trial versus recorded laptop workload; excludes future downtime and repeated unsaved work"
+}

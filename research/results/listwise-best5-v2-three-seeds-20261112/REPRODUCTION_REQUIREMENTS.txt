@@ -1,0 +1,11 @@
+# Exact versions used for the validated laptop run.
+# For the CUDA build: pip install -r requirements-tested.txt --extra-index-url https://download.pytorch.org/whl/cu124
+torch==2.6.0+cu124
+transformers==5.12.1
+huggingface-hub==1.19.0
+pyarrow==19.0.1
+numpy==2.3.5
+rank-bm25==0.2.2
+scikit-learn==1.6.1
+pytest==9.0.1
+setuptools==80.9.0

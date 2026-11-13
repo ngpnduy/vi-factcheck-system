@@ -1,0 +1,105 @@
+{
+  "classification": {
+    "count": 1447,
+    "accuracy": 0.6758811333794057,
+    "macro_f1": 0.6751170911622605,
+    "per_label": {
+      "SUPPORTED": {
+        "precision": 0.7017543859649122,
+        "recall": 0.7086614173228346,
+        "f1": 0.7051909892262488,
+        "support": 508
+      },
+      "REFUTED": {
+        "precision": 0.6840958605664488,
+        "recall": 0.6709401709401709,
+        "f1": 0.6774541531823085,
+        "support": 468
+      },
+      "NOT_ENOUGH_INFO": {
+        "precision": 0.64,
+        "recall": 0.6454352441613588,
+        "f1": 0.642706131078224,
+        "support": 471
+      }
+    },
+    "confusion_matrix": [
+      [
+        360,
+        58,
+        90
+      ],
+      [
+        73,
+        314,
+        81
+      ],
+      [
+        80,
+        87,
+        304
+      ]
+    ],
+    "label_order": [
+      "SUPPORTED",
+      "REFUTED",
+      "NOT_ENOUGH_INFO"
+    ]
+  },
+  "retrieval": {
+    "count": 539,
+    "alignment_coverage": 0.5922598479612993,
+    "alignment_status_counts": {
+      "valid": 857,
+      "unmatched": 579,
+      "ambiguous": 11
+    },
+    "hit@5": 0.9833024118738405,
+    "sentence_recall@5": 0.9482065553494126,
+    "complete_gold@5": 0.9072356215213359,
+    "hit@20": 1.0,
+    "sentence_recall@20": 0.9974025974025974,
+    "complete_gold@20": 0.9907235621521335,
+    "mrr": 0.9472589202181039
+  },
+  "bm25_retrieval": {
+    "count": 539,
+    "alignment_coverage": 0.5922598479612993,
+    "alignment_status_counts": {
+      "valid": 857,
+      "unmatched": 579,
+      "ambiguous": 11
+    },
+    "hit@5": 0.9777365491651205,
+    "sentence_recall@5": 0.9460420531849104,
+    "complete_gold@5": 0.9072356215213359,
+    "hit@20": 1.0,
+    "sentence_recall@20": 0.9974025974025974,
+    "complete_gold@20": 0.9907235621521335,
+    "mrr": 0.9433306695366064
+  },
+  "error_stages": {
+    "correct": 978,
+    "nei_verification_error": 167,
+    "selection_incomplete_gold": 20,
+    "alignment_unavailable": 172,
+    "verification_with_complete_gold": 107,
+    "bm25_incomplete_gold": 3
+  },
+  "truncation": {
+    "claim_count": 1447,
+    "claim_truncated_count": 3,
+    "candidate_pair_count": 22962,
+    "candidate_sentence_truncated_count": 3,
+    "selected_pair_count": 7231,
+    "selected_sentence_truncated_count": 3
+  },
+  "cost": {
+    "evaluation_seconds": 540.634818200022,
+    "seconds_per_claim": 0.3736246152038853,
+    "peak_cuda_allocated_mib": 1318.99072265625,
+    "peak_cuda_reserved_mib": 1340.0,
+    "prepared_input_inference_seconds": 535.424391400069,
+    "prepared_input_seconds_per_claim": 0.37002376738083553
+  }
+}

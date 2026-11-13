@@ -1,0 +1,18 @@
+{
+  "protocol_version": 2,
+  "completed_utc": "2026-11-10T06:42:50.717187+00:00",
+  "artifacts": {
+    "summary.json": "7304f84c9b38bac0947eaa6805373ae841d576aa56265c7412bf68ba386f7fbf",
+    "experiment.json": "e593b7da944974f113a9b09ef297d87154e7adafa1bd32642a453835bc5d04e3",
+    "m1_best.pt": "c256a82fb51d934892417346bcb671b0f4a041400f75b471d124d66f367b0d5f",
+    "m1_dev_metrics.json": "c5b98b2ea0a7c5565bcf77935c7a4faa9ffa345c36e6502d0fce867de241dacd",
+    "m1_dev_predictions.jsonl": "0bc648f8375510742c97bac160cceb31d84581ca7b8eb551bdfabeb28ee38cc6",
+    "m1_checks.json": "30ea683bb8eb95cb46db69add2f07c0316ec7b3a1af3537b452e0ea089f6fe3b",
+    "m1_selection.json": "ff795793bb75a824c42acd6725beb6a3bb2d0cea0ba7ac6c4992f2548d0e0fd9",
+    "reranker_best.pt": "5e45697c42dd9b6da78c9e7c1e711d34e392cba5e98b1ac4d44cb8167a751fc7",
+    "warmup_best.pt": "e0b74ae6353a3ae881a222a4fe960fef95c0b3c406d6a1e99268ac6561cff48a",
+    "warmup_end.pt": "e0b74ae6353a3ae881a222a4fe960fef95c0b3c406d6a1e99268ac6561cff48a",
+    "reranker_history.json": "d228c7aca33cbb5b2f4e42c1ab6ef17a0732c58c50b8a8894aefe1f4f33aa614",
+    "warmup_history.json": "7aeacedfe190d02dfc7dc3d02be3e13de33fb3755a4008167a4f4daa5c01fe0c"
+  }
+}

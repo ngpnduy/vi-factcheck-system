@@ -1,0 +1,143 @@
+{
+  "M2": {
+    "checkpoint": "C:\\Users\\HI\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\ViFactCheck\\full-five-listwise-best5-v2\\tuning\\lambda_0.1\\m2_best.pt",
+    "metrics": {
+      "classification": {
+        "count": 723,
+        "accuracy": 0.7081604426002767,
+        "macro_f1": 0.7062010725496713,
+        "per_label": {
+          "SUPPORTED": {
+            "precision": 0.6732673267326733,
+            "recall": 0.796875,
+            "f1": 0.7298747763864043,
+            "support": 256
+          },
+          "REFUTED": {
+            "precision": 0.7745098039215687,
+            "recall": 0.6475409836065574,
+            "f1": 0.7053571428571429,
+            "support": 244
+          },
+          "NOT_ENOUGH_INFO": {
+            "precision": 0.6944444444444444,
+            "recall": 0.672645739910314,
+            "f1": 0.683371298405467,
+            "support": 223
+          }
+        },
+        "confusion_matrix": [
+          [
+            204,
+            22,
+            30
+          ],
+          [
+            50,
+            158,
+            36
+          ],
+          [
+            49,
+            24,
+            150
+          ]
+        ],
+        "label_order": [
+          "SUPPORTED",
+          "REFUTED",
+          "NOT_ENOUGH_INFO"
+        ]
+      },
+      "retrieval": {
+        "count": 271,
+        "alignment_coverage": 0.5878284923928078,
+        "alignment_status_counts": {
+          "unmatched": 293,
+          "valid": 425,
+          "ambiguous": 5
+        },
+        "hit@5": 0.977859778597786,
+        "sentence_recall@5": 0.9484449130205589,
+        "complete_gold@5": 0.9040590405904059,
+        "hit@20": 1.0,
+        "sentence_recall@20": 0.9992619926199262,
+        "complete_gold@20": 0.996309963099631,
+        "mrr": 0.9390118901189011
+      },
+      "bm25_retrieval": {
+        "count": 271,
+        "alignment_coverage": 0.5878284923928078,
+        "alignment_status_counts": {
+          "unmatched": 293,
+          "valid": 425,
+          "ambiguous": 5
+        },
+        "hit@5": 0.9630996309963099,
+        "sentence_recall@5": 0.9288525742400281,
+        "complete_gold@5": 0.8856088560885609,
+        "hit@20": 1.0,
+        "sentence_recall@20": 0.9992619926199262,
+        "complete_gold@20": 0.996309963099631,
+        "mrr": 0.9247802931268024
+      },
+      "error_stages": {
+        "correct": 512,
+        "verification_with_complete_gold": 60,
+        "alignment_unavailable": 70,
+        "nei_verification_error": 73,
+        "selection_incomplete_gold": 8
+      },
+      "truncation": {
+        "claim_count": 723,
+        "claim_truncated_count": 2,
+        "candidate_pair_count": 11245,
+        "candidate_sentence_truncated_count": 2,
+        "selected_pair_count": 3607,
+        "selected_sentence_truncated_count": 2
+      },
+      "cost": {
+        "evaluation_seconds": 237.07976410002448,
+        "seconds_per_claim": 0.32791115366531737,
+        "peak_cuda_allocated_mib": 2999.3916015625,
+        "peak_cuda_reserved_mib": 3204.0,
+        "prepared_input_inference_seconds": 234.6975892999908,
+        "prepared_input_seconds_per_claim": 0.32461630608574105
+      }
+    },
+    "checks": {
+      "shared_warmup_checkpoint_sha256": "c0ea278a005e696b545fb2749e63734c0c386b5662da8918b12179f97738cd2e",
+      "verifier_initial_sha256": "42aa89506b12a1ea1b8226737af39e4dbef2fe8f7dc423368bf3505cd7d13db6",
+      "reranker_initial_sha256": "d434a284f4df36ae808a803b0c2a5a3311ad95f8415e5c9fe1e7bbfbde1ef7ff",
+      "reranker_unchanged": false,
+      "reranker_final_sha256": "3ce44eaeb6891ccbcc32abfd15e5284fcec1b338e0678ec0bbd0baaa5f711dd9",
+      "trained_reranker_unchanged": false,
+      "trained_reranker_final_sha256": "3ce44eaeb6891ccbcc32abfd15e5284fcec1b338e0678ec0bbd0baaa5f711dd9",
+      "verification_only_reranker_head_gradient_norm": 2.2164915208122693e-05,
+      "all_reranker_parameters_trainable": true,
+      "all_verifier_parameters_trainable": true,
+      "first_last_attention_query_changed": {
+        "verifier.encoder.layer.0.attention.self.query.weight": true,
+        "verifier.encoder.layer.11.attention.self.query.weight": true,
+        "reranker.encoder.layer.0.attention.self.query.weight": true,
+        "reranker.encoder.layer.11.attention.self.query.weight": true
+      },
+      "checked_state": "terminal continuation state, independent of selected best epoch"
+    },
+    "selection": {
+      "selected_global_epoch": 5,
+      "selected_stage": "continuation",
+      "selected_validation_macro_f1": 0.7062010725496713,
+      "checkpoint_sha256": "37f7547e956ca8145d84762e3016349cda8fdab3d5bca522c879ac3b51bd5050",
+      "initialization_checkpoint_sha256": "c0ea278a005e696b545fb2749e63734c0c386b5662da8918b12179f97738cd2e",
+      "selected_source_checkpoint_sha256": "37f7547e956ca8145d84762e3016349cda8fdab3d5bca522c879ac3b51bd5050",
+      "protocol_version": 2
+    },
+    "training_cost": {
+      "training_seconds": 41097.73069230013,
+      "peak_training_allocated_mib": 2999.3916015625,
+      "peak_training_reserved_mib": 3208.0,
+      "note": "Includes shared preparation for per-model comparison; do not sum model costs for workflow time"
+    }
+  }
+}

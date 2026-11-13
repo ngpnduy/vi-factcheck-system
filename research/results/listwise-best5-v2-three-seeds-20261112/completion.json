@@ -1,0 +1,108 @@
+{
+  "status": "complete",
+  "started_utc": "2026-11-06T05:12:06.730176+00:00",
+  "completed_utc": "2026-11-11T17:43:31.177183+00:00",
+  "seeds": [
+    42,
+    13,
+    2026
+  ],
+  "models": [
+    "M0",
+    "M1",
+    "A1",
+    "M2",
+    "A2"
+  ],
+  "selected_hyperparameters": {
+    "seed": 42,
+    "split": "dev",
+    "learning_rate": 1e-05,
+    "evidence_lambda": 0.1,
+    "learning_rate_trials": [
+      {
+        "learning_rate": 1e-05,
+        "validation_macro_f1": 0.6817807110232073,
+        "selection": {
+          "selected_global_epoch": 4,
+          "selected_stage": "continuation",
+          "selected_validation_macro_f1": 0.6817807110232073,
+          "checkpoint_sha256": "16413af8d38ad31421f17c610a32cd4939bdab85624c64beaf49b0cad7c57a20",
+          "initialization_checkpoint_sha256": "c0ea278a005e696b545fb2749e63734c0c386b5662da8918b12179f97738cd2e",
+          "selected_source_checkpoint_sha256": "16413af8d38ad31421f17c610a32cd4939bdab85624c64beaf49b0cad7c57a20",
+          "protocol_version": 2
+        },
+        "directory": "C:\\Users\\HI\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\ViFactCheck\\full-five-listwise-best5-v2\\tuning\\lr_1e-05"
+      },
+      {
+        "learning_rate": 2e-05,
+        "validation_macro_f1": 0.680540034466728,
+        "selection": {
+          "selected_global_epoch": 2,
+          "selected_stage": "warmup",
+          "selected_validation_macro_f1": 0.680540034466728,
+          "checkpoint_sha256": "ff24440a9625dc7039c4647c09fb94ea56cf76e36744b79dfdc61c26be0c770f",
+          "initialization_checkpoint_sha256": "ff9e2dba10c04fc48db14b5dd6ad8a482e2055a2f9db491393de795d0912b90e",
+          "selected_source_checkpoint_sha256": "9979b6911daabd1c54973efd8150f8445701fca0c89619d0082e93e29e3fd764",
+          "protocol_version": 2
+        },
+        "directory": "C:\\Users\\HI\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\ViFactCheck\\full-five-listwise-best5-v2\\tuning\\lr_2e-05"
+      }
+    ],
+    "lambda_trials": [
+      {
+        "evidence_lambda": 0.1,
+        "validation_macro_f1": 0.7062010725496713,
+        "selection": {
+          "selected_global_epoch": 5,
+          "selected_stage": "continuation",
+          "selected_validation_macro_f1": 0.7062010725496713,
+          "checkpoint_sha256": "37f7547e956ca8145d84762e3016349cda8fdab3d5bca522c879ac3b51bd5050",
+          "initialization_checkpoint_sha256": "c0ea278a005e696b545fb2749e63734c0c386b5662da8918b12179f97738cd2e",
+          "selected_source_checkpoint_sha256": "37f7547e956ca8145d84762e3016349cda8fdab3d5bca522c879ac3b51bd5050",
+          "protocol_version": 2
+        },
+        "directory": "C:\\Users\\HI\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\ViFactCheck\\full-five-listwise-best5-v2\\tuning\\lambda_0.1"
+      },
+      {
+        "evidence_lambda": 0.5,
+        "validation_macro_f1": 0.6936164958636869,
+        "selection": {
+          "selected_global_epoch": 5,
+          "selected_stage": "continuation",
+          "selected_validation_macro_f1": 0.6936164958636869,
+          "checkpoint_sha256": "8e48220017fb52466af4b861421f18daabcfdc6bf4352dcaa724543695f6d9f9",
+          "initialization_checkpoint_sha256": "c0ea278a005e696b545fb2749e63734c0c386b5662da8918b12179f97738cd2e",
+          "selected_source_checkpoint_sha256": "8e48220017fb52466af4b861421f18daabcfdc6bf4352dcaa724543695f6d9f9",
+          "protocol_version": 2
+        },
+        "directory": "C:\\Users\\HI\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\ViFactCheck\\full-five-listwise-best5-v2\\tuning\\lambda_0.5"
+      },
+      {
+        "evidence_lambda": 1.0,
+        "validation_macro_f1": 0.6978982352769144,
+        "selection": {
+          "selected_global_epoch": 4,
+          "selected_stage": "continuation",
+          "selected_validation_macro_f1": 0.6978982352769144,
+          "checkpoint_sha256": "990fac92961ce529ae24bfb72f30cffefe96c45babd2498d08f6c60faf5c4242",
+          "initialization_checkpoint_sha256": "c0ea278a005e696b545fb2749e63734c0c386b5662da8918b12179f97738cd2e",
+          "selected_source_checkpoint_sha256": "990fac92961ce529ae24bfb72f30cffefe96c45babd2498d08f6c60faf5c4242",
+          "protocol_version": 2
+        },
+        "directory": "C:\\Users\\HI\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\ViFactCheck\\full-five-listwise-best5-v2\\tuning\\lambda_1.0"
+      }
+    ],
+    "protocol_version": 2,
+    "reranker_architecture": "listwise",
+    "selection_metric": "best dev Macro-F1 over all five verifier epochs"
+  },
+  "report": "C:\\Users\\HI\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\ViFactCheck\\full-five-listwise-best5-v2\\REPORT.md",
+  "report_checksums": {
+    "REPORT.md": "156e770b990ee9f8c4f0a9159d4f0815ea6eb3057c6a0bad2acbce3cf3db8c63",
+    "results.csv": "31437b9d6864fee62b859fe0d901e6b13c9f041b536e7b92dcdfc1539d80bfff",
+    "comparison.json": "7f094c9f114c48be5a887d7f8ae1b5c44240ec1f008bdb0c3ce6b0a2e9eb0762",
+    "paired_bootstrap.json": "47079d8054c7e4b070aad555f915b34c8c4de3487c3fb4a5ede73107c292b6ed"
+  },
+  "protocol_version": 2
+}

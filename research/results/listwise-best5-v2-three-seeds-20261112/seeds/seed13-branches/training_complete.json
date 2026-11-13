@@ -1,0 +1,23 @@
+{
+  "protocol_version": 2,
+  "completed_utc": "2026-11-09T19:53:58.263829+00:00",
+  "artifacts": {
+    "summary.json": "270932146b7cf014a0d710980b63fea96465c0d99306e08838e89fe43f6f2f2c",
+    "experiment.json": "8af4c2dfc2a376d3fc709ab8e8a35c21e0916dbd15d604015c5bf1aa52761886",
+    "m2_best.pt": "49033381616dee546090efbbb711ef1ea81b4eb2a1bed36390cee4566afad924",
+    "m2_dev_metrics.json": "81bcd503b896cd15fcd08e853f4fcf0ec33a6a8e94a619d25ef13b14be5f4ddd",
+    "m2_dev_predictions.jsonl": "10fac005632683507fbdfcf4d5bba6abe5e615e83abb8db6255ff9f1e922dc2b",
+    "m2_checks.json": "c93202c9a953feaf442e5c4fc8a266cf25b3cc0652fb09788d0130e2e34e5c4d",
+    "m2_selection.json": "dde0e4a79639532d28d090db9467a5652c2017ce2157cadb2bfdf7a77a0162f2",
+    "a2_best.pt": "1e83edfa476988bb82fc974c31042088b1c8fe042370ebde9ef81975d47bcf59",
+    "a2_dev_metrics.json": "778af1e1f4d3cc30849f4c00115a9ca8d333d753273551ed77b8e9795bc0b808",
+    "a2_dev_predictions.jsonl": "e9ea3e1ac5a94cb1ef5505b56a59163b9575f105dde844cdaa0ad510e332cc23",
+    "a2_checks.json": "f826ffde8509d3132a9f627d2f4419ba37ce000094d1bb9d0ebff6693307204e",
+    "a2_selection.json": "b2b7f83dcdc425e7f5ff1c2a2fe9df1b2fbb1dd4e5e2740ef7a063913d6af02c",
+    "a1_best.pt": "ec8662391c8396fb58769e1e2a675232261fbfac3bc1e0eef5041fc3789b3cd1",
+    "a1_dev_metrics.json": "525b6929eb087e1f73b7a5f31b3eb5922b75c691fc91a928d09cd496ec0d4c05",
+    "a1_dev_predictions.jsonl": "51088089a5916161257fbc3f037d7c607a63594c3f5102ebbd9f0173095d91f3",
+    "a1_checks.json": "a8e23924dfd16208ff6896b43f2c0ee0f6ec2a51e5dce6bc57bc66ad92755290",
+    "a1_selection.json": "e4e0f435b4841e4aba643b251ee3b7efbba7512594ed38a863089a286f8e754e"
+  }
+}

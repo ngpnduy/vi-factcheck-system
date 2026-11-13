@@ -1,0 +1,9 @@
+{
+  "selected_global_epoch": 3,
+  "selected_stage": "m0",
+  "selected_validation_macro_f1": 0.6195122160870485,
+  "checkpoint_sha256": "a6af81cde5fbb0c92d9f869c205f26942149a9b068d357d8bd53e2564b505b22",
+  "initialization_checkpoint_sha256": null,
+  "selected_source_checkpoint_sha256": "a6af81cde5fbb0c92d9f869c205f26942149a9b068d357d8bd53e2564b505b22",
+  "protocol_version": 2
+}

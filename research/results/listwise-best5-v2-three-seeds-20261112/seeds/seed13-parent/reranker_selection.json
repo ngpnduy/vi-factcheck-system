@@ -1,0 +1,9 @@
+{
+  "selected_global_epoch": 3,
+  "selected_stage": "reranker",
+  "selected_validation_macro_f1": null,
+  "checkpoint_sha256": "fabbacf001c4acb24ffddc632ddd3526cc61dfbda21cc88db63618879f10498b",
+  "initialization_checkpoint_sha256": null,
+  "selected_source_checkpoint_sha256": "fabbacf001c4acb24ffddc632ddd3526cc61dfbda21cc88db63618879f10498b",
+  "protocol_version": 2
+}

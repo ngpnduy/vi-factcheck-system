@@ -1,0 +1,98 @@
+[
+  {
+    "epoch": 1,
+    "global_epoch": 1,
+    "stage": "reranker",
+    "phase": "reranker",
+    "average_loss": 0.3336369689323261,
+    "evidence_supervised_claims": 1871,
+    "optimizer_steps": 234,
+    "training_seconds": 3138.2523144000443,
+    "peak_training_cuda": {
+      "allocated_mib": 2446.193359375,
+      "reserved_mib": 2626.0
+    },
+    "validation": {
+      "retrieval": {
+        "count": 271,
+        "alignment_coverage": 0.5878284923928078,
+        "alignment_status_counts": {
+          "unmatched": 293,
+          "valid": 425,
+          "ambiguous": 5
+        },
+        "hit@5": 0.9704797047970479,
+        "sentence_recall@5": 0.9422948515199439,
+        "complete_gold@5": 0.9040590405904059,
+        "hit@20": 1.0,
+        "sentence_recall@20": 0.9992619926199262,
+        "complete_gold@20": 0.996309963099631,
+        "mrr": 0.925452735046831
+      }
+    }
+  },
+  {
+    "epoch": 2,
+    "global_epoch": 2,
+    "stage": "reranker",
+    "phase": "reranker",
+    "average_loss": 0.16924253023344774,
+    "evidence_supervised_claims": 1871,
+    "optimizer_steps": 234,
+    "training_seconds": 3118.9673976999475,
+    "peak_training_cuda": {
+      "allocated_mib": 2446.193359375,
+      "reserved_mib": 2626.0
+    },
+    "validation": {
+      "retrieval": {
+        "count": 271,
+        "alignment_coverage": 0.5878284923928078,
+        "alignment_status_counts": {
+          "unmatched": 293,
+          "valid": 425,
+          "ambiguous": 5
+        },
+        "hit@5": 0.966789667896679,
+        "sentence_recall@5": 0.9392198207696363,
+        "complete_gold@5": 0.9040590405904059,
+        "hit@20": 1.0,
+        "sentence_recall@20": 0.9992619926199262,
+        "complete_gold@20": 0.996309963099631,
+        "mrr": 0.9367546711181397
+      }
+    }
+  },
+  {
+    "epoch": 3,
+    "global_epoch": 3,
+    "stage": "reranker",
+    "phase": "reranker",
+    "average_loss": 0.13597247369456383,
+    "evidence_supervised_claims": 1871,
+    "optimizer_steps": 234,
+    "training_seconds": 2989.9574816999957,
+    "peak_training_cuda": {
+      "allocated_mib": 2446.193359375,
+      "reserved_mib": 2626.0
+    },
+    "validation": {
+      "retrieval": {
+        "count": 271,
+        "alignment_coverage": 0.5878284923928078,
+        "alignment_status_counts": {
+          "unmatched": 293,
+          "valid": 425,
+          "ambiguous": 5
+        },
+        "hit@5": 0.9630996309963099,
+        "sentence_recall@5": 0.9312247408188368,
+        "complete_gold@5": 0.8929889298892989,
+        "hit@20": 1.0,
+        "sentence_recall@20": 0.9992619926199262,
+        "complete_gold@20": 0.996309963099631,
+        "mrr": 0.9406006560065601
+      }
+    }
+  }
+]

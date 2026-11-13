@@ -1,0 +1,106 @@
+{
+  "id": "user-input",
+  "configuration": "M2",
+  "reranker_architecture": "listwise",
+  "label": "REFUTED",
+  "label_id": 1,
+  "probabilities": {
+    "SUPPORTED": 0.006988015491515398,
+    "REFUTED": 0.9770351648330688,
+    "NOT_ENOUGH_INFO": 0.01597660966217518
+  },
+  "ranking": [
+    9,
+    5,
+    6,
+    0,
+    2,
+    8,
+    10,
+    3,
+    11,
+    7,
+    12,
+    4,
+    1
+  ],
+  "selected_sentences": [
+    {
+      "id": 9,
+      "start": 2364,
+      "end": 2506,
+      "text": "Trong số đó, có vua hề Charlie Chaplin (vua hề Sác lô) và vợ từng trải qua kỳ nghỉ trăng mật vào tháng 4.1936 tại phòng Charlie Chaplin Suite.",
+      "segmented": "Trong số đó , có vua hề Charlie_Chaplin ( vua hề_Sác lô ) và vợ từng_trải qua kỳ nghỉ trăng_mật vào tháng 4.1936 tại phòng Charlie_Chaplin_Suite .",
+      "weight": 0.8954172730445862
+    },
+    {
+      "id": 5,
+      "start": 1377,
+      "end": 1880,
+      "text": "Vua hề Charlie Chaplin (vua hề Sác lô) và vợ từng trải qua kỳ nghỉ trăng mật tại khách sạn Saigon Morin vào tháng 4.1936 TL Nhà vua Na Uy Harald V. Swore Oath ở khách sạn Saigon Morin năm 2004 TL Trải qua nhiều giai đoạn lịch sử, đến nay, Saigon Morin là khách sạn 4 sao và đang nâng thành 5 sao theo hướng kiến trúc cổ điển độc đáo của miền Trung - Tây nguyên nhằm phát huy giá trị của một khách sạn lâu đời ở Việt Nam (122 năm tuổi), với hệ thống 180 phòng ngủ sang trọng, tiện nghi và hiện đại...",
+      "segmented": "Vua hề Charlie_Chaplin ( vua hề_Sác lô ) và vợ từng_trải qua kỳ nghỉ trăng_mật tại khách_sạn Saigon_Morin vào tháng 4.1936 TL Nhà_vua Na_Uy Harald V. Swore_Oath ở khách_sạn Saigon_Morin năm 2004 TL Trải qua nhiều giai_đoạn lịch_sử , đến nay , Saigon_Morin là khách_sạn 4 sao và đang nâng thành 5 sao theo hướng kiến_trúc cổ_điển độc_đáo của miền Trung - Tây_nguyên nhằm phát_huy giá_trị của một khách_sạn lâu_đời ở Việt_Nam ( 122 năm_tuổi ) , với hệ_thống 180 phòng ngủ sang_trọng , tiện_nghi và hiện_đại ...",
+      "weight": 0.10446501523256302
+    },
+    {
+      "id": 6,
+      "start": 1881,
+      "end": 2108,
+      "text": "Phu nhân cựu Tổng thống Pháp, bà Bernadette Chirac, lưu trú tại khách sạn vào năm 2004 TL Không chỉ có những sản phẩm và dịch vụ chuyên nghiệp, Saigon Morin còn mang đến cho du khách những trải nghiệm thú vị về lịch sử 122 năm.",
+      "segmented": "Phu_nhân cựu Tổng_thống Pháp , bà Bernadette_Chirac , lưu_trú tại khách_sạn vào năm 2004 TL Không_chỉ có những sản_phẩm và dịch_vụ chuyên_nghiệp , Saigon_Morin còn mang đến cho du_khách những trải_nghiệm thú_vị về lịch_sử 122 năm .",
+      "weight": 6.102572660893202e-05
+    },
+    {
+      "id": 0,
+      "start": 0,
+      "end": 207,
+      "text": "Saigon Morin, khách sạn 4 sao hàng đầu tại Huế, kỷ niệm 122 năm ra đời tối 26.3, là một trong những khách sạn lâu đời nhất Việt Nam với \"bảng vàng\" danh sách các yếu nhân và nguyên thủ quốc gia từng lưu trú.",
+      "segmented": "Saigon_Morin , khách_sạn 4 sao hàng_đầu tại Huế , kỷ_niệm 122 năm ra_đời tối 26.3 , là một trong những khách_sạn lâu_đời nhất Việt_Nam với \" bảng_vàng \" danh_sách các yếu_nhân và nguyên_thủ quốc_gia từng lưu_trú .",
+      "weight": 2.9166309104766697e-05
+    },
+    {
+      "id": 2,
+      "start": 762,
+      "end": 900,
+      "text": "Ngoài việc phục vụ du khách, Saigon Morin còn đảm nhiệm vai trò \"nhà khách\" của Chính phủ Nam triều và Chính phủ bảo hộ, cơ quan Trung kỳ.",
+      "segmented": "Ngoài việc phục_vụ du_khách , Saigon_Morin còn đảm_nhiệm vai_trò \" nhà_khách \" của Chính_phủ Nam triều và Chính_phủ bảo_hộ , cơ_quan Trung kỳ .",
+      "weight": 2.7506450351211242e-05
+    }
+  ],
+  "truncation": [
+    {
+      "claim_truncated": false,
+      "sentence_truncated": false,
+      "claim_original_tokens": 42,
+      "sentence_original_tokens": 35,
+      "pair_tokens": 81
+    },
+    {
+      "claim_truncated": false,
+      "sentence_truncated": false,
+      "claim_original_tokens": 42,
+      "sentence_original_tokens": 104,
+      "pair_tokens": 150
+    },
+    {
+      "claim_truncated": false,
+      "sentence_truncated": false,
+      "claim_original_tokens": 42,
+      "sentence_original_tokens": 43,
+      "pair_tokens": 89
+    },
+    {
+      "claim_truncated": false,
+      "sentence_truncated": false,
+      "claim_original_tokens": 42,
+      "sentence_original_tokens": 41,
+      "pair_tokens": 87
+    },
+    {
+      "claim_truncated": false,
+      "sentence_truncated": false,
+      "claim_original_tokens": 42,
+      "sentence_original_tokens": 26,
+      "pair_tokens": 72
+    }
+  ]
+}

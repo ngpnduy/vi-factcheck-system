@@ -1,0 +1,106 @@
+{
+  "id": "user-input",
+  "configuration": "M1",
+  "reranker_architecture": "listwise",
+  "label": "REFUTED",
+  "label_id": 1,
+  "probabilities": {
+    "SUPPORTED": 0.0019699628464877605,
+    "REFUTED": 0.9902640581130981,
+    "NOT_ENOUGH_INFO": 0.007766068447381258
+  },
+  "ranking": [
+    5,
+    9,
+    6,
+    10,
+    0,
+    2,
+    12,
+    4,
+    8,
+    3,
+    7,
+    11,
+    1
+  ],
+  "selected_sentences": [
+    {
+      "id": 5,
+      "start": 1377,
+      "end": 1880,
+      "text": "Vua hề Charlie Chaplin (vua hề Sác lô) và vợ từng trải qua kỳ nghỉ trăng mật tại khách sạn Saigon Morin vào tháng 4.1936 TL Nhà vua Na Uy Harald V. Swore Oath ở khách sạn Saigon Morin năm 2004 TL Trải qua nhiều giai đoạn lịch sử, đến nay, Saigon Morin là khách sạn 4 sao và đang nâng thành 5 sao theo hướng kiến trúc cổ điển độc đáo của miền Trung - Tây nguyên nhằm phát huy giá trị của một khách sạn lâu đời ở Việt Nam (122 năm tuổi), với hệ thống 180 phòng ngủ sang trọng, tiện nghi và hiện đại...",
+      "segmented": "Vua hề Charlie_Chaplin ( vua hề_Sác lô ) và vợ từng_trải qua kỳ nghỉ trăng_mật tại khách_sạn Saigon_Morin vào tháng 4.1936 TL Nhà_vua Na_Uy Harald V. Swore_Oath ở khách_sạn Saigon_Morin năm 2004 TL Trải qua nhiều giai_đoạn lịch_sử , đến nay , Saigon_Morin là khách_sạn 4 sao và đang nâng thành 5 sao theo hướng kiến_trúc cổ_điển độc_đáo của miền Trung - Tây_nguyên nhằm phát_huy giá_trị của một khách_sạn lâu_đời ở Việt_Nam ( 122 năm_tuổi ) , với hệ_thống 180 phòng ngủ sang_trọng , tiện_nghi và hiện_đại ...",
+      "weight": 0.7505515217781067
+    },
+    {
+      "id": 9,
+      "start": 2364,
+      "end": 2506,
+      "text": "Trong số đó, có vua hề Charlie Chaplin (vua hề Sác lô) và vợ từng trải qua kỳ nghỉ trăng mật vào tháng 4.1936 tại phòng Charlie Chaplin Suite.",
+      "segmented": "Trong số đó , có vua hề Charlie_Chaplin ( vua hề_Sác lô ) và vợ từng_trải qua kỳ nghỉ trăng_mật vào tháng 4.1936 tại phòng Charlie_Chaplin_Suite .",
+      "weight": 0.249446839094162
+    },
+    {
+      "id": 6,
+      "start": 1881,
+      "end": 2108,
+      "text": "Phu nhân cựu Tổng thống Pháp, bà Bernadette Chirac, lưu trú tại khách sạn vào năm 2004 TL Không chỉ có những sản phẩm và dịch vụ chuyên nghiệp, Saigon Morin còn mang đến cho du khách những trải nghiệm thú vị về lịch sử 122 năm.",
+      "segmented": "Phu_nhân cựu Tổng_thống Pháp , bà Bernadette_Chirac , lưu_trú tại khách_sạn vào năm 2004 TL Không_chỉ có những sản_phẩm và dịch_vụ chuyên_nghiệp , Saigon_Morin còn mang đến cho du_khách những trải_nghiệm thú_vị về lịch_sử 122 năm .",
+      "weight": 1.134531316893117e-06
+    },
+    {
+      "id": 10,
+      "start": 2507,
+      "end": 2840,
+      "text": "Nơi đây cũng từng đón tiếp và phục vụ nhiều nhân vật nổi tiếng, các nguyên thủ quốc gia trên thế giới như: Thủ tướng Pháp Francois Fillon (năm 2009), Chủ tịch Quốc hội Hàn Quốc Lim Chae Jung (năm 2008), Chủ tịch Quốc hội Na Uy Anne Marit Bjørnflaten (năm 2008), Phu nhân cựu Tổng thống Pháp Madam Bernadette Chirac (năm 2004)...",
+      "segmented": "Nơi đây cũng từng đón_tiếp và phục_vụ nhiều nhân_vật nổi_tiếng , các nguyên_thủ quốc_gia trên thế_giới như : Thủ_tướng Pháp Francois_Fillon ( năm 2009 ) , Chủ_tịch Quốc_hội Hàn_Quốc Lim_Chae_Jung ( năm 2008 ) , Chủ_tịch Quốc_hội Na_Uy Anne_Marit_Bjørnflaten ( năm 2008 ) , Phu_nhân cựu Tổng_thống Pháp Madam_Bernadette_Chirac ( năm 2004 ) ...",
+      "weight": 2.813061428241781e-07
+    },
+    {
+      "id": 0,
+      "start": 0,
+      "end": 207,
+      "text": "Saigon Morin, khách sạn 4 sao hàng đầu tại Huế, kỷ niệm 122 năm ra đời tối 26.3, là một trong những khách sạn lâu đời nhất Việt Nam với \"bảng vàng\" danh sách các yếu nhân và nguyên thủ quốc gia từng lưu trú.",
+      "segmented": "Saigon_Morin , khách_sạn 4 sao hàng_đầu tại Huế , kỷ_niệm 122 năm ra_đời tối 26.3 , là một trong những khách_sạn lâu_đời nhất Việt_Nam với \" bảng_vàng \" danh_sách các yếu_nhân và nguyên_thủ quốc_gia từng lưu_trú .",
+      "weight": 2.463198711666337e-07
+    }
+  ],
+  "truncation": [
+    {
+      "claim_truncated": false,
+      "sentence_truncated": false,
+      "claim_original_tokens": 42,
+      "sentence_original_tokens": 104,
+      "pair_tokens": 150
+    },
+    {
+      "claim_truncated": false,
+      "sentence_truncated": false,
+      "claim_original_tokens": 42,
+      "sentence_original_tokens": 35,
+      "pair_tokens": 81
+    },
+    {
+      "claim_truncated": false,
+      "sentence_truncated": false,
+      "claim_original_tokens": 42,
+      "sentence_original_tokens": 43,
+      "pair_tokens": 89
+    },
+    {
+      "claim_truncated": false,
+      "sentence_truncated": false,
+      "claim_original_tokens": 42,
+      "sentence_original_tokens": 73,
+      "pair_tokens": 119
+    },
+    {
+      "claim_truncated": false,
+      "sentence_truncated": false,
+      "claim_original_tokens": 42,
+      "sentence_original_tokens": 41,
+      "pair_tokens": 87
+    }
+  ]
+}

@@ -1,0 +1,106 @@
+{
+  "id": "user-input",
+  "configuration": "M0",
+  "reranker_architecture": null,
+  "label": "REFUTED",
+  "label_id": 1,
+  "probabilities": {
+    "SUPPORTED": 0.02486647292971611,
+    "REFUTED": 0.6376781463623047,
+    "NOT_ENOUGH_INFO": 0.3374554514884949
+  },
+  "ranking": [
+    9,
+    5,
+    6,
+    1,
+    10,
+    0,
+    2,
+    4,
+    11,
+    3,
+    7,
+    12,
+    8
+  ],
+  "selected_sentences": [
+    {
+      "id": 9,
+      "start": 2364,
+      "end": 2506,
+      "text": "Trong số đó, có vua hề Charlie Chaplin (vua hề Sác lô) và vợ từng trải qua kỳ nghỉ trăng mật vào tháng 4.1936 tại phòng Charlie Chaplin Suite.",
+      "segmented": "Trong số đó , có vua hề Charlie_Chaplin ( vua hề_Sác lô ) và vợ từng_trải qua kỳ nghỉ trăng_mật vào tháng 4.1936 tại phòng Charlie_Chaplin_Suite .",
+      "weight": 0.20000000298023224
+    },
+    {
+      "id": 5,
+      "start": 1377,
+      "end": 1880,
+      "text": "Vua hề Charlie Chaplin (vua hề Sác lô) và vợ từng trải qua kỳ nghỉ trăng mật tại khách sạn Saigon Morin vào tháng 4.1936 TL Nhà vua Na Uy Harald V. Swore Oath ở khách sạn Saigon Morin năm 2004 TL Trải qua nhiều giai đoạn lịch sử, đến nay, Saigon Morin là khách sạn 4 sao và đang nâng thành 5 sao theo hướng kiến trúc cổ điển độc đáo của miền Trung - Tây nguyên nhằm phát huy giá trị của một khách sạn lâu đời ở Việt Nam (122 năm tuổi), với hệ thống 180 phòng ngủ sang trọng, tiện nghi và hiện đại...",
+      "segmented": "Vua hề Charlie_Chaplin ( vua hề_Sác lô ) và vợ từng_trải qua kỳ nghỉ trăng_mật tại khách_sạn Saigon_Morin vào tháng 4.1936 TL Nhà_vua Na_Uy Harald V. Swore_Oath ở khách_sạn Saigon_Morin năm 2004 TL Trải qua nhiều giai_đoạn lịch_sử , đến nay , Saigon_Morin là khách_sạn 4 sao và đang nâng thành 5 sao theo hướng kiến_trúc cổ_điển độc_đáo của miền Trung - Tây_nguyên nhằm phát_huy giá_trị của một khách_sạn lâu_đời ở Việt_Nam ( 122 năm_tuổi ) , với hệ_thống 180 phòng ngủ sang_trọng , tiện_nghi và hiện_đại ...",
+      "weight": 0.20000000298023224
+    },
+    {
+      "id": 6,
+      "start": 1881,
+      "end": 2108,
+      "text": "Phu nhân cựu Tổng thống Pháp, bà Bernadette Chirac, lưu trú tại khách sạn vào năm 2004 TL Không chỉ có những sản phẩm và dịch vụ chuyên nghiệp, Saigon Morin còn mang đến cho du khách những trải nghiệm thú vị về lịch sử 122 năm.",
+      "segmented": "Phu_nhân cựu Tổng_thống Pháp , bà Bernadette_Chirac , lưu_trú tại khách_sạn vào năm 2004 TL Không_chỉ có những sản_phẩm và dịch_vụ chuyên_nghiệp , Saigon_Morin còn mang đến cho du_khách những trải_nghiệm thú_vị về lịch_sử 122 năm .",
+      "weight": 0.20000000298023224
+    },
+    {
+      "id": 1,
+      "start": 208,
+      "end": 761,
+      "text": "Khách sạn có 4 mặt tiền thuộc các giao lộ Lê Lợi - Hùng Vương, Hoàng Hoa Thám - Trương Định (TP.Huế, Thừa Thiên-Huế) bên cạnh cầu Trường Tiền với \"view\" sông Hương thơ mộng, Phó chủ tịch thường trực UBND tỉnh Thừa Thiên-Huế, ông Nguyễn Thanh Bình (phải), trao cờ đơn vị dẫn đầu thi đua có nhiều đóng góp cho du lịch của tỉnh cho ông Trần Văn Lâm, Tổng giám đốc Saigon Morin, tại lễ kỷ niệm 122 năm HƯƠNG GIANG Khách sạn ra đời vào năm 1901 khi ông Henri Bogaert, chủ nhà máy gạch ngói Long Thọ, cho khởi công xây dựng và lấy tên là \"Grand Hotel de Hue\".",
+      "segmented": "Khách_sạn có 4 mặt_tiền thuộc các giao_lộ Lê_Lợi - Hùng_Vương , Hoàng_Hoa_Thám - Trương_Định ( TP. Huế , Thừa_Thiên-Huế ) bên cạnh cầu Trường Tiền với \" view \" sông Hương thơ_mộng , Phó chủ_tịch thường_trực UBND tỉnh Thừa_Thiên-Huế , ông Nguyễn_Thanh_Bình ( phải ) , trao cờ đơn_vị dẫn_đầu thi_đua có nhiều đóng_góp cho du_lịch của tỉnh cho ông Trần_Văn_Lâm , Tổng_giám_đốc Saigon_Morin , tại lễ kỷ_niệm 122 năm_HƯƠNG_GIANG Khách_sạn ra_đời vào năm 1901 khi ông Henri_Bogaert , chủ nhà_máy gạch ngói Long_Thọ , cho khởi_công xây_dựng và lấy tên là \" Grand_Hotel de Hue \" .",
+      "weight": 0.20000000298023224
+    },
+    {
+      "id": 10,
+      "start": 2507,
+      "end": 2840,
+      "text": "Nơi đây cũng từng đón tiếp và phục vụ nhiều nhân vật nổi tiếng, các nguyên thủ quốc gia trên thế giới như: Thủ tướng Pháp Francois Fillon (năm 2009), Chủ tịch Quốc hội Hàn Quốc Lim Chae Jung (năm 2008), Chủ tịch Quốc hội Na Uy Anne Marit Bjørnflaten (năm 2008), Phu nhân cựu Tổng thống Pháp Madam Bernadette Chirac (năm 2004)...",
+      "segmented": "Nơi đây cũng từng đón_tiếp và phục_vụ nhiều nhân_vật nổi_tiếng , các nguyên_thủ quốc_gia trên thế_giới như : Thủ_tướng Pháp Francois_Fillon ( năm 2009 ) , Chủ_tịch Quốc_hội Hàn_Quốc Lim_Chae_Jung ( năm 2008 ) , Chủ_tịch Quốc_hội Na_Uy Anne_Marit_Bjørnflaten ( năm 2008 ) , Phu_nhân cựu Tổng_thống Pháp Madam_Bernadette_Chirac ( năm 2004 ) ...",
+      "weight": 0.20000000298023224
+    }
+  ],
+  "truncation": [
+    {
+      "claim_truncated": false,
+      "sentence_truncated": false,
+      "claim_original_tokens": 42,
+      "sentence_original_tokens": 35,
+      "pair_tokens": 81
+    },
+    {
+      "claim_truncated": false,
+      "sentence_truncated": false,
+      "claim_original_tokens": 42,
+      "sentence_original_tokens": 104,
+      "pair_tokens": 150
+    },
+    {
+      "claim_truncated": false,
+      "sentence_truncated": false,
+      "claim_original_tokens": 42,
+      "sentence_original_tokens": 43,
+      "pair_tokens": 89
+    },
+    {
+      "claim_truncated": false,
+      "sentence_truncated": false,
+      "claim_original_tokens": 42,
+      "sentence_original_tokens": 110,
+      "pair_tokens": 156
+    },
+    {
+      "claim_truncated": false,
+      "sentence_truncated": false,
+      "claim_original_tokens": 42,
+      "sentence_original_tokens": 73,
+      "pair_tokens": 119
+    }
+  ]
+}

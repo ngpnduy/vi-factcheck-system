@@ -1,0 +1,8 @@
+{
+  "verifier_initial_sha256": "42aa89506b12a1ea1b8226737af39e4dbef2fe8f7dc423368bf3505cd7d13db6",
+  "reranker_unchanged": true,
+  "reranker_initial_sha256": "d434a284f4df36ae808a803b0c2a5a3311ad95f8415e5c9fe1e7bbfbde1ef7ff",
+  "reranker_final_sha256": "d434a284f4df36ae808a803b0c2a5a3311ad95f8415e5c9fe1e7bbfbde1ef7ff",
+  "selection_source_checkpoint_sha256": "4a37edb4bd92b2421c0858a046f1077025b076d5043564aa92cdca0bd8d9bce6",
+  "aggregation": "uniform"
+}
