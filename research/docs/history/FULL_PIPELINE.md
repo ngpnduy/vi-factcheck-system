@@ -1,13 +1,15 @@
 # Full-data M0/M1/M2 pipeline
 
-**For new runs, use [protocol v2](LISTWISE_V2.md).** It branches from final epoch three, selects best across five epochs, and includes fresh architecture-specific tuning. The original protocol and run history below describe v1.
+> Historical snapshot. Use the [current research guide](../../README.md) for new commands and results.
+
+**For new runs, use [protocol v2](../../LISTWISE_V2.md).** It branches from final epoch three, selects best across five epochs, and includes fresh architecture-specific tuning. The original protocol and run history below describe v1.
 
 The full runner uses all 5,062 train, 723 dev and 1,447 test claims. It preserves the
 256/96 token and 20/5 evidence limits, separate PhoBERT-base parameters, Adafactor,
 eight-claim accumulation, mixed precision and activation checkpointing. M2 trains
 both encoders. The default run covers M0/M1/M2. Add `--include-ablations` for
 A1/A2 and fifteen final models; D0 and manual annotation remain outside this run.
-The [slide implementation guide](docs/SLIDES_0410_IMPLEMENTATION.md) describes
+The [slide implementation guide](SLIDES_0410_IMPLEMENTATION.md) describes
 the five-mode protocol, optional list-aware architecture, and initializer reuse.
 
 ## Execution order

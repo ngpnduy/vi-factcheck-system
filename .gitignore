@@ -29,3 +29,15 @@ outputs/
 !tests/fixtures/
 
 docs/code_learning_notes.md
+
+# Research runtime and publication build products (published legacy files stay tracked).
+.cache/
+runs/
+exports/
+*.egg-info/
+*.pt
+*.pth
+*.safetensors
+*.bin
+*.log
+*.zip

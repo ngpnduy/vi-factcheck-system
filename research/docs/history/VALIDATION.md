@@ -1,10 +1,12 @@
 # M0 M1 M2 implementation validation
 
+> Historical snapshot. Use the [current research guide](../../README.md) for new commands and results.
+
 This file records the original 24-train/12-dev smoke validation. The larger 900-claim pilot was launched afterwards and was still running when this branch's source snapshot was imported. Its test results are not included in this validation record. The Rush checkout's additional pilot/report tests are separate from the original 24-test smoke milestone.
 
 The larger pilot has since completed. Its final test results are available in the
-[completed pilot report](results/pilot-900-seed42/REPORT.md) and
-[results package](results/pilot-900-seed42/README.md).
+[completed pilot report](../../../rush/results/pilot-900-seed42/REPORT.md) and
+[results package](../../../rush/results/pilot-900-seed42/README.md).
 
 ## Rush branch verification
 

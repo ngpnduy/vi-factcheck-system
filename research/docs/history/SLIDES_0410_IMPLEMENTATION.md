@@ -1,6 +1,8 @@
 # Implementation of the 0410 progress slides
 
-**Protocol v2 supersedes the warmup-best initialization and legacy checkpoint reuse commands below.** New runs branch from the final warmup epoch, select best across all verifier epochs, and reject v1 initialization. Use the [current guide](../LISTWISE_V2.md). The slide implementation notes below describe the original v1 protocol.
+> Historical snapshot. Use the [current research guide](../../README.md) for new commands and results.
+
+**Protocol v2 supersedes the warmup-best initialization and legacy checkpoint reuse commands below.** New runs branch from the final warmup epoch, select best across all verifier epochs, and reject v1 initialization. Use the [current guide](../../LISTWISE_V2.md). The slide implementation notes below describe the original v1 protocol.
 
 Run commands from `vi-factcheck-system/rush/`. This updates the standalone Rush
 research implementation. The main `src/factcheck/` package has a separate protocol.
@@ -63,7 +65,7 @@ REFUTED gains require new experiments. References:
 
 ## Setup and validation
 
-Use the [setup guide](../README.md). Preparation, dataset labels, conservative
+Use the [setup guide](../../README.md). Preparation, dataset labels, conservative
 alignment, token limits 256/96, and evidence limits 20/5 remain the same.
 
 ```powershell
@@ -83,7 +85,7 @@ alignment, token limits 256/96, and evidence limits 20/5 remain the same.
 
 The diagnostic makes one optimizer update on one training claim per case. It
 keeps the full token/evidence limits. Its measurements do not establish memory
-use for every training claim. [Validation evidence](../SLIDES_VALIDATION.md)
+use for every training claim. [Validation evidence](SLIDES_VALIDATION.md)
 records checks performed for this implementation, not new benchmark scores.
 
 ## Reuse original pairwise initialization for A1/A2

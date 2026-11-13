@@ -1,6 +1,6 @@
 # Listwise v2: best of five epochs, fresh tuning, three seeds
 
-This is a new training protocol. Published October results stay in their original
+The [completed three-seed results](results/listwise-best5-v2-three-seeds-20261112/README.md) are available. This is protocol v2. Published October results stay in their original
 folders. Legacy checkpoints still support prediction/evaluation, but cannot
 initialize or resume a protocol-v2 experiment.
 
@@ -53,7 +53,7 @@ across seeds are not independent samples.
 
 ## Windows commands
 
-Run from `vi-factcheck-system/rush/`. The launcher discovers prepared data/model/
+Run from `vi-factcheck-system/research/`. The launcher discovers prepared data/model/
 segmenter folders in this subproject or its enclosing laptop workspace.
 
 ```powershell
@@ -100,7 +100,7 @@ Smoke uses 24 train / 12 dev claims, one reranker epoch, one warmup and one
 continuation epoch; selection covers both verifier epochs. M0/A1 receive two
 epochs. It seals models individually to reduce peak disk use and checks terminal
 gradients, encoder changes, checkpoint reload and raw-text prediction. Smoke
-scores are pipeline checks. The recorded outcome is in `V2_VALIDATION.md`.
+scores are pipeline checks. The recorded outcome is in [6 November validation snapshot](docs/history/V2_VALIDATION.md).
 
 Laptop settings stay at PhoBERT-base, separate encoder parameters, pair/claim
 limits 256/96, BM25 top 20 / selected top five, batch one claim, accumulation
@@ -122,6 +122,8 @@ Create `STOP_REQUESTED` in the status directory to stop at a progress boundary;
 remove it before explicitly resuming. A process lock prevents duplicate writers.
 Changed source, settings, protocol or data require a fresh output directory.
 
-Budget approximately **90-110 uninterrupted compute hours**. After the first LR
-trial, `runtime_estimate.json` rescales this using measured training time. Future
-downtime and repeated unsaved work are additional.
+The initial forecast was **90-110 uninterrupted compute hours**. The completed
+study took **132.52 wall-clock hours**, including interruptions, repeated unsaved
+work and slower intervals. Consult the completed report for measured phase costs.
+`runtime_estimate.json` preserves the first-trial forecast; it is not the final
+elapsed time or a guarantee for another laptop.

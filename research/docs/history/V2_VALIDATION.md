@@ -1,5 +1,7 @@
 # Protocol v2 validation - 6 November 2026
 
+> Historical snapshot. Use the [current research guide](../../README.md) for new commands and results.
+
 All 85 unit/integration cases passed with zero failures, errors or skips. Two benign SWIG deprecation warnings were emitted.
 
 Coverage includes every possible best epoch (1-5) for M1/M2/A2, earlier-epoch ties, branching from final epoch three, optimizer/RNG resume, recovery between last-save and best-link, legacy inference-only compatibility, the 35-GiB start gate, per-write reserve checks, and terminal-state gradient checks when warmup wins.
@@ -32,4 +34,4 @@ After the GPU smoke, a universal pre-write capacity guard was added. Final valid
 
 Full tuning/three-seed training has **not started**: storage readiness is `needs_space`, with 6.08 GiB free versus the required 35 GiB at the recorded check. Historical checkpoints and published result hashes were preserved.
 
-[Machine-readable evidence and source hashes](docs/validation/listwise-v2-20261106.json). Local raw artifacts are in the enclosing workspace `runs/listwise-v2-validation-20261106/`. See [launch/resume instructions](LISTWISE_V2.md).
+[Machine-readable evidence and source hashes](../validation/listwise-v2-20261106.json). Local raw artifacts are in the enclosing workspace `runs/listwise-v2-validation-20261106/`. See [launch/resume instructions](../../LISTWISE_V2.md).

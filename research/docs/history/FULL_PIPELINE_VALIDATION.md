@@ -1,5 +1,7 @@
 # Full-pipeline launch validation - 13 October 2026
 
+> Historical snapshot. Use the [current research guide](../../README.md) for new commands and results.
+
 The official prepared split counts are 5,062 train, 723 dev and 1,447 test claims.
 All prepared-file hashes and cached dataset, PhoBERT and VnCoreNLP asset hashes
 were verified against the existing pinned manifests. CUDA-enabled PyTorch

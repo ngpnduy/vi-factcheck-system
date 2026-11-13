@@ -1,5 +1,7 @@
 # Rush-version contribution
 
+> Historical snapshot. Use the [current research guide](../../README.md) for new commands and results.
+
 This branch adds the previously implemented M0/M1/M2 research project under
 `rush/`. The existing `src/factcheck/` algorithms, root dependency lock and M0
 configuration are retained. M1 and M2 are executable here; the existing M1
@@ -69,7 +71,7 @@ The full-data orchestrator was added on 13 October 2026. It introduces `full.py`
 `full_reporting.py`, a CLI entry point and `scripts/start_full.ps1`. The underlying
 training implementation is preserved. This runner records its current code hashes
 and a frozen source snapshot separately from the historical pilot provenance.
-See [the full pipeline guide](../FULL_PIPELINE.md).
+See [the full pipeline guide](FULL_PIPELINE.md).
 
 Before merging this work into the main M0/M1 architecture, agree on a shared
 backbone, sentence/BM25 pipeline, classifier, optimizer, effective batch and fork

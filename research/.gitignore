@@ -6,3 +6,10 @@ __pycache__/
 .pytest_cache/
 *.egg-info/
 *.pyc
+exports/
+*.pt
+*.pth
+*.safetensors
+*.bin
+*.log
+*.zip

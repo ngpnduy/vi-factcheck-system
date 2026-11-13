@@ -18,13 +18,13 @@ riêng. Không dùng điểm của luồng này thay cho luồng kia.
 | M0 | `evaluation/evaluate_m0.py` | Verdict và sentence retrieval metrics, kiểm tra ID và alignment |
 | Corpus BM25 | `retrieval/build_corpus.py`, `retrieval/corpus_bm25.py` | Index BM25S trên corpus chunk dùng chung |
 | Corpus BM25 | `retrieval/evaluate_bm25.py` | Đánh giá chunk retrieval |
-| Rush M0/M1/M2 | `rush/vifactcheck/` (từ gốc repo) | Subproject riêng, pilot 900 claim/seed 42, test/report tự động |
+| Research M0/M1/M2/A1/A2 | `research/vifactcheck/` (từ gốc repo) | Listwise v2; hoàn tất 5 model x 3 seed; môi trường và giao thức riêng |
 
 Các đường dẫn module trong bảng thuộc `src/factcheck/`.
 
-Riêng `rush/` nằm tại gốc repository và có `pyproject.toml`, môi trường,
-preprocessing, checkpoint và test suite riêng. Xem [hướng dẫn Rush](../rush/README.md).
-Giao thức Rush dùng PhoBERT-base, VnCoreNLP sentence boundaries, BM25Okapi và
+Riêng `research/` nằm tại gốc repository và có `pyproject.toml`, môi trường,
+preprocessing, checkpoint và test suite riêng. Xem [hướng dẫn research](../research/README.md).
+Giao thức research dùng PhoBERT-base, VnCoreNLP sentence boundaries, BM25Okapi và
 Adafactor; kết quả không thay thế trực tiếp cho M0 PhoBERT-base-v2 trên `main`.
 
 Trước merge, cả hai nhánh đều có `retrieval/bm25.py` với API khác nhau. Bản
@@ -34,6 +34,8 @@ Nếu từng gọi trực tiếp `python -m factcheck.retrieval.bm25 --corpus ..
 sang `python -m factcheck.retrieval.corpus_bm25 --corpus ...`. Các script
 `run_vifactcheck_bm25.sh` và `evaluate_vifactcheck_bm25.sh` vẫn giữ tên cũ.
 M0 tiếp tục dùng `scripts/run_m0.sh`; cấu hình và thuật toán M0 không đổi.
+
+Xem [giao thức v2](../research/LISTWISE_V2.md) và [kết quả ba seed](../research/results/listwise-best5-v2-three-seeds-20261112/README.md). Root lock dùng Transformers 4.x; research dùng bộ pin đã kiểm chứng riêng. Các đường dẫn `rush/results/` đã công bố vẫn được giữ.
 
 ## Môi trường chung
 

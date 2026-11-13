@@ -1,0 +1,3 @@
+# Preserve the exact executed experiment source bytes across checkouts.
+vifactcheck/*.py -text
+results/** -text whitespace=cr-at-eol

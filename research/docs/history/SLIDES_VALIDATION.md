@@ -1,5 +1,7 @@
 # Slide-update validation - 29 October 2026
 
+> Historical snapshot. Use the [current research guide](../../README.md) for new commands and results.
+
 The update adds A1, A2, optional candidate-list attention, checkpoint-parent reuse,
 and the five-configuration, three-seed reporting path. It does not provide new
 ablation benchmark scores or launch the full study.
@@ -47,7 +49,7 @@ memory-efficient attention backward may be nondeterministic. Seed control does
 not guarantee bit-for-bit agreement across repeated GPU training runs.
 
 Reproduce using `scripts/validate_slides.py`; see the
-[implementation guide](docs/SLIDES_0410_IMPLEMENTATION.md) for commands and scope.
+[implementation guide](SLIDES_0410_IMPLEMENTATION.md) for commands and scope.
 Machine-readable evidence is in `docs/validation/slides-20261029.json`.
 Full ablation/list-aware training, final scores, and timing estimates remain to
 be measured in separate experiments.

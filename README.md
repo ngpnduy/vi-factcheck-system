@@ -1,31 +1,28 @@
 # Vietnamese Fact-Checking System
 
-Protocol v2 now selects M1/M2/A2 checkpoints across all five verifier epochs, tunes listwise settings on validation, and supports the complete three-seed study. See [the protocol and launch guide](rush/LISTWISE_V2.md).
+The **Listwise v2 five-model, three-seed study is complete**. See the
+[report and full results download](research/results/listwise-best5-v2-three-seeds-20261112/README.md).
+M2 test Macro-F1 is **0.7066 +/- 0.0057**, the mean and sample SD across three seeds.
 
-Research code for evidence-based Vietnamese fact-checking.
+| Implementation | Entry point | Environment / protocol |
+|---|---|---|
+| Original paper reproduction and M0 | `src/factcheck/` and root `scripts/` | Root `uv.lock`; original data/model workflows |
+| M0/M1/M2/A1/A2 research study | [research/](research/README.md) | Own pinned environment; PhoBERT-base, VnCoreNLP, Adafactor, Listwise v2 |
 
-The repository includes the ViFactCheck paper reproduction (PLM/LLM classifiers
-and BM25/SBERT/hybrid retrieval), the M0 within-context baseline, and a separate
-corpus BM25 experiment. See [the code organization guide](docs/code_organization.md)
-for their entry points, data formats, and dependency requirements.
+These implementations have separate preprocessing, dependencies and protocols.
+Do not install the research requirements into the root environment or interchange
+scores/checkpoints. See [code organization](docs/code_organization.md).
 
-## Rush-version: standalone research implementation
+The standalone project moved from `rush/` to `research/`. The Python package and
+CLI stay `vifactcheck`; [migration instructions](research/MIGRATION.md) describe the
+forwarding PowerShell launchers and new environment location.
 
-The `rush/` subproject contains a separate, tested M0/M1/M2 implementation and
-the 900-claim, seed-42 deadline pilot. See [its setup and commands](rush/README.md)
-and [protocol differences](rush/docs/BRANCH_NOTES.md). It uses its own environment
-and data/artifact directories; its scores belong to its recorded protocol.
+Historical [pilot](rush/results/pilot-900-seed42/README.md) and
+[single-seed study](rush/results/full-five-listwise-seed42-20261030/README.md)
+remain at their original URLs. The application version is unchanged; study
+publications use separate experiment tags.
 
-The completed pilot's [report](rush/results/pilot-900-seed42/REPORT.md) and
-[downloadable results package](rush/results/pilot-900-seed42/README.md) are available.
-
-The Rush implementation also supports the 0410 slides' A1/A2 controls and optional
-list-aware candidate attention. See [the implementation and commands](rush/docs/SLIDES_0410_IMPLEMENTATION.md).
-
-The full-data, seed-42 list-aware study completed all five configurations on
-30 October 2026. See the [report and downloadable results archive](rush/results/full-five-listwise-seed42-20261030/README.md).
-
-The existing `src/factcheck/` workflows continue to use the setup below.
+The setup below applies to the **original `src/factcheck/` workflows**.
 
 ## Quick start
 
@@ -72,7 +69,7 @@ bash scripts/run_m0.sh train --seed 42
 
 Training uses the existing baseline dependency group. Full runs select checkpoints
 on validation only. The current learning rate is provisional pending M1 selection;
-official three-seed test results have not yet been produced.
+official three-seed results for this original `src/factcheck/` M0 workflow have not been produced. The completed study linked above belongs to the separate research implementation.
 
 ## ViFactCheck paper reproduction
 
