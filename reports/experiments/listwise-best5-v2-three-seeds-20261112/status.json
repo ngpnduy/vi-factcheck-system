@@ -1,0 +1,49 @@
+{
+  "status": "complete",
+  "pid": 22004,
+  "started_utc": "2026-11-06T05:12:06.730176+00:00",
+  "updated_utc": "2026-11-11T17:43:31.449167+00:00",
+  "output": "C:\\Users\\HI\\AppData\\Local\\Packages\\OpenAI.Codex_2p2nqsd0c76g0\\LocalCache\\Local\\ViFactCheck\\full-five-listwise-best5-v2",
+  "train_count": 5062,
+  "validation_count": 723,
+  "test_count": 1447,
+  "total_training_tasks": 13,
+  "completed_training_tasks": 13,
+  "protocol_version": 2,
+  "models": [
+    "M0",
+    "M1",
+    "A1",
+    "M2",
+    "A2"
+  ],
+  "architecture": "listwise",
+  "initial_estimated_total_hours": [
+    90,
+    110
+  ],
+  "runtime_estimate_note": "Estimate from measured phase throughput; no fixed ETA for new architectures or ablations",
+  "task": "report",
+  "phase": "complete",
+  "event": "complete",
+  "free_disk_gib": 7.887443542480469,
+  "evidence_supervised_train_count": 1871,
+  "seed": 2026,
+  "learning_rate": 1e-05,
+  "evidence_lambda": 0.1,
+  "estimated_total_compute_hours": [
+    90.2716454564582,
+    110.33201111344891
+  ],
+  "epoch": 5,
+  "total_epochs": 5,
+  "global_epoch": 5,
+  "total_verifier_epochs": 5,
+  "completed_claims": 1447,
+  "total_claims": 1447,
+  "epoch_training_seconds": 2392.121427600039,
+  "checkpoint_model_bytes": 537639948,
+  "completed_test_models": 15,
+  "total_test_models": 15,
+  "model": "A2"
+}

@@ -1,0 +1,11 @@
+{
+  "checkpoint_sha256": "49033381616dee546090efbbb711ef1ea81b4eb2a1bed36390cee4566afad924",
+  "test_count": 1447,
+  "reload_max_probability_difference": 0.0,
+  "raw_input_max_probability_difference": 0.0,
+  "artifact_sha256": {
+    "m2_test_metrics.json": "8110d799033dfdc3c4f1b51382e09dd1e9dace99d8d5106adf9fbc2f4fc97456",
+    "m2_test_predictions.jsonl": "d8bd49c62697859cbcf19bdd21f49450c1b6b83eefd8f6e44d64b1936aa23c7a",
+    "m2_example_prediction.json": "18d0bcc522660223b22db6fef7c59e238c388f7111ee271e71f48c350467d0f4"
+  }
+}

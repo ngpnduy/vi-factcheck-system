@@ -1,0 +1,18 @@
+{
+  "protocol_version": 2,
+  "completed_utc": "2026-11-06T13:48:48.827587+00:00",
+  "artifacts": {
+    "summary.json": "10d93b52ea2a3c7bd5354d6260944998a4fd07ba5cf94e17ba4149afcba93a62",
+    "experiment.json": "b8bc94a9f981917d0bd0935c5a39ae848b09c77197215294cf09d6d59103f592",
+    "m1_best.pt": "16413af8d38ad31421f17c610a32cd4939bdab85624c64beaf49b0cad7c57a20",
+    "m1_dev_metrics.json": "5ba6151594a1efc728c33c5ed27077d3eb929004ee1b2c468b66cac3e14027d6",
+    "m1_dev_predictions.jsonl": "f1fb2b4ace2239b3c0634b952076a8f7881e0d8c4e8c340bffce35dcecee53ed",
+    "m1_checks.json": "abb5118d2332642561be8ca9b8b2c667c1634b0d65b7cd1cb06cedd7283d8d2b",
+    "m1_selection.json": "061341d86af5e80d3128d27f7489181e3e292e43b9c5d24c7fd1036e16c1a557",
+    "reranker_best.pt": "4a37edb4bd92b2421c0858a046f1077025b076d5043564aa92cdca0bd8d9bce6",
+    "warmup_best.pt": "c0ea278a005e696b545fb2749e63734c0c386b5662da8918b12179f97738cd2e",
+    "warmup_end.pt": "c0ea278a005e696b545fb2749e63734c0c386b5662da8918b12179f97738cd2e",
+    "reranker_history.json": "b15ab5ef711346ef041fe8de20d33f9af538f1b747b95728fd1d61ba12f18e42",
+    "warmup_history.json": "34464fc71a7df5f5fb9ac8f018dc8f1627227748f10f9bdc00ebc20c46bd1386"
+  }
+}

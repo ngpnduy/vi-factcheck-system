@@ -1,0 +1,20 @@
+{
+  "shared_warmup_checkpoint_sha256": "9dfce19ec8c1acacee184bb71c7c3ca73da07f64ac4dd0c2a25d66f3b4a86838",
+  "verifier_initial_sha256": "50a408fbffcd64bfe6c601fb184de164d5a4a78dea442ed8ce5c62087333e171",
+  "reranker_initial_sha256": "0006123cb81c3bb9a201a9390060186f264703abf890c3c7e9d07c92d0d3c432",
+  "verification_only_reranker_head_gradient_norm": 0.0,
+  "evidence_only_reranker_head_gradient_norm": 0.004803377203643322,
+  "all_reranker_parameters_trainable": true,
+  "all_verifier_parameters_trainable": true,
+  "reranker_unchanged": false,
+  "reranker_final_sha256": "fd3656beda70ffa08feeb22a64be21051b22b045e6583d7118067457f76624c2",
+  "trained_reranker_unchanged": false,
+  "trained_reranker_final_sha256": "fd3656beda70ffa08feeb22a64be21051b22b045e6583d7118067457f76624c2",
+  "first_last_attention_query_changed": {
+    "verifier.encoder.layer.0.attention.self.query.weight": true,
+    "verifier.encoder.layer.11.attention.self.query.weight": true,
+    "reranker.encoder.layer.0.attention.self.query.weight": true,
+    "reranker.encoder.layer.11.attention.self.query.weight": true
+  },
+  "checked_state": "terminal continuation state, independent of selected best epoch"
+}

@@ -1,0 +1,18 @@
+{
+  "status": "passed",
+  "claim_ids": [
+    "train:19855855:5038",
+    "train:18534948:6045",
+    "train:18569894:3529",
+    "train:19855855:1851",
+    "train:18774224:4964",
+    "train:19901154:5947",
+    "train:18773211:2901",
+    "train:19561385:2727"
+  ],
+  "purpose": "eight largest tokenized candidate workloads; weights discarded",
+  "seconds": 14.270484399981797,
+  "peak_allocated_mib": 2996.9345703125,
+  "peak_reserved_mib": 3200.0,
+  "all_encoder_parameters_trainable": true
+}

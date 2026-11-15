@@ -1,0 +1,435 @@
+{
+  "validated_utc": "2026-11-13T09:55:55.600334+00:00",
+  "purpose": "Directory migration and publication validation; no retraining or protocol/model changes",
+  "executed_source_commit": "baa0bdc80379d26e661bd1dcf5e37b3b48ba14a8",
+  "source_path_mapping": {
+    "rush/vifactcheck/": "research/vifactcheck/"
+  },
+  "executed_source_sha256": {
+    "__init__.py": "e8a6520d4213e806147567f59d27abfeb58a639da99d46c90e150ddb532df725",
+    "__main__.py": "6d8b7d7846a845059d7a3107143f11131f63c5511d669b44085b15ec5e3d2279",
+    "assets.py": "d93f04cfe24001a5a8d3bb1640fe5c9ef193118b85160b2f597d44716a2e22d7",
+    "cli.py": "db6f304d2748e55d431c7db21d5e9d6ffaf916cca95c4a83ba3bc8ae8331abce",
+    "config.py": "b52a4ae206d192a37ccc9918acd1d882fb32caaeff4adf5ea246487293be4889",
+    "data.py": "e3b329b2be877a894b57526ffd47368617ac02615d4a3f3d15e404cf6a85624a",
+    "full.py": "f67bafb5355283f8592a71caace803ce84ee0e14865ae71e683d340074076884",
+    "full_reporting.py": "55220c6ddd6f0031be959520d0e3fb84398609e3eee4e115ed2339dfd3dc622d",
+    "io.py": "77b6b13716d2c0b9a5c62b30dd99fd8c5156320e822ef51a82c00998601f460b",
+    "metrics.py": "a2a1aa8d78ee0a2c0c7c14345c0d25efdee0172b4d32a6430dc215bc6b9e4393",
+    "model.py": "44c5b0a5e27e45ba39df63d41ad68f77fe610de0280a1ca561aeff3308597434",
+    "pilot.py": "ef091c59a44e3d24c334a78a867b0a14382e8a7b3f589eb64f8e6b195653523b",
+    "reporting.py": "d4ea6c7472214ec1af8d622033b6ea03c114086f2de476ecd4ed249681b8b951",
+    "text.py": "40f8ff648368e0b63abdf0308c7aefd2d570eb74613cd3ab14432b1fc9b76311",
+    "training.py": "33775d69a7ab0ac99cc1dfe56543d2e446e13d43ad110434f4b4803f684a95c1"
+  },
+  "protected_files": {
+    "count": 163,
+    "all_unchanged": true,
+    "historical_publication_files_and_original_workflows": true
+  },
+  "research_tests": {
+    "tests": 102,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "time": 120.636
+  },
+  "publication_tests": {
+    "tests": 17,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 0,
+    "time": 3.93
+  },
+  "original_workflow_tests": {
+    "result": {
+      "tests": 62,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "time": 52.752
+    },
+    "environment": "Separate Python 3.11 uv sync --frozen environment using unchanged root uv.lock",
+    "snapshot": "Exact original Git blobs from baa0bdc",
+    "windows_adapter": "Resolve subprocess bash to C:/Program Files/Git/bin/bash.exe; default Windows lookup selected WSL bash and initially caused 2 shell-test failures (60 passed). No original source was changed."
+  },
+  "checkpoint_relocation": {
+    "purpose": "checkpoint inference equivalence only; no training or test-driven selection",
+    "started_utc": "2026-11-13T09:49:42.214461+00:00",
+    "package_root": "E:\\Bean\\hcmut\\documents(real)\\programming inergration project\\vi-factcheck-system\\research",
+    "source_code_sha256": {
+      "assets.py": "d93f04cfe24001a5a8d3bb1640fe5c9ef193118b85160b2f597d44716a2e22d7",
+      "cli.py": "db6f304d2748e55d431c7db21d5e9d6ffaf916cca95c4a83ba3bc8ae8331abce",
+      "config.py": "b52a4ae206d192a37ccc9918acd1d882fb32caaeff4adf5ea246487293be4889",
+      "data.py": "e3b329b2be877a894b57526ffd47368617ac02615d4a3f3d15e404cf6a85624a",
+      "full.py": "f67bafb5355283f8592a71caace803ce84ee0e14865ae71e683d340074076884",
+      "full_reporting.py": "55220c6ddd6f0031be959520d0e3fb84398609e3eee4e115ed2339dfd3dc622d",
+      "io.py": "77b6b13716d2c0b9a5c62b30dd99fd8c5156320e822ef51a82c00998601f460b",
+      "metrics.py": "a2a1aa8d78ee0a2c0c7c14345c0d25efdee0172b4d32a6430dc215bc6b9e4393",
+      "model.py": "44c5b0a5e27e45ba39df63d41ad68f77fe610de0280a1ca561aeff3308597434",
+      "pilot.py": "ef091c59a44e3d24c334a78a867b0a14382e8a7b3f589eb64f8e6b195653523b",
+      "reporting.py": "d4ea6c7472214ec1af8d622033b6ea03c114086f2de476ecd4ed249681b8b951",
+      "text.py": "40f8ff648368e0b63abdf0308c7aefd2d570eb74613cd3ab14432b1fc9b76311",
+      "training.py": "33775d69a7ab0ac99cc1dfe56543d2e446e13d43ad110434f4b4803f684a95c1",
+      "__init__.py": "e8a6520d4213e806147567f59d27abfeb58a639da99d46c90e150ddb532df725",
+      "__main__.py": "6d8b7d7846a845059d7a3107143f11131f63c5511d669b44085b15ec5e3d2279"
+    },
+    "cases": [
+      {
+        "seed": 42,
+        "model": "M0",
+        "claim_id": "test:19050703:1383",
+        "checkpoint_sha256": "53b0b4b7c4166443c7a3df092bf9959d2e95d6b3dc052fba7597e265c2a6359e",
+        "reload_max_probability_difference": 0.0,
+        "raw_input_max_probability_difference": 0.0,
+        "same_label_and_ranking": true
+      },
+      {
+        "seed": 42,
+        "model": "M1",
+        "claim_id": "test:19050703:1383",
+        "checkpoint_sha256": "16413af8d38ad31421f17c610a32cd4939bdab85624c64beaf49b0cad7c57a20",
+        "reload_max_probability_difference": 0.0,
+        "raw_input_max_probability_difference": 0.0,
+        "same_label_and_ranking": true
+      },
+      {
+        "seed": 42,
+        "model": "A1",
+        "claim_id": "test:19050703:1383",
+        "checkpoint_sha256": "20bea5328cc11d5811567df84cde9126049c50f2ac867fd761e052a70bd33fbc",
+        "reload_max_probability_difference": 0.0,
+        "raw_input_max_probability_difference": 0.0,
+        "same_label_and_ranking": true
+      },
+      {
+        "seed": 42,
+        "model": "M2",
+        "claim_id": "test:19050703:1383",
+        "checkpoint_sha256": "37f7547e956ca8145d84762e3016349cda8fdab3d5bca522c879ac3b51bd5050",
+        "reload_max_probability_difference": 0.0,
+        "raw_input_max_probability_difference": 0.0,
+        "same_label_and_ranking": true
+      },
+      {
+        "seed": 42,
+        "model": "A2",
+        "claim_id": "test:19050703:1383",
+        "checkpoint_sha256": "b914e2f725bce40fbf3a6989fb7fb7ff7b4d3e381cf231f28a275db60bd086d0",
+        "reload_max_probability_difference": 0.0,
+        "raw_input_max_probability_difference": 0.0,
+        "same_label_and_ranking": true
+      },
+      {
+        "seed": 13,
+        "model": "M0",
+        "claim_id": "test:19050703:1383",
+        "checkpoint_sha256": "a6af81cde5fbb0c92d9f869c205f26942149a9b068d357d8bd53e2564b505b22",
+        "reload_max_probability_difference": 0.0,
+        "raw_input_max_probability_difference": 0.0,
+        "same_label_and_ranking": true
+      },
+      {
+        "seed": 13,
+        "model": "M1",
+        "claim_id": "test:19050703:1383",
+        "checkpoint_sha256": "116b472b67fdcf65a2bb5e4fa48293b6ffd3bf681531d57940b6b8d24d274aa5",
+        "reload_max_probability_difference": 0.0,
+        "raw_input_max_probability_difference": 0.0,
+        "same_label_and_ranking": true
+      },
+      {
+        "seed": 13,
+        "model": "A1",
+        "claim_id": "test:19050703:1383",
+        "checkpoint_sha256": "ec8662391c8396fb58769e1e2a675232261fbfac3bc1e0eef5041fc3789b3cd1",
+        "reload_max_probability_difference": 0.0,
+        "raw_input_max_probability_difference": 0.0,
+        "same_label_and_ranking": true
+      },
+      {
+        "seed": 13,
+        "model": "M2",
+        "claim_id": "test:19050703:1383",
+        "checkpoint_sha256": "49033381616dee546090efbbb711ef1ea81b4eb2a1bed36390cee4566afad924",
+        "reload_max_probability_difference": 0.0,
+        "raw_input_max_probability_difference": 0.0,
+        "same_label_and_ranking": true
+      },
+      {
+        "seed": 13,
+        "model": "A2",
+        "claim_id": "test:19050703:1383",
+        "checkpoint_sha256": "1e83edfa476988bb82fc974c31042088b1c8fe042370ebde9ef81975d47bcf59",
+        "reload_max_probability_difference": 0.0,
+        "raw_input_max_probability_difference": 0.0,
+        "same_label_and_ranking": true
+      },
+      {
+        "seed": 2026,
+        "model": "M0",
+        "claim_id": "test:19050703:1383",
+        "checkpoint_sha256": "1ad1c9f61cb606d6dddc72e4bc1fea04c22a7ee5a127e67ec2152e6ce7f71fa6",
+        "reload_max_probability_difference": 0.0,
+        "raw_input_max_probability_difference": 0.0,
+        "same_label_and_ranking": true
+      },
+      {
+        "seed": 2026,
+        "model": "M1",
+        "claim_id": "test:19050703:1383",
+        "checkpoint_sha256": "c256a82fb51d934892417346bcb671b0f4a041400f75b471d124d66f367b0d5f",
+        "reload_max_probability_difference": 0.0,
+        "raw_input_max_probability_difference": 0.0,
+        "same_label_and_ranking": true
+      },
+      {
+        "seed": 2026,
+        "model": "A1",
+        "claim_id": "test:19050703:1383",
+        "checkpoint_sha256": "1e10317afbba8db1b41795a9ac8f1ceb49ab491130cc289b9a68ec4a0b49edf6",
+        "reload_max_probability_difference": 0.0,
+        "raw_input_max_probability_difference": 0.0,
+        "same_label_and_ranking": true
+      },
+      {
+        "seed": 2026,
+        "model": "M2",
+        "claim_id": "test:19050703:1383",
+        "checkpoint_sha256": "3953329c69b7f1dbfdd980bbfc21dc1dbf0cfd1f12c4c364b8ff0b2c1b9e1558",
+        "reload_max_probability_difference": 0.0,
+        "raw_input_max_probability_difference": 0.0,
+        "same_label_and_ranking": true
+      },
+      {
+        "seed": 2026,
+        "model": "A2",
+        "claim_id": "test:19050703:1383",
+        "checkpoint_sha256": "ed48522876e7ee5d186ba6182be0f3d1f7738c0ca186f38ceef116f70db55f7e",
+        "reload_max_probability_difference": 0.0,
+        "raw_input_max_probability_difference": 0.0,
+        "same_label_and_ranking": true
+      }
+    ],
+    "status": "passed",
+    "completed_utc": "2026-11-13T09:52:29.242378+00:00"
+  },
+  "saved_results_verification": {
+    "test_sets": 15,
+    "claims_per_test": 1447,
+    "paired_ids_labels_articles": true,
+    "classification_and_retrieval_recomputed": true,
+    "mean_and_sample_sd_verified": true,
+    "paired_bootstrap_records": 12,
+    "checkpoint_selections": {
+      "42:M0": {
+        "selected_global_epoch": 3,
+        "selected_stage": "m0",
+        "selected_validation_macro_f1": 0.5895405299298605,
+        "checkpoint_sha256": "53b0b4b7c4166443c7a3df092bf9959d2e95d6b3dc052fba7597e265c2a6359e",
+        "initialization_checkpoint_sha256": null,
+        "selected_source_checkpoint_sha256": "53b0b4b7c4166443c7a3df092bf9959d2e95d6b3dc052fba7597e265c2a6359e",
+        "protocol_version": 2
+      },
+      "42:M1": {
+        "selected_global_epoch": 4,
+        "selected_stage": "continuation",
+        "selected_validation_macro_f1": 0.6817807110232073,
+        "checkpoint_sha256": "16413af8d38ad31421f17c610a32cd4939bdab85624c64beaf49b0cad7c57a20",
+        "initialization_checkpoint_sha256": "c0ea278a005e696b545fb2749e63734c0c386b5662da8918b12179f97738cd2e",
+        "selected_source_checkpoint_sha256": "16413af8d38ad31421f17c610a32cd4939bdab85624c64beaf49b0cad7c57a20",
+        "protocol_version": 2
+      },
+      "42:A1": {
+        "selected_global_epoch": 5,
+        "selected_stage": "a1",
+        "selected_validation_macro_f1": 0.5834033613445379,
+        "checkpoint_sha256": "20bea5328cc11d5811567df84cde9126049c50f2ac867fd761e052a70bd33fbc",
+        "initialization_checkpoint_sha256": "4a37edb4bd92b2421c0858a046f1077025b076d5043564aa92cdca0bd8d9bce6",
+        "selected_source_checkpoint_sha256": "20bea5328cc11d5811567df84cde9126049c50f2ac867fd761e052a70bd33fbc",
+        "protocol_version": 2
+      },
+      "42:M2": {
+        "selected_global_epoch": 5,
+        "selected_stage": "continuation",
+        "selected_validation_macro_f1": 0.7062010725496713,
+        "checkpoint_sha256": "37f7547e956ca8145d84762e3016349cda8fdab3d5bca522c879ac3b51bd5050",
+        "initialization_checkpoint_sha256": "c0ea278a005e696b545fb2749e63734c0c386b5662da8918b12179f97738cd2e",
+        "selected_source_checkpoint_sha256": "37f7547e956ca8145d84762e3016349cda8fdab3d5bca522c879ac3b51bd5050",
+        "protocol_version": 2
+      },
+      "42:A2": {
+        "selected_global_epoch": 5,
+        "selected_stage": "continuation",
+        "selected_validation_macro_f1": 0.6765034652358596,
+        "checkpoint_sha256": "b914e2f725bce40fbf3a6989fb7fb7ff7b4d3e381cf231f28a275db60bd086d0",
+        "initialization_checkpoint_sha256": "c0ea278a005e696b545fb2749e63734c0c386b5662da8918b12179f97738cd2e",
+        "selected_source_checkpoint_sha256": "b914e2f725bce40fbf3a6989fb7fb7ff7b4d3e381cf231f28a275db60bd086d0",
+        "protocol_version": 2
+      },
+      "13:M0": {
+        "selected_global_epoch": 3,
+        "selected_stage": "m0",
+        "selected_validation_macro_f1": 0.6195122160870485,
+        "checkpoint_sha256": "a6af81cde5fbb0c92d9f869c205f26942149a9b068d357d8bd53e2564b505b22",
+        "initialization_checkpoint_sha256": null,
+        "selected_source_checkpoint_sha256": "a6af81cde5fbb0c92d9f869c205f26942149a9b068d357d8bd53e2564b505b22",
+        "protocol_version": 2
+      },
+      "13:M1": {
+        "selected_global_epoch": 5,
+        "selected_stage": "continuation",
+        "selected_validation_macro_f1": 0.6981847977856123,
+        "checkpoint_sha256": "116b472b67fdcf65a2bb5e4fa48293b6ffd3bf681531d57940b6b8d24d274aa5",
+        "initialization_checkpoint_sha256": "9dfce19ec8c1acacee184bb71c7c3ca73da07f64ac4dd0c2a25d66f3b4a86838",
+        "selected_source_checkpoint_sha256": "116b472b67fdcf65a2bb5e4fa48293b6ffd3bf681531d57940b6b8d24d274aa5",
+        "protocol_version": 2
+      },
+      "13:A1": {
+        "selected_global_epoch": 3,
+        "selected_stage": "a1",
+        "selected_validation_macro_f1": 0.6240171709209109,
+        "checkpoint_sha256": "ec8662391c8396fb58769e1e2a675232261fbfac3bc1e0eef5041fc3789b3cd1",
+        "initialization_checkpoint_sha256": "fabbacf001c4acb24ffddc632ddd3526cc61dfbda21cc88db63618879f10498b",
+        "selected_source_checkpoint_sha256": "ec8662391c8396fb58769e1e2a675232261fbfac3bc1e0eef5041fc3789b3cd1",
+        "protocol_version": 2
+      },
+      "13:M2": {
+        "selected_global_epoch": 4,
+        "selected_stage": "continuation",
+        "selected_validation_macro_f1": 0.709033074572869,
+        "checkpoint_sha256": "49033381616dee546090efbbb711ef1ea81b4eb2a1bed36390cee4566afad924",
+        "initialization_checkpoint_sha256": "9dfce19ec8c1acacee184bb71c7c3ca73da07f64ac4dd0c2a25d66f3b4a86838",
+        "selected_source_checkpoint_sha256": "49033381616dee546090efbbb711ef1ea81b4eb2a1bed36390cee4566afad924",
+        "protocol_version": 2
+      },
+      "13:A2": {
+        "selected_global_epoch": 5,
+        "selected_stage": "continuation",
+        "selected_validation_macro_f1": 0.7080292311138415,
+        "checkpoint_sha256": "1e83edfa476988bb82fc974c31042088b1c8fe042370ebde9ef81975d47bcf59",
+        "initialization_checkpoint_sha256": "9dfce19ec8c1acacee184bb71c7c3ca73da07f64ac4dd0c2a25d66f3b4a86838",
+        "selected_source_checkpoint_sha256": "1e83edfa476988bb82fc974c31042088b1c8fe042370ebde9ef81975d47bcf59",
+        "protocol_version": 2
+      },
+      "2026:M0": {
+        "selected_global_epoch": 3,
+        "selected_stage": "m0",
+        "selected_validation_macro_f1": 0.6134238194332554,
+        "checkpoint_sha256": "1ad1c9f61cb606d6dddc72e4bc1fea04c22a7ee5a127e67ec2152e6ce7f71fa6",
+        "initialization_checkpoint_sha256": null,
+        "selected_source_checkpoint_sha256": "1ad1c9f61cb606d6dddc72e4bc1fea04c22a7ee5a127e67ec2152e6ce7f71fa6",
+        "protocol_version": 2
+      },
+      "2026:M1": {
+        "selected_global_epoch": 4,
+        "selected_stage": "continuation",
+        "selected_validation_macro_f1": 0.6676006425789053,
+        "checkpoint_sha256": "c256a82fb51d934892417346bcb671b0f4a041400f75b471d124d66f367b0d5f",
+        "initialization_checkpoint_sha256": "e0b74ae6353a3ae881a222a4fe960fef95c0b3c406d6a1e99268ac6561cff48a",
+        "selected_source_checkpoint_sha256": "c256a82fb51d934892417346bcb671b0f4a041400f75b471d124d66f367b0d5f",
+        "protocol_version": 2
+      },
+      "2026:A1": {
+        "selected_global_epoch": 3,
+        "selected_stage": "a1",
+        "selected_validation_macro_f1": 0.6107042144425322,
+        "checkpoint_sha256": "1e10317afbba8db1b41795a9ac8f1ceb49ab491130cc289b9a68ec4a0b49edf6",
+        "initialization_checkpoint_sha256": "5e45697c42dd9b6da78c9e7c1e711d34e392cba5e98b1ac4d44cb8167a751fc7",
+        "selected_source_checkpoint_sha256": "1e10317afbba8db1b41795a9ac8f1ceb49ab491130cc289b9a68ec4a0b49edf6",
+        "protocol_version": 2
+      },
+      "2026:M2": {
+        "selected_global_epoch": 4,
+        "selected_stage": "continuation",
+        "selected_validation_macro_f1": 0.6877117321720965,
+        "checkpoint_sha256": "3953329c69b7f1dbfdd980bbfc21dc1dbf0cfd1f12c4c364b8ff0b2c1b9e1558",
+        "initialization_checkpoint_sha256": "e0b74ae6353a3ae881a222a4fe960fef95c0b3c406d6a1e99268ac6561cff48a",
+        "selected_source_checkpoint_sha256": "3953329c69b7f1dbfdd980bbfc21dc1dbf0cfd1f12c4c364b8ff0b2c1b9e1558",
+        "protocol_version": 2
+      },
+      "2026:A2": {
+        "selected_global_epoch": 5,
+        "selected_stage": "continuation",
+        "selected_validation_macro_f1": 0.6949142630587769,
+        "checkpoint_sha256": "ed48522876e7ee5d186ba6182be0f3d1f7738c0ca186f38ceef116f70db55f7e",
+        "initialization_checkpoint_sha256": "e0b74ae6353a3ae881a222a4fe960fef95c0b3c406d6a1e99268ac6561cff48a",
+        "selected_source_checkpoint_sha256": "ed48522876e7ee5d186ba6182be0f3d1f7738c0ca186f38ceef116f70db55f7e",
+        "protocol_version": 2
+      }
+    }
+  },
+  "research_environment": {
+    "python": "3.12.4",
+    "kind": "New isolated environment on C exposed by a research/.venv junction because E has less free space than the CUDA Torch package",
+    "recorded_top_level_pins_match": true,
+    "packages": {
+      "annotated-doc": "0.0.6",
+      "anyio": "4.16.0",
+      "certifi": "2026.10.23",
+      "click": "8.5.1",
+      "cloudpickle": "3.1.2",
+      "colorama": "0.4.6",
+      "filelock": "4.2.10",
+      "fsspec": "2026.9.0",
+      "h11": "0.16.0",
+      "hf-xet": "1.8.0",
+      "httpcore": "1.0.9",
+      "httpx": "0.28.1",
+      "huggingface_hub": "1.19.0",
+      "idna": "3.20",
+      "iniconfig": "2.3.1",
+      "Jinja2": "3.1.6",
+      "joblib": "1.6.0",
+      "markdown-it-py": "4.3.0",
+      "MarkupSafe": "3.0.4",
+      "mdurl": "0.1.2",
+      "mpmath": "1.3.0",
+      "networkx": "3.7",
+      "numpy": "2.3.5",
+      "packaging": "26.3",
+      "pluggy": "1.7.0",
+      "pyarrow": "19.0.1",
+      "Pygments": "2.21.0",
+      "pytest": "9.0.1",
+      "PyYAML": "6.0.3",
+      "rank-bm25": "0.2.2",
+      "regex": "2026.11.9",
+      "rich": "15.0.0",
+      "safetensors": "0.8.0",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.18.1",
+      "setuptools": "80.9.0",
+      "shellingham": "1.5.4",
+      "sympy": "1.13.1",
+      "threadpoolctl": "3.8.0",
+      "tokenizers": "0.22.2",
+      "torch": "2.6.0+cu124",
+      "tqdm": "4.70.1",
+      "transformers": "5.12.1",
+      "typer": "0.25.1",
+      "typing_extensions": "4.16.0",
+      "vifactcheck-reproduction": "0.1.0"
+    },
+    "previous_attempt": "Shared-package test collection encountered a native Windows access violation during optional dependency imports; final validation uses isolated dependencies."
+  },
+  "powershell_launchers": {
+    "parsed": 6,
+    "legacy_forwarding_cases_passed": 3,
+    "setup_environment_directory_option": true
+  },
+  "ignore_rules_checked": [
+    "environments",
+    "caches",
+    "generated runs",
+    "weights",
+    "new ZIP exports"
+  ],
+  "documentation": {
+    "existing_links_checked": 14,
+    "broken_existing_links": 0,
+    "publication_links": "Final strict check is recorded in publication-export-20261113.json after export"
+  },
+  "application_version": "0.1.0",
+  "new_training_started": false
+}

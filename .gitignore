@@ -19,3 +19,10 @@ outputs/
 .DS_Store
 .vscode/
 .idea/
+
+# Model weights and downloadable result archives
+*.pt
+*.pth
+*.safetensors
+*.bin
+*.zip

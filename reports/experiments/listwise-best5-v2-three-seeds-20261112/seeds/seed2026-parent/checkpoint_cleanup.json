@@ -1,0 +1,14 @@
+[
+  {
+    "file": "reranker_last.pt",
+    "sha256": "413fbc3da341c7dbf5fd32bbf9c804418b0b74a4a19d9b58dc940878b6acfbf0"
+  },
+  {
+    "file": "warmup_last.pt",
+    "sha256": "e0b74ae6353a3ae881a222a4fe960fef95c0b3c406d6a1e99268ac6561cff48a"
+  },
+  {
+    "file": "m1_last.pt",
+    "sha256": "3f0f82e56219d036b94c11ffb596ffc157e611ad944c61d66b48e9c2dc3436e6"
+  }
+]

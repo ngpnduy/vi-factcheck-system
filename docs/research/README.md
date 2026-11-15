@@ -6,4 +6,6 @@
 - [Multi-stage reranking](paper_04_multistage_reranking.md) và [RAV evidence retrieval](paper_06_rav_evidence_retrieval.md): động lực cho chọn evidence và verifier.
 - [LLM verification survey](paper_05_llm_verification_survey.md): bối cảnh so sánh.
 
-Đây là ghi chú đọc paper, không phải source hoặc kết quả benchmark của v2. Các ghi chú và PDF khác vẫn ở workspace cá nhân; chỉ những tài liệu liên quan trực tiếp đến báo cáo hiện tại được đưa vào nhánh release.
+Các ghi chú tiếp theo (`paper_07_*` đến `paper_24_*`) mở rộng bối cảnh về claim verification, uncertainty, retrieval, dữ liệu và mô hình ngôn ngữ. Chúng nằm cùng thư mục để tra cứu; số trong tên file là thứ tự ghi chú, không phải thứ hạng paper. PDF gốc được lưu ngoài Git.
+
+Đây là ghi chú đọc paper, không phải source hoặc kết quả benchmark v2. Đọc [hướng dẫn dự án](../guides/learning_guide_vi.md) và [báo cáo thực nghiệm](../../reports/README.md) để phân biệt ý tưởng tham khảo với implementation và kết quả của nhóm.

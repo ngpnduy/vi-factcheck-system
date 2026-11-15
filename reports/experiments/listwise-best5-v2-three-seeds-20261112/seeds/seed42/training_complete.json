@@ -1,0 +1,33 @@
+{
+  "protocol_version": 2,
+  "completed_utc": "2026-11-08T18:56:29.655788+00:00",
+  "artifacts": {
+    "summary.json": "3645c7b75d711b157dc49d811479d4359e13beb81803fb5719355cc5a7139e46",
+    "experiment.json": "684d54218103356398c75115b24c993353a1859209adda2357a44b3686359c20",
+    "m0_best.pt": "53b0b4b7c4166443c7a3df092bf9959d2e95d6b3dc052fba7597e265c2a6359e",
+    "m0_dev_metrics.json": "169652212ade164224e4dc8bf593030b974e99ec1b4c09e075aa33a7e87182aa",
+    "m0_dev_predictions.jsonl": "2d1c5959853cd299efd0351cdd360722c2738a9bb8e0ee7f93910eace26e58ee",
+    "m0_checks.json": "c4e843d743096193df5670b122630c1389d8b4990376c8c297bd9c87d6389a77",
+    "m0_selection.json": "c1dac03d1420bde5188fa69fec4a8d7f1ef03d3e65cb2683960a8c54b60e4c31",
+    "m1_best.pt": "16413af8d38ad31421f17c610a32cd4939bdab85624c64beaf49b0cad7c57a20",
+    "m1_dev_metrics.json": "5ba6151594a1efc728c33c5ed27077d3eb929004ee1b2c468b66cac3e14027d6",
+    "m1_dev_predictions.jsonl": "f1fb2b4ace2239b3c0634b952076a8f7881e0d8c4e8c340bffce35dcecee53ed",
+    "m1_checks.json": "abb5118d2332642561be8ca9b8b2c667c1634b0d65b7cd1cb06cedd7283d8d2b",
+    "m1_selection.json": "061341d86af5e80d3128d27f7489181e3e292e43b9c5d24c7fd1036e16c1a557",
+    "a1_best.pt": "20bea5328cc11d5811567df84cde9126049c50f2ac867fd761e052a70bd33fbc",
+    "a1_dev_metrics.json": "13fb0ecf2302c91fb6452162ee14d2edb18b1263c733ddd1f11d1e7c9b987baf",
+    "a1_dev_predictions.jsonl": "2170eb2b10850e6a617d035e96fd31a533724242b7afb4d2f64a51654a34a779",
+    "a1_checks.json": "b26c6bed4a25558df4aaeb90b08d234ff890c56c0bdef7bc3368b228ddd61bae",
+    "a1_selection.json": "b732ff9a022b55133dd62b74db6b2ae3ac9baa9cbad32b44ccf654132bad0b67",
+    "m2_best.pt": "37f7547e956ca8145d84762e3016349cda8fdab3d5bca522c879ac3b51bd5050",
+    "m2_dev_metrics.json": "252beed9f3a08e5ea89f9b638a8c6f006c7960ce106e74d4689510f31dd5e0fc",
+    "m2_dev_predictions.jsonl": "1826845e83b7fd2de31b10e23361c9b23da9f89e306167ba01f19df2b250eb52",
+    "m2_checks.json": "011ef8a8b6fbc899ac994a1d914bb4a39edc6ff28a2e68e7414349f4f0075b3e",
+    "m2_selection.json": "64070518132874c14bbd8e92deb79e8010a4d1b3a523e2f4f7ec4fc2725585de",
+    "a2_best.pt": "b914e2f725bce40fbf3a6989fb7fb7ff7b4d3e381cf231f28a275db60bd086d0",
+    "a2_dev_metrics.json": "83fdb7241b3dd5564ce79a80f80867771e4d1c2431448499a293b3ff2e112919",
+    "a2_dev_predictions.jsonl": "e20517c8901489e82430e7aee8ea57fe204852eb8b1cddb8ef23254661e3c80c",
+    "a2_checks.json": "f837e7b34e5cce7be528372368d311d84a2be8fc6e31f6e23e97094711761bba",
+    "a2_selection.json": "07f889448a085e0120d25a42e0cd6c41f461f4772b79d77ba652b1b24e6f441d"
+  }
+}

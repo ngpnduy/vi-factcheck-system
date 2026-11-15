@@ -4,9 +4,9 @@ Repo này có **một pipeline chính** tại [`src/vifactcheck/`](src/vifactche
 
 ## Kết quả hiện có
 
-M2 listwise đạt **0.7046 test Macro-F1** trong thí nghiệm full-data **một seed (42)** ngày 30/10/2026; đây là điểm cao nhất trong năm cấu hình của thí nghiệm đó. [Báo cáo và bảng điểm](reports/experiments/listwise-seed42/) ghi rõ giao thức và giới hạn. [Pilot 900 claim](reports/experiments/pilot-900-seed42/) là một thí nghiệm trước đó, không dùng điểm pilot thay cho điểm full-data.
+Thí nghiệm **Listwise v2 ba seed** đã hoàn tất trên 5.062 train, 723 dev và 1.447 test claim. M2 đạt **0.7066 ± 0.0057 test Macro-F1** (trung bình ± sample SD trên seeds 42, 13, 2026). Learning rate `1e-5` và evidence lambda `0.1` được chọn trên seed 42/dev trước khi đánh giá test. Đọc [báo cáo đầy đủ](reports/experiments/listwise-best5-v2-three-seeds-20261112/REPORT.md), [bảng kết quả](reports/experiments/listwise-best5-v2-three-seeds-20261112/results.csv) và [trạng thái checkpoint](reports/MODELS.md).
 
-V2 chạy lại năm cấu hình trên các seed 42, 13, 2026, chọn learning rate/lambda bằng validation và chọn checkpoint tốt nhất trong năm epoch verifier. **Chưa có báo cáo kết quả full v2 được đưa vào nhánh này.** Không lấy điểm smoke hoặc điểm tháng 10 làm kết quả v2. Checkpoint weights không nằm trong Git; [trạng thái checkpoint](reports/MODELS.md) ghi rõ khả năng chạy inference.
+[Pilot 900 claim](reports/experiments/pilot-900-seed42/) và [full-data một seed tháng 10](reports/experiments/listwise-seed42/) là kết quả lịch sử, dùng protocol khác. Để bắt đầu từ khái niệm verdict, retrieval, loss, seed và metrics, đọc [hướng dẫn tiếng Việt](docs/guides/learning_guide_vi.md).
 
 ## Cấu trúc
 
@@ -17,9 +17,11 @@ V2 chạy lại năm cấu hình trên các seed 42, 13, 2026, chọn learning r
 | `tests/` | Kiểm tra cho code chính |
 | `docs/protocol/` | Giao thức, cách chạy và bằng chứng validation |
 | `docs/research/` | Ghi chú paper phục vụ báo cáo |
+| `docs/guides/` | Hướng dẫn đọc dự án, thuật ngữ và quy trình viết báo |
+| `docs/validation/` | Bằng chứng kiểm tra và provenance của v2 |
 | `reports/` | Proposal, slide và báo cáo kết quả |
 
-Source tái hiện paper, M0 độc lập, pilot/slides scripts và dữ liệu thí nghiệm chi tiết được giữ tại commit [`baa0bdc`](https://github.com/ngpnduy/vi-factcheck-system/tree/baa0bdc80379d26e661bd1dcf5e37b3b48ba14a8) trong lịch sử nhánh listwise. Các báo cáo dẫn thẳng tới commit này để truy vết khi nhánh tiếp tục phát triển.
+Source của run ba seed được ghi ở commit `baa0bdc`; 15 file Python của run giống byte-for-byte với `src/vifactcheck/` trong nhánh này. Bản công bố kết quả gốc là commit `0af01fd` và tag `listwise-v2-three-seeds-20261112`. Report và metadata nằm trong Git; ZIP phát hành có thêm predictions và source snapshot. Checkpoint weights và dataset không nằm trong Git/ZIP.
 
 ## Chạy trên Windows GPU
 
@@ -33,7 +35,7 @@ powershell -ExecutionPolicy Bypass -File scripts\start_listwise_v2.ps1 -CheckOnl
 powershell -ExecutionPolicy Bypass -File scripts\start_listwise_v2.ps1
 ```
 
-Launcher giữ checkpoint ở `%LOCALAPPDATA%\ViFactCheck\full-five-listwise-best5-v2` và ghi trạng thái vào `runs\full-five-listwise-best5-v2`. Chạy lại **cùng lệnh, cùng source và dữ liệu** để resume. Có thể truyền `-DataDirectory`, `-ModelDirectory`, `-SegmenterDirectory`, `-OutputDirectory` và `-StatusDirectory` khi dùng vị trí khác. [Chi tiết protocol và resume](docs/protocol/v2.md).
+Launcher của nhánh release dùng `%LOCALAPPDATA%\ViFactCheck\full-five-listwise-best5-v2` và `runs\full-five-listwise-best5-v2` cho **run mới**. Run đã công bố dùng đường dẫn ghi trong metadata trên máy thí nghiệm. Có thể truyền `-DataDirectory`, `-ModelDirectory`, `-SegmenterDirectory`, `-OutputDirectory` và `-StatusDirectory`. [Chi tiết protocol và resume](docs/protocol/v2.md).
 
 Để dự đoán bằng checkpoint đã có:
 
