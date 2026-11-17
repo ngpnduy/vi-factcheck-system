@@ -161,7 +161,7 @@ Sau khi baseline/adapter mới được triển khai, chạy smoke riêng cho **
 
 ### Job được chuẩn bị trước: pilot hội tụ M2 trên P100
 
-Người dùng đã chọn P100 là nơi chạy diagnostic dài; laptop chỉ chuẩn bị code và phân tích log trong bước này. Sau khi checkout commit có runner mới, đọc [protocol hội tụ](../protocol/convergence.md), rồi kiểm tra:
+P100 là một lựa chọn chạy diagnostic dài sau khi xác nhận môi trường server. Cập nhật 17/11/2026: laptop cũng đã được cho phép chạy cùng protocol khi ổ output đạt ít nhất 35 GiB trống; run 15 epoch hiện chưa khởi chạy. Đọc [kế hoạch hội tụ và lệnh Windows/Linux](../protocol/convergence.md), chọn máy/output cho run mới, rồi kiểm tra:
 
 ```bash
 python scripts/run_convergence.py \

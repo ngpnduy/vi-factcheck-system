@@ -1,6 +1,8 @@
-# Thăm dò hội tụ trên P100: M2/PhoBERT, seed 42
+# Kế hoạch hội tụ 15 epoch: M2/PhoBERT, seed 42
 
-Chuẩn bị ngày 17/11/2026 từ `release/v2` (`2045e64`), trên nhánh làm việc `research/convergence-and-backbones`. Người dùng đã chọn **chuẩn bị để teammate chạy trên P100**, không chạy training dài trên laptop. [Setup Conda](../guides/server-conda.md) và [kế hoạch nhiều backbone](../guides/backbone-benchmark.md) là hai hướng dẫn đi kèm.
+Chuẩn bị ngày 17/11/2026 từ `release/v2` (`2045e64`); runner và bộ hướng dẫn đã merge vào `release/v2` ở `9287427`. Kế hoạch hiện tại cho phép chạy **trên laptop khi đủ dung lượng**, hoặc trên Tesla P100 sau khi kiểm tra server. [Setup Conda/P100](../guides/server-conda.md) và [kế hoạch nhiều backbone](../guides/backbone-benchmark.md) là hai hướng dẫn đi kèm.
+
+**Trạng thái ngày 17/11/2026:** run 15 epoch chưa khởi chạy. Laptop đã được kiểm tra và chưa đạt ngưỡng 35 GiB trống trên ổ output; môi trường P100 chưa có full-model smoke xác nhận trên máy thật. Giữ toàn bộ checkpoint đã có. Việc publish kế hoạch không bắt đầu training hay cho phép tự xóa checkpoint/dữ liệu cũ.
 
 ## 1. Hiện có thể kết luận gì?
 
@@ -28,6 +30,14 @@ Warmup tối ưu verification, continuation thêm evidence BCE và mở gradient
 - Chạy đủ horizon đã chốt để quan sát; không có early stopping tự động. OOM/nonfinite loss/dung lượng không đủ dừng có thông báo, không tự đổi mô hình.
 
 `scripts/run_convergence.py` dùng các phase hiện có, thêm observer riêng và lựa chọn LR horizon có lưu trong checkpoint. Khi không bật observer/horizon, đường chạy cũ giữ nguyên mặc định. Không resume checkpoint năm epoch cũ bằng cách sửa trường epoch hoặc lấy `m2_best.pt` làm terminal state. Pilot chạy mới từ pretrained weights; trên P100 khác phần cứng không cam kết tái hiện từng bit của năm epoch đầu laptop.
+
+### Điều kiện khởi chạy và thứ tự công việc
+
+1. Chọn máy và một thư mục output mới; giữ nguyên các run đã công bố. Đo ổ chứa output còn ít nhất **35 GiB trống**, nên còn khoảng 40 GiB trống trên ổ đó. Nếu dùng ổ ngoài, chọn đường dẫn/drive letter cố định cho cả run và resume. Không hạ ngưỡng hoặc tự xóa checkpoint để vượt gate.
+2. Ghi commit, môi trường, đường dẫn assets/data/output và giữ nguyên chúng sau khi job bắt đầu. Máy đã có môi trường đúng phiên bản thì tái sử dụng; không chạy lại setup hoặc nâng package giữa một run. Máy mới cần [setup Windows](../../README.md#chạy-trên-windows-gpu) hoặc [Conda/P100](../guides/server-conda.md), rồi prepare pinned assets/data.
+3. Chạy preflight và smoke trong output riêng; full-model probe kiểm tra tám workload dài nhất trước training. Chỉ bắt đầu full-data khi các bước này thành công. OOM hoặc loss không hữu hạn phải dừng và kiểm tra nguyên nhân, giữ cả hai encoder trainable trong M2.
+4. Chạy ba epoch reranker, ba epoch warmup và 12 epoch M2 continuation; ghi loss/dev metrics mỗi epoch. Cắm nguồn và giữ laptop không sleep; runner hiện không tự ngăn máy sleep.
+5. Sau từng epoch đã lưu, kiểm tra diagnostics/history/status và phân tích đường loss theo mục 5–6. Kết thúc run mới kết luận về plateau/overfit trong phạm vi 15 epoch; checkpoint vẫn chọn bằng dev, không dùng test.
 
 ## 3. Chuẩn bị và preflight
 
@@ -57,6 +67,54 @@ python scripts/run_convergence.py \
 ```
 
 Smoke dùng 24 train/12 dev. Điểm smoke chỉ xác nhận pipeline. Giữ riêng nó với full-data pilot.
+
+### Windows: dùng môi trường đã có
+
+Chạy PowerShell tại gốc repo. Ví dụ dưới dùng layout của một checkout mới đã setup/prepare theo README. Nếu môi trường hoặc data/model đang ở nơi khác, sửa ba biến đầu thành đường dẫn thực tế **trước preflight**; máy laptop đã có môi trường không cần tạo lại `.venv`. Chọn `$OutputDirectory` trên ổ đủ dung lượng. Các log terminal phải ở ngoài thư mục output mới, vì runner từ chối thư mục đã có file nhưng chưa có run identity.
+
+```powershell
+$Python = (Resolve-Path -LiteralPath '.venv\Scripts\python.exe').Path
+$DataDirectory = (Resolve-Path -LiteralPath 'data\prepared').Path
+$ModelDirectory = (Resolve-Path -LiteralPath '.cache\phobert').Path
+$OutputDirectory = Join-Path $env:LOCALAPPDATA 'ViFactCheck\convergence-phobert-seed42-e15'
+$env:PYTHONPATH = (Resolve-Path -LiteralPath 'src').Path
+$env:OMP_NUM_THREADS = '2'
+$env:MKL_NUM_THREADS = '2'
+$env:CUBLAS_WORKSPACE_CONFIG = ':4096:8'
+
+$RunArguments = @(
+    '-u', 'scripts/run_convergence.py',
+    '--data', $DataDirectory, '--model-path', $ModelDirectory,
+    '--output', $OutputDirectory, '--device', 'cuda',
+    '--total-epochs', '15', '--warmup-epochs', '3',
+    '--reranker-epochs', '3', '--lr-horizon-epochs', '5',
+    '--seed', '42', '--lr', '1e-5', '--evidence-lambda', '0.1'
+)
+& $Python @RunArguments --check-only
+if ($LASTEXITCODE -ne 0) { throw 'Preflight failed; do not start training.' }
+```
+
+Smoke riêng, giữ giới hạn token/evidence như full-data và không sửa `$RunArguments` của full run:
+
+```powershell
+& $Python -u scripts/run_convergence.py `
+    --data $DataDirectory --model-path $ModelDirectory `
+    --output ($OutputDirectory + '-smoke') --device cuda `
+    --smoke --total-epochs 5 --warmup-epochs 3 --reranker-epochs 1 `
+    --lr-horizon-epochs 5 --seed 42 --lr 1e-5 --evidence-lambda 0.1
+if ($LASTEXITCODE -ne 0) { throw 'Smoke failed; do not start the full run.' }
+```
+
+Sau khi smoke thành công, đo lại dung lượng và chạy full-data. Log dưới đây nằm ở gốc repo, bên ngoài output, và chỉ được tạo khi preflight đã thành công:
+
+```powershell
+& $Python @RunArguments --check-only
+if ($LASTEXITCODE -ne 0) { throw 'Preflight failed after smoke; do not start training.' }
+& $Python @RunArguments 2>&1 | Tee-Object -FilePath 'convergence-seed42.log' -Append
+if ($LASTEXITCODE -ne 0) { throw 'Training stopped; inspect the log and failure.json.' }
+```
+
+Giữ terminal mở và lưu các giá trị biến/lệnh đã dùng. Để resume sau gián đoạn, khôi phục đúng các giá trị đó và chạy lại lệnh full-data; không chạy setup lại, không có cờ `--resume`, không đổi sang checkpoint best của study cũ. Nếu đã tạo file `STOP`, xem mục 4 trước khi chạy lại.
 
 ## 4. Chạy, theo dõi và resume
 

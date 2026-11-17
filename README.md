@@ -11,10 +11,10 @@ Thí nghiệm **Listwise v2 ba seed** đã hoàn tất trên 5.062 train, 723 de
 ## Công việc tiếp theo: hội tụ và nhiều backbone
 
 - [Audit loss/dev hiện có](reports/diagnostics/convergence-20261117/REPORT.md): train objective còn giảm; chưa đủ bằng chứng hội tụ sau năm epoch.
-- [Pilot hội tụ 15 epoch trên P100](docs/protocol/convergence.md): runner riêng, train/dev loss tách thành phần, giữ best/last và resume; không đọc test.
+- [Kế hoạch hội tụ 15 epoch trên laptop hoặc P100](docs/protocol/convergence.md): lệnh Windows/Linux, điều kiện khởi chạy, train/dev loss tách thành phần, giữ best/last và resume; không đọc test.
 - [Hướng dẫn teammate so sánh baseline với M2 theo backbone](docs/guides/backbone-benchmark.md) và [setup Conda/P100](docs/guides/server-conda.md).
 
-Các công cụ chuẩn bị này dựa trên `release/v2`; training dài trên P100 chưa được chạy. Classifier baseline độc lập và adapter tổng quát cho các backbone mới là bước triển khai kế tiếp, chưa phải chức năng đã hoàn tất của CLI. Giữ study năm epoch đã công bố riêng với pilot dài hơn và khóa protocol benchmark sau pilot.
+Các công cụ chuẩn bị này dựa trên `release/v2`. Cập nhật 17/11/2026: run 15 epoch chưa khởi chạy; laptop đang chờ ổ output đạt ít nhất 35 GiB trống và P100 vẫn cần smoke trên server. Giữ toàn bộ checkpoint cũ. Classifier baseline độc lập và adapter tổng quát cho các backbone mới là bước triển khai kế tiếp, chưa phải chức năng đã hoàn tất của CLI. Giữ study năm epoch đã công bố riêng với pilot dài hơn và khóa protocol benchmark sau pilot.
 
 ## Cấu trúc
 
@@ -48,7 +48,7 @@ Launcher của nhánh release dùng `%LOCALAPPDATA%\ViFactCheck\full-five-listwi
 Để dự đoán bằng checkpoint đã có:
 
 ```powershell
-.\.venv\Scripts\python.exe -m vifactcheck predict --checkpoint <duong-dan-checkpoint> --input examples\claim.json --output runs\prediction.json
+.\.venv\Scripts\python.exe -m vifactcheck predict --checkpoint '<duong-dan-checkpoint>' --input examples\claim.json --output runs\prediction.json
 ```
 
 Run An đang huấn luyện cần tiếp tục trên checkout và launcher cũ, với checkpoint/data/config/output path đã ghi nhận. Các file Python được chuyển **nguyên byte**, nhưng đường dẫn package và launcher ở nhánh release khác; dùng nhánh này cho lần chạy mới sau khi run cũ hoàn tất.
