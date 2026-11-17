@@ -1,0 +1,9 @@
+{
+  "format": "vifactcheck-convergence-analysis-v1",
+  "source_run": "E:\\Bean\\hcmut\\documents(real)\\programming inergration project\\vi-factcheck-system\\reports\\experiments\\listwise-best5-v2-three-seeds-20261112",
+  "files": {
+    "convergence.json": "39125bb0a2b684db20e802da09e04a2e1362bf085824ab3528b910485f6f7981",
+    "convergence.csv": "6a2a03c9a118b92eb3121f7c15ed784b2536e97e7a229a587b1a9debb4989228",
+    "REPORT.md": "4d2a31f76a1ff60148913bf20334cf1c83e5b857d226c914ad0dcf7691563aab"
+  }
+}

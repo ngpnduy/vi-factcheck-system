@@ -163,11 +163,18 @@ def evaluate_ranker(system, rows, progress=None):
     return {"retrieval": retrieval_metrics(rows, rankings)}
 
 
-def phase(system, train, dev, directory, name, stage, epochs, source=None, progress=None, selection_source=None):
+def phase(system, train, dev, directory, name, stage, epochs, source=None, progress=None, selection_source=None,
+          epoch_observer=None, diagnostic_id=None, lr_horizon_epochs=None):
     directory = Path(directory)
     directory.mkdir(parents=True, exist_ok=True)
     last_path, best_path = directory / f"{name}_last.pt", directory / f"{name}_best.pt"
     config = system.config
+    if (epoch_observer is None) != (diagnostic_id is None):
+        raise ValueError("An epoch observer requires a persistent diagnostic_id")
+    if lr_horizon_epochs is not None and (not isinstance(lr_horizon_epochs, int) or lr_horizon_epochs < 1):
+        raise ValueError("LR horizon must be a positive epoch count")
+    phase_options = ({"diagnostic_id": diagnostic_id, "lr_horizon_epochs": lr_horizon_epochs}
+                     if diagnostic_id is not None or lr_horizon_epochs is not None else None)
     if config.protocol_version != PROTOCOL_VERSION:
         raise ValueError("Training requires protocol v2; legacy checkpoints are inference-only")
     system.configure_training(stage)
@@ -182,6 +189,8 @@ def phase(system, train, dev, directory, name, stage, epochs, source=None, progr
     if last_path.exists():
         checkpoint = load_checkpoint(last_path)
         require_v2(checkpoint)
+        if checkpoint.get("phase_options") != phase_options:
+            raise ValueError("Existing run has different diagnostics or LR horizon")
         if checkpoint["mode"] != system.mode or TrainConfig(**checkpoint["config"]).to_dict() != config.to_dict() or checkpoint["data_signature"] != data_signature or checkpoint["source_checkpoint_sha256"] != source_hash:
             raise ValueError("Existing run has different configuration/data/source; choose a new output directory")
         completed, best_score, history = checkpoint["completed_epochs"], checkpoint["best_score"], checkpoint["history"]
@@ -218,6 +227,8 @@ def phase(system, train, dev, directory, name, stage, epochs, source=None, progr
     elif source:
         checkpoint = load_checkpoint(source)
         require_v2(checkpoint)
+        if checkpoint.get("phase_options") != phase_options:
+            raise ValueError("Initialization has different diagnostics or LR horizon")
         if checkpoint["data_signature"] != data_signature:
             raise ValueError("Initialization checkpoint has different data")
         saved_config = TrainConfig.from_saved(checkpoint["config"]).to_dict()
@@ -274,6 +285,7 @@ def phase(system, train, dev, directory, name, stage, epochs, source=None, progr
         if not order:
             raise ValueError("No eligible examples for this training phase")
         started, total, evidence_count, optimizer_steps = time.perf_counter(), 0.0, 0, 0
+        verification_total, evidence_total = 0.0, 0.0
         optimizer.zero_grad(set_to_none=True)
         epoch_metadata = {"phase": name, "epoch": epoch + 1, "total_epochs": epochs,
                           "global_epoch": order_epoch + 1,
@@ -284,7 +296,8 @@ def phase(system, train, dev, directory, name, stage, epochs, source=None, progr
             group = order[group_start:group_start + config.accumulation_steps]
             # Warm up to the configured explicit LR over the first 10% of
             # optimizer updates of this phase; no relative Adafactor schedule.
-            schedule_epochs = config.reranker_epochs if stage == "reranker" else config.warmup_epochs + config.continuation_epochs
+            schedule_epochs = (config.reranker_epochs if stage == "reranker" else
+                               lr_horizon_epochs or config.warmup_epochs + config.continuation_epochs)
             total_updates = math.ceil(len(order) / config.accumulation_steps) * schedule_epochs
             update = order_epoch * math.ceil(len(order) / config.accumulation_steps) + group_start // config.accumulation_steps + 1
             lr = config.learning_rate * min(1.0, update / max(1, math.ceil(total_updates * 0.1)))
@@ -296,10 +309,16 @@ def phase(system, train, dev, directory, name, stage, epochs, source=None, progr
                     candidates, scores = system.rank_scores(row, gradients=True)
                     loss = evidence_loss(scores, row, candidates)
                     evidence_count += 1
+                    if epoch_observer is not None:
+                        evidence_total += float(loss.detach())
                 else:
                     result = system(row, training_stage=stage)
                     loss = -result["log_probabilities"][row["label"]]
+                    if epoch_observer is not None:
+                        verification_total += float(loss.detach())
                     if result["evidence_loss"] is not None:
+                        if epoch_observer is not None:
+                            evidence_total += float(result["evidence_loss"].detach())
                         loss = loss + config.evidence_lambda * result["evidence_loss"]
                         evidence_count += 1
                 if not torch.isfinite(loss):
@@ -327,6 +346,16 @@ def phase(system, train, dev, directory, name, stage, epochs, source=None, progr
             raise ValueError("Validation has no aligned evidence for reranker selection")
         global_epoch = order_epoch + 1
         history.append({"epoch": epoch + 1, "global_epoch": global_epoch, "stage": stage, "phase": name, "average_loss": total / len(order), "evidence_supervised_claims": evidence_count, "optimizer_steps": optimizer_steps, "training_seconds": training_seconds, "peak_training_cuda": training_memory, "validation": validation})
+        if epoch_observer is not None:
+            history[-1]["loss_components"] = {
+                "verification_nll": verification_total / len(order) if stage != "reranker" else None,
+                "eligible_evidence_bce": evidence_total / evidence_count if evidence_count else None,
+                "evidence_weighted_contribution": (config.evidence_lambda * evidence_total / len(order)
+                                                   if stage != "reranker" else None),
+                "objective_mean": total / len(order), "claim_count": len(order),
+                "eligible_evidence_count": evidence_count, "mode": "online_train_dropout_enabled",
+            }
+            history[-1]["diagnostics"] = epoch_observer(system, train, dev, stage, history[-1])
         improved = score > best_score
         best_score = max(score, best_score)
         if improved:
@@ -337,6 +366,8 @@ def phase(system, train, dev, directory, name, stage, epochs, source=None, progr
                    "source_checkpoint": str(Path(source).resolve()) if source else None,
                    "selection_baseline_sha256": selection_hash,
                    "selection_source_checkpoint": str(Path(selection_source).resolve()) if selection_source else None, **selected}
+        if phase_options is not None:
+            payload["phase_options"] = phase_options
         if progress:
             progress({**epoch_metadata, "event": "checkpoint", "checkpoint_model_bytes": sum(t.numel() * t.element_size() for t in payload["model"].values())})
         save_checkpoint(last_path, payload)
@@ -344,7 +375,13 @@ def phase(system, train, dev, directory, name, stage, epochs, source=None, progr
         if improved:
             copy_checkpoint(last_path, best_path)
         write_json(directory / f"{name}_history.json", history)
+        if epoch_observer is not None and progress:
+            progress({**epoch_metadata, "event": "epoch_complete"})
         print(f"{name}: validation {'MRR' if stage == 'reranker' else 'Macro-F1'}={score:.4f}", flush=True)
+    if epoch_observer is not None:
+        # last.pt is authoritative if power was lost before the JSON journal.
+        # Recreate it even when resuming an already-completed phase.
+        write_json(directory / f"{name}_history.json", history)
     if not best_path.exists():
         raise RuntimeError("Best checkpoint missing")
     payload = load_checkpoint(best_path)

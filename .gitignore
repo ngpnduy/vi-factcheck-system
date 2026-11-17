@@ -14,6 +14,10 @@ dist/
 data/
 runs/
 outputs/
+# Runtime leftovers from the pre-release layout; source now lives under src/.
+/research/
+/exports/
+*.log
 
 # Editor and OS files
 .DS_Store

@@ -8,6 +8,14 @@ Thí nghiệm **Listwise v2 ba seed** đã hoàn tất trên 5.062 train, 723 de
 
 [Pilot 900 claim](reports/experiments/pilot-900-seed42/) và [full-data một seed tháng 10](reports/experiments/listwise-seed42/) là kết quả lịch sử, dùng protocol khác. Để bắt đầu từ khái niệm verdict, retrieval, loss, seed và metrics, đọc [hướng dẫn tiếng Việt](docs/guides/learning_guide_vi.md).
 
+## Công việc tiếp theo: hội tụ và nhiều backbone
+
+- [Audit loss/dev hiện có](reports/diagnostics/convergence-20261117/REPORT.md): train objective còn giảm; chưa đủ bằng chứng hội tụ sau năm epoch.
+- [Pilot hội tụ 15 epoch trên P100](docs/protocol/convergence.md): runner riêng, train/dev loss tách thành phần, giữ best/last và resume; không đọc test.
+- [Hướng dẫn teammate so sánh baseline với M2 theo backbone](docs/guides/backbone-benchmark.md) và [setup Conda/P100](docs/guides/server-conda.md).
+
+Các công cụ chuẩn bị này dựa trên `release/v2`; training dài trên P100 chưa được chạy. Classifier baseline độc lập và adapter tổng quát cho các backbone mới là bước triển khai kế tiếp, chưa phải chức năng đã hoàn tất của CLI. Giữ study năm epoch đã công bố riêng với pilot dài hơn và khóa protocol benchmark sau pilot.
+
 ## Cấu trúc
 
 | Nơi | Nội dung |
@@ -21,7 +29,7 @@ Thí nghiệm **Listwise v2 ba seed** đã hoàn tất trên 5.062 train, 723 de
 | `docs/validation/` | Bằng chứng kiểm tra và provenance của v2 |
 | `reports/` | Proposal, slide và báo cáo kết quả |
 
-Source của run ba seed được ghi ở commit `baa0bdc`; 15 file Python của run giống byte-for-byte với `src/vifactcheck/` trong nhánh này. Bản công bố kết quả gốc là commit `0af01fd` và tag `listwise-v2-three-seeds-20261112`. Report và metadata nằm trong Git; ZIP phát hành có thêm predictions và source snapshot. Checkpoint weights và dataset không nằm trong Git/ZIP.
+Source của run ba seed được ghi ở commit `baa0bdc`; bản `release/v2` tại `2045e64` giữ nguyên 15 file Python của run. Nhánh công việc mới bổ sung observer/lịch LR tùy chọn trong `training.py` và module hội tụ riêng; source hiện tại không còn là snapshot nguyên byte của run cũ. Snapshot thực thi được giữ trong ZIP công bố, không sửa các báo cáo gốc. Bản công bố kết quả gốc là commit `0af01fd` và tag `listwise-v2-three-seeds-20261112`. Report và metadata nằm trong Git; ZIP phát hành có thêm predictions và source snapshot. Checkpoint weights và dataset không nằm trong Git/ZIP; M2 seed 13 được chia sẻ riêng tại [Release](https://github.com/ngpnduy/vi-factcheck-system/releases/tag/listwise-v2-three-seeds-20261112), cần quyền đọc repo private.
 
 ## Chạy trên Windows GPU
 

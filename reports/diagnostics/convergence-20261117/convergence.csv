@@ -1,0 +1,16 @@
+history_path,model,seed,global_epoch,stage,train_objective,train_verification_loss,train_evidence_loss,train_evidence_weighted_contribution,train_claim_count,train_eligible_evidence_count,train_probe_nll,train_probe_evidence_bce,train_probe_claim_count,train_probe_eligible_evidence_count,dev_macro_f1,dev_evidence_bce,dev_eligible_evidence_count,dev_nll,dev_claim_count
+seeds/seed13-branches/m2_history.json,M2,13,1,warmup,1.0579970941177144,,,,,,,,,,0.40612273120138287,,,,723
+seeds/seed13-branches/m2_history.json,M2,13,2,warmup,0.8689430751876427,,,,,,,,,,0.6133982734967957,,,,723
+seeds/seed13-branches/m2_history.json,M2,13,3,warmup,0.6339499712872003,,,,,,,,,,0.6703221387075567,,,,723
+seeds/seed13-branches/m2_history.json,M2,13,4,continuation,0.4479331190509082,,,,,,,,,,0.709033074572869,,,,723
+seeds/seed13-branches/m2_history.json,M2,13,5,continuation,0.28122467743109575,,,,,,,,,,0.7080275413341992,,,,723
+tuning/lambda_0.1/m2_history.json,M2,42,1,warmup,1.0581259751381116,,,,,,,,,,0.5206203082470832,,,,723
+tuning/lambda_0.1/m2_history.json,M2,42,2,warmup,0.8744909412230146,,,,,,,,,,0.6162805947561147,,,,723
+tuning/lambda_0.1/m2_history.json,M2,42,3,warmup,0.6640706969287463,,,,,,,,,,0.6560838599085007,,,,723
+tuning/lambda_0.1/m2_history.json,M2,42,4,continuation,0.4921554493442242,,,,,,,,,,0.6786504868640079,,,,723
+tuning/lambda_0.1/m2_history.json,M2,42,5,continuation,0.3349646882974428,,,,,,,,,,0.7062010725496713,,,,723
+seeds/seed2026-branches/m2_history.json,M2,2026,1,warmup,1.0593105067496407,,,,,,,,,,0.46865770021418224,,,,723
+seeds/seed2026-branches/m2_history.json,M2,2026,2,warmup,0.8769491314177825,,,,,,,,,,0.6151340453442344,,,,723
+seeds/seed2026-branches/m2_history.json,M2,2026,3,warmup,0.6716548311110131,,,,,,,,,,0.6436603268316577,,,,723
+seeds/seed2026-branches/m2_history.json,M2,2026,4,continuation,0.507966361057708,,,,,,,,,,0.6877117321720965,,,,723
+seeds/seed2026-branches/m2_history.json,M2,2026,5,continuation,0.34137135700417254,,,,,,,,,,0.6810827110931631,,,,723
