@@ -65,6 +65,9 @@ def main(argv=None):
     output.parent.mkdir(parents=True, exist_ok=True)
     for target in targets:
         figure.savefig(target, dpi=180, metadata={"Creator": "ViFactCheck convergence diagnostic"})
+        if target.suffix == ".svg":
+            # Matplotlib's path exporter emits trailing spaces; keep Git artifacts tidy.
+            target.write_text("\n".join(line.rstrip() for line in target.read_text(encoding="utf-8").splitlines()) + "\n", encoding="utf-8")
     plt.close(figure)
     print("Saved " + ", ".join(str(target) for target in targets))
 
