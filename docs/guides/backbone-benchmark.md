@@ -2,6 +2,8 @@
 
 P100 chạy [mBERT](https://huggingface.co/google-bert/bert-base-multilingual-cased/commit/3f076fdb1ab68d5b2880cb87a0886f315b8146f8) trước. Chạy [XLM-R](https://huggingface.co/FacebookAI/xlm-roberta-base/commit/e73636d4f797dec63c3081bb6ed5c7b0bb3f2089) nếu thời gian đo trên mBERT phù hợp với hạn nhóm đã chốt. Mỗi backbone chạy Baseline và M2 với seeds 42, 13, 2026. Thiết kế này giữ trần **5 epoch verifier** của v2. Pilot hội tụ 15 epoch đang tạm gác.
 
+Xem [phân công ba backbone của nhóm](backbone-work-plan.md) để biết phần của Thành trên P100 và phần PhoBERT-v2 của An trên RTX 3050.
+
 ## 1. Điều kiện và dữ liệu dùng chung
 
 - Hoàn tất bước 1–4 trong [guide Conda/P100](server-conda.md). Dùng cùng môi trường đã kiểm tra CUDA FP16 và chạy từ gốc repo. `python -m vifactcheck benchmark --help` cần hiện các lệnh con `prepare`, `smoke`, `run`, `export`, `compare`.

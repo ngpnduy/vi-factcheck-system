@@ -6,5 +6,6 @@
 4. [Benchmark Baseline–M2 trên P100](backbone-benchmark.md): lệnh Slurm cho mBERT và XLM-R, tuning, resume và ZIP kết quả.
 5. [Setup Conda/P100](server-conda.md): môi trường server, kiểm tra CUDA và chuẩn bị dữ liệu dùng chung.
 6. [Pilot hội tụ 15 epoch](../protocol/convergence.md): loss đã ghi nhận, cách chạy dài hơn và cách diễn giải dev curves.
+7. [Phân công benchmark backbone](backbone-work-plan.md): Thành chạy mBERT và XLM-R trên P100, An phụ trách PhoBERT-v2 trên laptop.
 
 Kết quả chính thức nằm tại [reports](../../reports/README.md); protocol chạy mô hình ở [docs/protocol](../protocol/v2.md).

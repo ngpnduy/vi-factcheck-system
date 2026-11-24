@@ -17,6 +17,8 @@ python -m vifactcheck benchmark --help
 
 Sau đó vào [phần chạy mBERT](backbone-benchmark.md#2-chạy-mbert-từ-terminal-trên-server) để tải pretrained assets và submit smoke Baseline + M2 qua Slurm. Khi smoke đạt mới submit full mBERT. Xem [cách tải ZIP kết quả qua Open OnDemand](backbone-benchmark.md#4-output-để-tải-qua-open-ondemand).
 
+[File phân công benchmark](backbone-work-plan.md) ghi hai backbone của Thành trên P100 và backbone PhoBERT-v2 của An.
+
 Các bước bên dưới dành cho máy cần setup Conda từ đầu hoặc nhóm muốn kiểm tra lại pipeline PhoBERT. Pilot hội tụ 15 epoch hiện đang tạm gác.
 
 ## Bước 1 — Ghi cấu hình máy và chọn checkout
