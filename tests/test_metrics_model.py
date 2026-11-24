@@ -1,8 +1,32 @@
 import pytest
 import torch
 
+from vifactcheck.config import TrainConfig
 from vifactcheck.metrics import classification_metrics, retrieval_metrics
-from vifactcheck.model import aggregate, evidence_loss, stable_topk
+from vifactcheck.model import VerificationSystem, aggregate, evidence_loss, stable_topk
+
+
+def test_baseline_prediction_without_evidence_sentences(monkeypatch):
+    class StubVerifier(torch.nn.Module):
+        def __init__(self, *args):
+            super().__init__()
+
+        def forward(self, inputs):
+            return torch.tensor([2.0, 0.0, -1.0])
+
+    class StubTokenizer:
+        def inputs(self, claim, context, device):
+            return {}, {"pair_tokens": 5}
+
+    monkeypatch.setattr("vifactcheck.model.PairEncoder", StubVerifier)
+    config = TrainConfig(backbone="mbert", device="cpu")
+    system = VerificationSystem(config, "BASELINE", tokenizer=StubTokenizer())
+    prediction = system.prediction({"id": "claim-1", "claim": "claim", "context": "article"})
+
+    assert prediction["label_id"] == 0
+    assert sum(prediction["probabilities"].values()) == pytest.approx(1.0)
+    assert prediction["ranking"] == []
+    assert prediction["selected_sentences"] == []
 
 
 def test_uniform_and_weighted_aggregation():

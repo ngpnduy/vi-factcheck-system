@@ -221,7 +221,7 @@ class VerificationSystem(nn.Module):
             with self.autocast():
                 logits = self.verifier(inputs)
             return {"log_probabilities": F.log_softmax(logits, dim=-1),
-                    "ranking": [], "selected": [], "weights": [],
+                    "ranking": [], "selected": [], "weights": logits.new_empty((0,)),
                     "evidence_loss": None, "truncation": [metadata]}
         rank_loss = None
         if self.mode == "M0":
