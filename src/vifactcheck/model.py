@@ -7,6 +7,7 @@ from transformers import AutoModel, AutoTokenizer
 
 from . import LABELS
 from .config import ALL_MODELS
+from .text import normalize
 
 
 class PairTokenizer:
@@ -45,6 +46,64 @@ class PairEncoder(nn.Module):
 
     def forward(self, inputs):
         return self.head(self.encode(inputs).unsqueeze(0)).float().squeeze(0)
+
+
+class NativePairTokenizer:
+    """Use the pinned native vocabulary, pair template and input budget."""
+
+    def __init__(self, config):
+        from pathlib import Path
+        from tokenizers import Tokenizer
+
+        self.tokenizer = Tokenizer.from_file(str(Path(config.model_path) / "tokenizer.json"))
+        self.bert_segments = config.backbone == "mbert"
+        self.max_length = config.max_length
+        self.claim_max_tokens = config.claim_max_tokens
+        start, end = ("[CLS]", "[SEP]") if self.bert_segments else ("<s>", "</s>")
+        self.start = self.tokenizer.token_to_id(start)
+        self.end = self.tokenizer.token_to_id(end)
+        plain = self.tokenizer.encode("test", add_special_tokens=False).ids
+        ids, fields, _ = self._pack(plain, plain)
+        native = self.tokenizer.encode("test", "test")
+        if ids != native.ids or (self.bert_segments and fields["token_type_ids"] != native.type_ids):
+            raise ValueError("Native tokenizer pair template differs from benchmark configuration")
+
+    def _pack(self, claim_ids, sentence_ids):
+        special_count = 3 if self.bert_segments else 4
+        claim = claim_ids[:self.claim_max_tokens]
+        sentence = sentence_ids[:self.max_length - special_count - len(claim)]
+        first = [self.start, *claim, self.end]
+        second = [*sentence, self.end] if self.bert_segments else [self.end, *sentence, self.end]
+        ids = first + second
+        fields = {"input_ids": ids, "attention_mask": [1] * len(ids)}
+        if self.bert_segments:
+            fields["token_type_ids"] = [0] * len(first) + [1] * len(second)
+        metadata = {"claim_truncated": len(claim) < len(claim_ids),
+                    "sentence_truncated": len(sentence) < len(sentence_ids),
+                    "claim_original_tokens": len(claim_ids), "sentence_original_tokens": len(sentence_ids),
+                    "context_tokens_kept": len(sentence), "pair_tokens": len(ids)}
+        return ids, fields, metadata
+
+    @lru_cache(maxsize=4096)
+    def _encode(self, claim, sentence):
+        claim_ids = self.tokenizer.encode(normalize(claim), add_special_tokens=False).ids
+        sentence_ids = self.tokenizer.encode(normalize(sentence), add_special_tokens=False).ids
+        return self._pack(claim_ids, sentence_ids)
+
+    def encode(self, claim, sentence):
+        ids, _, metadata = self._encode(claim, sentence)
+        return ids, metadata
+
+    def inputs(self, claim, sentence, device):
+        _, fields, metadata = self._encode(claim, sentence)
+        return {key: torch.tensor([value], dtype=torch.long, device=device)
+                for key, value in fields.items()}, metadata
+
+
+def tokenizer_for(config):
+    if config.backbone is not None:
+        return NativePairTokenizer(config)
+    return PairTokenizer(config.model_path, config.max_length, config.claim_max_tokens)
 
 
 class CandidateAttention(nn.Module):
@@ -107,13 +166,14 @@ def evidence_loss(scores, row, candidate_ids):
 class VerificationSystem(nn.Module):
     def __init__(self, config, mode, tokenizer=None):
         super().__init__()
-        if mode not in ALL_MODELS:
+        if mode not in ALL_MODELS and (mode != "BASELINE" or config.backbone is None):
             raise ValueError(f"mode must be one of {ALL_MODELS}")
         self.config, self.mode = config, mode
-        self.tokenizer = tokenizer or PairTokenizer(config.model_path, config.max_length, config.claim_max_tokens)
+        self.tokenizer = tokenizer or tokenizer_for(config)
         # Verifier is always constructed first for shared seed initialization.
         self.verifier = PairEncoder(config.model_path, 3, config.gradient_checkpointing)
-        self.reranker = PairEncoder(config.model_path, 1, config.gradient_checkpointing) if mode != "M0" else None
+        self.reranker = (PairEncoder(config.model_path, 1, config.gradient_checkpointing)
+                         if mode not in ("M0", "BASELINE") else None)
         if self.reranker is not None and config.reranker_architecture == "listwise":
             self.reranker.contextualizer = CandidateAttention(self.reranker.head.in_features, config)
         self.to(config.device)
@@ -137,7 +197,7 @@ class VerificationSystem(nn.Module):
         scores, features = [], []
         with nullcontext() if gradients else torch.no_grad():
             for i in candidates:
-                inputs, _ = self.tokenizer.inputs(row["claim_segmented"], row["sentences"][i]["segmented"], self.config.device)
+                inputs, _ = self.tokenizer.inputs(*self.pair_text(row, i), self.config.device)
                 with self.autocast():
                     if self.config.reranker_architecture == "listwise":
                         features.append(self.reranker.encode(inputs))
@@ -149,7 +209,20 @@ class VerificationSystem(nn.Module):
                     return candidates, self.reranker.head(contextualized).float().squeeze(-1)
         return candidates, torch.stack(scores)
 
+    def pair_text(self, row, sentence_id):
+        sentence = row["sentences"][sentence_id]
+        if self.config.backbone is not None:
+            return row["claim"], sentence["text"]
+        return row["claim_segmented"], sentence["segmented"]
+
     def forward(self, row, training_stage=None):
+        if self.mode == "BASELINE":
+            inputs, metadata = self.tokenizer.inputs(row["claim"], row["context"], self.config.device)
+            with self.autocast():
+                logits = self.verifier(inputs)
+            return {"log_probabilities": F.log_softmax(logits, dim=-1),
+                    "ranking": [], "selected": [], "weights": [],
+                    "evidence_loss": None, "truncation": [metadata]}
         rank_loss = None
         if self.mode == "M0":
             ranking = row["candidate_ids"][:self.config.candidate_count]
@@ -170,7 +243,7 @@ class VerificationSystem(nn.Module):
                 selected_scores = selected_scores.detach()
         logits, truncation = [], []
         for i in selected:
-            inputs, metadata = self.tokenizer.inputs(row["claim_segmented"], row["sentences"][i]["segmented"], self.config.device)
+            inputs, metadata = self.tokenizer.inputs(*self.pair_text(row, i), self.config.device)
             with self.autocast():
                 logits.append(self.verifier(inputs))
             truncation.append(metadata)

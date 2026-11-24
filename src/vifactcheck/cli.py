@@ -34,10 +34,12 @@ def configuration(args, smoke=False):
 
 
 def predict_record(system, claim, context, segmenter_path=".cache/vncorenlp"):
-    from .data import bm25_candidates
     from .text import VnCoreSegmenter, normalize, recover_sentences
     if not isinstance(claim, str) or not normalize(claim) or not isinstance(context, str) or not normalize(context):
         raise ValueError("claim and context must be nonempty strings")
+    if getattr(system, "mode", None) == "BASELINE":
+        return system.prediction({"id": "user-input", "claim": claim, "context": context})
+    from .data import bm25_candidates
     segmented = VnCoreSegmenter(segmenter_path).segment_many([claim, context])
     sentences = recover_sentences(context, segmented[1])
     claim_segmented = " ".join(segmented[0])
@@ -219,6 +221,8 @@ def main(argv=None):
     comp = sub.add_parser("compare")
     comp.add_argument("--runs", nargs="+", required=True)
     comp.add_argument("--output", default="runs/comparison.json")
+    from .benchmark_cli import add_benchmark_parser
+    add_benchmark_parser(sub)
     args = parser.parse_args(argv)
     try:
         if args.command == "prepare":
@@ -234,6 +238,9 @@ def main(argv=None):
         elif args.command == "full":
             from .full import run_full
             result = run_full(args)
+        elif args.command == "benchmark":
+            from .benchmark_cli import dispatch_benchmark
+            result = dispatch_benchmark(args)
         elif args.command == "train":
             from .training import resume_checkpoint, run_experiment
             if args.resume and args.initialization_from:

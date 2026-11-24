@@ -1,8 +1,23 @@
-# Setup Conda cho teammate chạy Tesla P100
+# Setup Conda và chạy benchmark trên Tesla P100
 
-Cập nhật 17/11/2026. Hướng dẫn dưới đây dùng **Bash trên Linux** và bố cục `release/v2`. GPU đã được xác nhận là Tesla P100; VRAM, driver và OS vẫn phải lấy từ máy thật. Các lệnh chưa được chạy trên server của teammate; smoke trên server mới là bằng chứng tương thích.
+Cập nhật 24/11/2026. Trên `ood-master`, PyTorch `2.6.0+cu118` đã chạy phép thử CUDA FP16 trên P100 16 GB. Dữ liệu đã được chuẩn bị đủ 5.062 train, 723 dev và 1.447 test.
 
-Đọc [kế hoạch baseline–M2 theo backbone](backbone-benchmark.md) trước. CLI hiện tại sẵn sàng cho pipeline **PhoBERT**, chưa có classifier baseline độc lập hoặc adapter tổng quát cho mBERT/XLM-R. Setup thành công không đồng nghĩa benchmark đa backbone đã được triển khai.
+## Đã xong bước 4 trên ood-master
+
+Giữ Conda env `vifactcheck` và dữ liệu `data/prepared/` đã tạo. Trong terminal Open OnDemand, chuyển checkout hiện có sang nhánh benchmark:
+
+```bash
+cd ~/vi-factcheck-system
+git fetch origin
+git switch --track origin/feat/p100-backbone-benchmark
+conda activate vifactcheck
+export PYTHONNOUSERSITE=1
+python -m vifactcheck benchmark --help
+```
+
+Sau đó vào [phần chạy mBERT](backbone-benchmark.md#2-chạy-mbert-từ-terminal-trên-server) để tải pretrained assets và submit smoke Baseline + M2 qua Slurm. Khi smoke đạt mới submit full mBERT. Xem [cách tải ZIP kết quả qua Open OnDemand](backbone-benchmark.md#4-output-để-tải-qua-open-ondemand).
+
+Các bước bên dưới dành cho máy cần setup Conda từ đầu hoặc nhóm muốn kiểm tra lại pipeline PhoBERT. Pilot hội tụ 15 epoch hiện đang tạm gác.
 
 ## Bước 1 — Ghi cấu hình máy và chọn checkout
 
@@ -17,10 +32,10 @@ df -h .
 
 Gửi tên GPU, VRAM, driver, OS và dung lượng trống cho team lead, không gửi token hoặc mật khẩu. `CUDA Version` trong `nvidia-smi` là khả năng driver hỗ trợ, không phải bằng chứng Python đang dùng đúng CUDA wheel.
 
-Repo là private; dùng Git credential helper hoặc GitHub CLI đã đăng nhập với tài khoản có quyền đọc:
+Nếu chưa clone repo, clone nhánh benchmark về tài khoản của bạn trên server:
 
 ```bash
-git clone --branch release/v2 https://github.com/ngpnduy/vi-factcheck-system.git
+git clone --branch feat/p100-backbone-benchmark https://github.com/ngpnduy/vi-factcheck-system.git
 cd vi-factcheck-system
 git status --short --branch
 git rev-parse HEAD
@@ -31,8 +46,9 @@ Team lead cung cấp **approved commit** sau review. Checkout commit đó trên 
 ## Bước 2 — Tạo môi trường riêng
 
 ```bash
-conda create -n vifactcheck-v2 python=3.12 pip -y
-conda activate vifactcheck-v2
+conda create -n vifactcheck python=3.12 pip -y
+conda activate vifactcheck
+export PYTHONNOUSERSITE=1
 conda install -c conda-forge openjdk=17 -y
 which python
 which java
@@ -114,7 +130,7 @@ python -m vifactcheck prepare --cache .cache --output data/prepared
 
 Nếu output nằm trên ổ khác, kiểm tra đúng ổ đó. 35 GiB là mốc khởi động của full v2 worker; model lớn có thể cần hơn. Mọi lần lưu cần reserve cho file tạm; không gộp cache của các backbone vào `.cache/phobert` hoặc sửa manifest PhoBERT để giả làm model khác.
 
-Lệnh prepare hiện tải **PhoBERT-base** được pin cùng VnCoreNLP và official splits. Nó không tải mBERT/XLM-R/PhoBERT-v2. Những assets mới phải qua adapter/manifest đã được triển khai theo kế hoạch benchmark.
+Lệnh prepare tải **PhoBERT-base** và VnCoreNLP, rồi ghi các split dùng chung. Với mBERT/XLM-R, dùng lại data/prepared và tải đúng pretrained assets bằng lệnh benchmark prepare theo [guide benchmark](backbone-benchmark.md).
 
 Xác nhận dữ liệu và import đúng source:
 
@@ -140,7 +156,7 @@ PY
 
 Chuẩn bị file test không phải chọn model bằng test. Không chạy final test inference hoặc xem điểm test trong lúc chọn LR, lambda, epoch cap và checkpoint.
 
-## Bước 5 — Test và PhoBERT smoke có thật trong CLI
+## Bước 5 — Smoke tùy chọn cho pipeline PhoBERT
 
 ```bash
 python -m pytest -q
@@ -157,26 +173,13 @@ Smoke dùng 24 train / 12 dev, một reranker epoch, một warmup và một cont
 
 Nếu thư mục output có run khác, dùng tên mới; nếu smoke đã hoàn tất và không đổi source/config/data, kiểm tra artifacts trước khi chạy lại. Không có kết quả server được xác nhận chỉ vì guide chứa các lệnh trên. Một lỗi CUDA/OOM phải dừng để chẩn đoán; không tự freeze encoder hoặc đổi kiến trúc.
 
-Sau khi baseline/adapter mới được triển khai, chạy smoke riêng cho **cả baseline và M2 của từng backbone**. M2 phải qua workload claim dài/nhiều candidates và cả hai encoder vẫn trainable. Team lead cấp lệnh thực tế từ `--help`; không thay đường dẫn PhoBERT bằng mBERT rồi coi smoke trên đã đủ.
+Để đo hai backbone mới, dùng smoke riêng cho Baseline và M2 của mỗi backbone. Lệnh submit Slurm và thư mục output có trong [guide benchmark](backbone-benchmark.md).
 
-### Job được chuẩn bị trước: pilot hội tụ M2 trên P100
+Pilot 15 epoch của PhoBERT đang tạm gác. [Protocol hội tụ](../protocol/convergence.md) giữ các lệnh và phân tích cho thí nghiệm đó.
 
-P100 là một lựa chọn chạy diagnostic dài sau khi xác nhận môi trường server. Cập nhật 17/11/2026: laptop cũng đã được cho phép chạy cùng protocol khi ổ output đạt ít nhất 35 GiB trống; run 15 epoch hiện chưa khởi chạy. Đọc [kế hoạch hội tụ và lệnh Windows/Linux](../protocol/convergence.md), chọn máy/output cho run mới, rồi kiểm tra:
+## Bước 6 — Inference tham chiếu với checkpoint PhoBERT
 
-```bash
-python scripts/run_convergence.py \
-  --data data/prepared \
-  --model-path .cache/phobert \
-  --output runs/convergence-phobert-seed42-e15 \
-  --lr-horizon-epochs 5 \
-  --check-only
-```
-
-Preflight kiểm tra assets/device/disk mà không ghi checkpoint. Khi đạt, bỏ `--check-only` để chạy. Lệnh mặc định dùng seed 42, LR `1e-5`, lambda `0.1`, ba reranker epoch và 15 verifier epochs (ba warmup + 12 continuation); `--lr-horizon-epochs 5` giữ lịch LR năm epoch đầu. Chạy lại chính lệnh bình thường để resume cùng run identity; không sửa số epoch giữa chừng. `--smoke` hoặc `--total-epochs 5` chỉ dùng cho một output mới khi kiểm tra đường chạy. Run test nhỏ và pilot hội tụ có mục đích khác nhau, không trộn scores.
-
-## Bước 6 — Checkpoint tham chiếu từ laptop
-
-Checkpoint [M2 seed 13 đã chia sẻ](https://github.com/ngpnduy/vi-factcheck-system/releases/tag/listwise-v2-three-seeds-20261112) đi kèm `ViFactCheck-M2-seed13-handoff.zip` và `ViFactCheck-M2-seed13-SHA256SUMS.txt`. Download bằng tài khoản GitHub có quyền đọc; repo private trả 404 khi chưa có access.
+Checkpoint [M2 seed 13 đã chia sẻ](https://github.com/ngpnduy/vi-factcheck-system/releases/tag/listwise-v2-three-seeds-20261112) đi kèm `ViFactCheck-M2-seed13-handoff.zip` và `ViFactCheck-M2-seed13-SHA256SUMS.txt`. Nếu GitHub yêu cầu quyền đọc release, đăng nhập bằng tài khoản có quyền.
 
 Kiểm tra checksum rồi extract helper vào thư mục `handoff/`:
 
@@ -218,6 +221,6 @@ Không dùng `m2_best.pt` để giả làm trạng thái cuối epoch; không đ
 
 Cho mỗi job dùng một output directory và một writer. Dùng scheduler của server hoặc session được duy trì theo quy định máy; dừng có checkpoint trước maintenance. Không tùy ý tắt process của người khác. Bàn giao lịch sử, selection, revisions/hashes và compact predictions theo [artifact contract](backbone-benchmark.md).
 
-## Khi nào teammate được bắt đầu benchmark thật?
+## Chạy benchmark mBERT và XLM-R
 
-Sau khi có đủ: approved implementation commit; baseline + adapter đã qua test; epoch/tuning policy đã khóa bằng train/dev; môi trường và storage đạt gate; smoke cho đúng backbone đạt; thư mục run mới và task ownership rõ. Khi chưa đủ, chỉ setup/prepare/kiểm tra compatibility, không chạy một thử nghiệm dài rồi đặt tên như benchmark hoàn chỉnh.
+Từ bước 4, chuyển sang [guide benchmark](backbone-benchmark.md). Chạy mBERT trước và kiểm tra cả Baseline lẫn M2 trong smoke trên P100. Guide benchmark ghi cách chạy lại job và file ZIP cần tải qua Open OnDemand.

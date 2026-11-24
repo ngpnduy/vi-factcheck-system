@@ -45,12 +45,15 @@ class TrainConfig:
     listwise_heads: int = 8
     listwise_feedforward: int = 1536
     listwise_dropout: float = 0.1
+    backbone: str | None = None
 
     def __post_init__(self):
         if self.protocol_version not in (1, PROTOCOL_VERSION):
             raise ValueError("Unsupported training protocol version")
         if self.device not in ("cuda", "cpu"):
             raise ValueError("device must be cuda or cpu")
+        if self.backbone not in (None, "mbert", "xlmr"):
+            raise ValueError("Unsupported benchmark backbone")
         if not 0 < self.evidence_count <= self.candidate_count:
             raise ValueError("evidence_count must be between 1 and candidate_count")
         if not 4 < self.max_length <= 256 or not 0 < self.claim_max_tokens <= self.max_length - 4:
@@ -67,7 +70,10 @@ class TrainConfig:
             raise ValueError("Invalid list-aware attention settings")
 
     def to_dict(self):
-        return asdict(self)
+        result = asdict(self)
+        if self.backbone is None:
+            del result["backbone"]
+        return result
 
     @classmethod
     def from_saved(cls, value):

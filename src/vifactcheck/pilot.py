@@ -60,12 +60,15 @@ def backbone_probes(system):
 
 
 def profile_long_claims(config, train, progress):
-    from .model import PairTokenizer, VerificationSystem
+    from .model import VerificationSystem, tokenizer_for
     seed_everything(config.seed)
-    tokenizer = PairTokenizer(config.model_path, config.max_length, config.claim_max_tokens)
+    tokenizer = tokenizer_for(config)
+    native = getattr(config, "backbone", None) is not None
     workloads = []
     for row in train:
-        lengths = [len(tokenizer.encode(row["claim_segmented"], row["sentences"][i]["segmented"])[0]) for i in row["candidate_ids"]]
+        claim_key, sentence_key = ("claim", "text") if native else ("claim_segmented", "segmented")
+        lengths = [len(tokenizer.encode(row[claim_key], row["sentences"][i][sentence_key])[0])
+                   for i in row["candidate_ids"][:config.candidate_count]]
         workloads.append((sum(lengths) + sum(sorted(lengths, reverse=True)[:config.evidence_count]), row["id"], row))
     selected = [value[2] for value in sorted(workloads, key=lambda value: (-value[0], value[1]))[:8]]
     system = VerificationSystem(config, "M2", tokenizer)

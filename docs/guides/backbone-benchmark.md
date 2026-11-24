@@ -1,148 +1,87 @@
-# Hướng dẫn nhóm: một baseline và M2 trên nhiều backbone
+# Benchmark Baseline và M2 trên P100
 
-Cập nhật ngày 17/11/2026. Tài liệu dùng cấu trúc `release/v2`: chạy từ gốc repo, package ở `src/vifactcheck/`, script ở `scripts/`, kết quả ở `reports/`. Đây là **kế hoạch triển khai và vận hành**, không phải thông báo các backbone mới đã chạy xong.
+P100 chạy [mBERT](https://huggingface.co/google-bert/bert-base-multilingual-cased/commit/3f076fdb1ab68d5b2880cb87a0886f315b8146f8) trước. Chạy [XLM-R](https://huggingface.co/FacebookAI/xlm-roberta-base/commit/e73636d4f797dec63c3081bb6ed5c7b0bb3f2089) nếu thời gian đo trên mBERT phù hợp với hạn nhóm đã chốt. Mỗi backbone chạy Baseline và M2 với seeds 42, 13, 2026. Thiết kế này giữ trần **5 epoch verifier** của v2. Pilot hội tụ 15 epoch đang tạm gác.
 
-## 1. Chốt câu hỏi và hai hệ thống
+## 1. Điều kiện và dữ liệu dùng chung
 
-Mỗi backbone được dùng trong cùng hai thiết kế:
+- Hoàn tất bước 1–4 trong [guide Conda/P100](server-conda.md). Dùng cùng môi trường đã kiểm tra CUDA FP16 và chạy từ gốc repo. `python -m vifactcheck benchmark --help` cần hiện các lệnh con `prepare`, `smoke`, `run`, `export`, `compare`.
+- Tái sử dụng `data/prepared/` từ `python -m vifactcheck prepare`, gồm 5.062 train, 723 dev, 1.447 test. Cả hai dùng chung tách câu, căn chỉnh evidence và danh sách BM25. Runner đối chiếu hash của các split khi đọc.
+- `benchmark prepare` tải weights safetensors và tokenizer pretrained theo revision đã ghim vào `.cache/backbones/` và ghi hash từng file. Dùng riêng cache mỗi backbone. Checkpoint PhoBERT đã train chỉ hữu ích cho việc tái lập inference của PhoBERT.
+- Với full run mới, cần khoảng trống ban đầu 35 GiB cho mBERT hoặc 60 GiB cho XLM-R trên ổ output. Kiểm tra cả quota cá nhân nếu cụm có áp quota.
 
-| Hệ thống | Input và cách dự đoán | Tham số học |
-|---|---|---|
-| **Baseline classifier** | Claim + article, truncate theo ngân sách đã công bố, phân loại ba nhãn | Một encoder và classification head |
-| **M2** | BM25 lấy tối đa 20 câu; reranker chọn tối đa 5; verifier gộp xác suất có trọng số; verification feedback đi tới reranker | Hai encoder riêng biệt cùng loại backbone, các head và list-aware attention |
+## 2. Chạy mBERT từ terminal trên server
 
-Mục tiêu là đo `Macro-F1(M2) − Macro-F1(baseline)` **trong từng backbone**. Baseline này là claim–article classifier, không phải M0. M0/M1/A1/A2 trong study PhoBERT đã hoàn tất vẫn là các phép đối chứng để giải thích thành phần. So sánh baseline–M2 đánh giá cả hệ thống; nó không tự tách riêng đóng góp của attention hoặc gradient feedback.
-
-Giới hạn token của baseline phải ghi rõ là **article đã truncate**, không gọi đó là toàn bộ bài báo được encoder nhìn thấy. M2 có nhiều lượt encode, hai encoder và evidence supervision; công bố thêm tổng token được xử lý, số tham số, runtime và memory. Cùng giới hạn 256 token mỗi pair không đồng nghĩa cùng tổng compute hoặc cùng số token bài báo được đọc.
-
-## 2. Cái gì chạy được trong code hiện tại?
-
-| Tác vụ | Trạng thái trên nền release/v2 |
-|---|---|
-| Prepare, smoke, train, tune, evaluate, predict cho pipeline PhoBERT M0/M1/A1/M2/A2 | Đã có CLI và protocol |
-| Classifier baseline claim–article độc lập | **Chưa có trong CLI; cần triển khai trước benchmark** |
-| Chuyển đồng loạt giữa PhoBERT/mBERT/XLM-R với preprocessing và provenance đúng | **Chưa có registry/adapter tổng quát; cần triển khai và kiểm thử** |
-| Đổi `--model-path` thành mBERT rồi coi là hỗ trợ hoàn chỉnh | Chưa đủ: code hiện đưa text đã word-segment cho mọi encoder và không gửi BERT `token_type_ids` |
-
-Các lệnh CLI có thật được trình bày trong [protocol v2](../protocol/v2.md) và [hướng dẫn Conda/P100](server-conda.md). Tài liệu này không đưa lệnh giả như `train-baseline` hoặc `--backbone`: chúng chưa tồn tại. Team lead bổ sung lệnh benchmark sau khi implementation vượt qua các gate ở bước 4–5.
-
-## 3. Ma trận, người phụ trách và điều kiện tái sử dụng
-
-| Backbone pretrained | Người/máy chính | Kế hoạch |
-|---|---|---|
-| `vinai/phobert-base` | Laptop / kết quả hiện có | Baseline mới; M2 ba seed đã có làm mốc lịch sử |
-| `vinai/phobert-base-v2` | Laptop RTX 3050 4 GB | Baseline + M2 sau khi đủ storage và smoke memory |
-| `google-bert/bert-base-multilingual-cased` | Teammate / Tesla P100 + Conda | Baseline + M2; backbone mới đầu tiên trên server |
-| `FacebookAI/xlm-roberta-base` | Teammate / P100 | Baseline + M2 sau khi ETA cho phép hoàn tất trước cutoff |
-
-Mỗi hàng hoàn chỉnh có hai hệ thống × seeds **42, 13, 2026** = sáu kết quả test. Ba backbone mới tạo 18 kết quả, không phải chạy lại cả năm cấu hình cho từng backbone. Reranker pretraining, warmup và tuning vẫn là công việc bổ sung của M2; sáu kết quả không có nghĩa chỉ sáu job tính toán.
-
-M2 PhoBERT cũ chỉ được tái sử dụng trong bảng chính khi protocol mới giữ nguyên chính sách train/chọn checkpoint phù hợp. Nếu sau pilot hội tụ nhóm tăng trần epoch hoặc thay preprocessing/objective, ghi một protocol mới và chạy đối chiếu cùng điều kiện. Khi đó điểm năm epoch cũ là **mốc lịch sử**, không gắn nhãn kết quả của protocol mới.
-
-## 4. Bước 1 — Chốt epoch bằng một pilot hội tụ trước
-
-1. Chạy chẩn đoán trên **seed 42, train/dev**, giữ nguyên LR/lambda và kiến trúc trong một run mới. Người dùng đã chọn **chuẩn bị run này cho P100 của teammate**; không khởi chạy training dài trên laptop trong bước chuẩn bị. Không dùng test để xác định khi nào dừng.
-2. Vẽ riêng train verification NLL, evidence BCE, objective tổng, dev NLL và dev Macro-F1 theo epoch. Đánh dấu reranker, warmup và continuation. Warmup và continuation dùng objective khác nhau nên không kết luận từ một đường `average_loss` nối thẳng qua hai stage.
-3. Trần lớn hơn năm epoch giúp quan sát plateau/overfit; nó không chứng minh nghiệm tốt nhất toàn cục. Chọn checkpoint theo dev metric đã định, không chọn epoch chỉ vì train loss nhỏ nhất.
-4. Trước benchmark, lưu quyết định: tổng verifier epochs tối đa `E`, warmup epochs, lịch LR và horizon, chính sách best/early-stop, tie-break, metric và lý do. Nếu dùng early stopping, định trước patience/min-delta và áp dụng cùng quy tắc cho cả hai hệ thống. Phân biệt **một run pilot** với kết quả ba seed.
-5. Baseline được cùng trần `E` verifier epochs; M2 giữ ba warmup epoch và `E−3` continuation nếu đó là lịch được chốt. Reranker pretraining được báo riêng. Giữ bảng v2 năm epoch cũ nguyên vẹn.
-
-Runner chẩn đoán mới là `scripts/run_convergence.py`, độc lập với full worker của study đã công bố. Mặc định seed 42, LR `1e-5`, lambda `0.1`, ba reranker epoch và **15 verifier epochs = 3 warmup + 12 continuation**, listwise, token 256/96 và evidence 20/5. Đây là trần pilot để quan sát, chưa phải ngân sách benchmark đã được lựa chọn. Giữ `--lr-horizon-epochs 5` để tăng số epoch không âm thầm đổi lịch LR của năm epoch đầu so với protocol gốc.
-
-Đọc [protocol hội tụ](../protocol/convergence.md) và chuẩn bị môi trường P100 trước. Preflight không train và không ghi checkpoint:
+Chuẩn bị pretrained assets. Bước này có thể chạy trong terminal thường.
 
 ```bash
-python scripts/run_convergence.py \
-  --data data/prepared \
-  --model-path .cache/phobert \
-  --output runs/convergence-phobert-seed42-e15 \
-  --lr-horizon-epochs 5 \
-  --check-only
+cd ~/vi-factcheck-system
+conda activate vifactcheck
+export PYTHONNOUSERSITE=1
+
+python -m vifactcheck benchmark prepare --backbone mbert
 ```
 
-Khi mọi gate đạt, teammate bỏ `--check-only` để bắt đầu. Chạy lại chính lệnh đó để resume ở ranh giới epoch, không sửa `*_best.pt` hoặc ghép checkpoint nguồn khác. `--smoke` là kiểm tra 24 train / 12 dev; nó không đủ để kết luận hội tụ trên full data. Runner chẩn đoán này không tạo baseline hoặc làm các backbone mới tự được hỗ trợ.
+Submit smoke bằng Slurm. Batch launcher lấy Python và Java từ Conda env bạn truyền vào, ghi log vào thư mục output và tiếp tục chạy khi đóng tab terminal.
 
-## 5. Bước 2 — Cố định source, dữ liệu và cấu hình
+```bash
+sbatch --partition=p100 --gres=gpu:tesla_p100-pcie-16gb:1 \
+  --time=00:30:00 scripts/benchmark-p100.sbatch \
+  smoke mbert runs/backbone-mbert-smoke "$CONDA_PREFIX"
+```
 
-Hai máy checkout cùng **commit đã review**, xuất phát từ `release/v2`. Ghi `git rev-parse HEAD` và diff; không để mỗi người tự sửa model trong lúc các run chính đang chạy.
+Smoke chạy probe M2 với tám claim có workload token lớn nhất, sau đó train Baseline và M2 trên 24 train/12 dev. Nó kiểm tra loss hữu hạn, cập nhật weights, gradient verdict tới reranker và prediction sau khi reload. `completion.json` phải ghi `"status": "passed"` trước khi submit full. Điểm smoke lấy từ dev để kiểm tra pipeline.
 
-- Dataset: `tranthaihoa/vifactcheck`, revision `2df623632299a3459ad95feeff9ac67d7205a42a`.
-- Số claim: train **5.062**, dev **723**, test **1.447**; `0=SUPPORTED`, `1=REFUTED`, `2=NOT_ENOUGH_INFO`.
-- Lưu hash `manifest.json`, JSONL và tập ID; dùng đúng official split, không tự chia lại bằng random split.
-- Cố định sentence boundaries, original offsets, conservative evidence alignment và BM25 20→5 của M2. Không thêm gold vào candidates.
-- Claim/context gốc phải còn nguyên để dùng native tokenizer. PhoBERT/PhoBERT-v2 nhận word-segmented text; mBERT/XLM-R nhận normalized raw text. BM25 vẫn dùng cùng segmentation để giữ candidate IDs giữa các backbone.
-- Không bắt đầu từ encoder ViFactCheck của tác giả khác nếu chưa biết nó được train trên những ID nào. Bắt đầu từ generic pretrained backbone, lưu model **và tokenizer** revision bất biến cùng hash asset.
+```bash
+cat runs/backbone-mbert-smoke/status.json
+cat runs/backbone-mbert-smoke/completion.json
+```
 
-## 6. Bước 3 — Hoàn thiện implementation một lần, rồi dùng chung
+Submit full benchmark. `--time=08:00:00` là ví dụ thời lượng cấp cho **một job**, chỉnh theo giới hạn partition. Khi hết giờ, submit lại cùng lệnh, thư mục output, mã nguồn, dữ liệu và Conda env. Runner tiếp tục từ epoch đã checkpoint gần nhất và bỏ qua các job con đã hoàn thành sau khi kiểm tra hash. Epoch chưa kịp lưu sẽ chạy lại.
 
-Team lead tạo baseline và backbone adapter; teammate review trước khi chạy:
+```bash
+sbatch --partition=p100 --gres=gpu:tesla_p100-pcie-16gb:1 \
+  --time=08:00:00 scripts/benchmark-p100.sbatch \
+  run mbert runs/backbone-mbert "$CONDA_PREFIX"
+```
 
-1. Một baseline head ba nhãn, một pair claim–article mỗi claim, claim cap 96 và tổng pair cap 256 gồm special tokens. Ghi số article token còn lại và tỷ lệ truncate. Khởi tạo classification head được seed hóa.
-2. Adapter model/tokenizer ghi rõ native preprocessing, pair special tokens, hidden size, pooling, dropout, model constructor và loại forward arguments. mBERT phải có segment IDs hợp lệ cho claim/article.
-3. M2 dùng hai bản sao pretrained độc lập, không chia sẻ storage/trọng số. Đảm bảo gradients đi qua score weights của các câu được chọn; top-k indices vẫn discrete. NEI không có evidence loss.
-4. Reranker pretraining/chọn dev MRR và verifier chọn dev Macro-F1 được giữ theo protocol đã khóa. Warmup best và warmup end là hai trạng thái khác nhau. Resume phải giữ đúng optimizer, AMP scaler và RNG.
-5. Run identity gồm backbone/revision, architecture, source, dữ liệu, preprocessing, epoch policy và seed; không resume giữa hai identity khác nhau. Mở rộng tên artifact nhưng không đổi nghĩa của kết quả lịch sử.
-6. Bộ đánh giá kiểm tra số prediction/ID, xác suất, thứ tự nhãn và số ranking bằng số claim; không cho `zip` âm thầm cắt dữ liệu. Ghi rõ mẫu số retrieval khác classification.
+Dùng `squeue -u "$USER"` để xem job. Mở `runs/backbone-mbert/status.json` để xem seed, phase, epoch và số claim đã xử lý. `job_timings.json` có thời gian quan sát theo job đã xong và train seconds tính từ lịch sử epoch. Một attempt được resume có thể chỉ đo phần còn lại, nên đối chiếu history và thời gian Slurm khi ước lượng XLM-R. Dùng `sacct -j JOB_ID` nếu cụm bật tính năng accounting.
 
-Sau khi có code, team lead thêm các lệnh CLI/launcher thực tế vào phần này bằng chính output `--help`, rồi mới giao lệnh train cho từng máy. **Đây là gate bắt buộc hiện chưa được tuyên bố hoàn tất trong hướng dẫn này.**
+Khi còn thời gian, lặp lại các lệnh với `--backbone xlmr` ở bước prepare, `xlmr` trong batch launcher, và thư mục riêng `runs/backbone-xlmr-smoke` / `runs/backbone-xlmr`. Cần một smoke đạt riêng cho XLM-R.
 
-## 7. Bước 4 — Setup và smoke từng backbone
+## 3. Protocol ghi trong báo cáo
 
-Teammate theo [server-conda.md](server-conda.md); laptop theo [README](../../README.md). Trước download/run, kiểm tra storage. Mốc hiện có là ít nhất **35 GiB** cho full worker; với model lớn phải dự trù từ checkpoint thực tế và giữ reserve mỗi lần ghi. Không tự xóa weights cũ để vượt gate.
+- **Baseline** dùng một encoder và classifier ba nhãn. Nó nhận một cặp claim–bài báo mỗi claim, cắt claim tối đa 96 token và cả cặp tối đa 256 token gồm special tokens. Baseline huấn luyện 5 epoch.
+- **M2** dùng hai encoder được khởi tạo độc lập từ cùng pretrained backbone. BM25 lấy tối đa 20 câu, listwise reranker lấy tối đa 5. Reranker pretrain 3 epoch, chọn bằng dev MRR. Verifier warmup 3 epoch rồi joint training 2 epoch. M2 chọn checkpoint bằng dev Macro-F1 trên cả 5 epoch.
+- mBERT và XLM-R dùng văn bản gốc đã chuẩn hóa và đúng tokenizer của mình. Cặp mBERT có `token_type_ids` dành cho claim và context. BM25 vẫn dùng đầu vào đã tách từ để giữ cùng danh sách ứng viên.
+- Mặc định tune seed 42 trên dev. Baseline thử LR `1e-5, 2e-5`. M2 chọn LR qua M1 với cùng hai giá trị, rồi thử lambda `0.1, 0.5, 1.0` từ cùng warmup. Chọn điểm dev cao nhất, hòa chọn epoch hoặc trial xuất hiện sớm hơn. Giữ lại checkpoint thắng cho seed 42 và dùng bộ tham số thắng cho 13 và 2026.
+- Nếu nhóm chốt trước một cấu hình cố định để rút thời gian, truyền `--fixed-hyperparameters` **sau** `"$CONDA_PREFIX"` ở cả hai lệnh full. Cờ này dùng LR `1e-5`, lambda M2 `0.1` cho cả ba seed. Dùng output mới nếu đổi chính sách. Bảng tổng hợp kiểm tra hai run dùng cùng chính sách.
+- Runner ghi checksum toàn bộ checkpoint được chọn trước khi đánh giá test. Bảng chính dùng đủ 1.447 claim mỗi checkpoint, mean ± sample SD theo ba seed, cùng chênh lệch M2–Baseline. Bootstrap ghép theo bài báo và tính theo từng seed. Retrieval chỉ có ở M2 và có mẫu số riêng. Các split có bài báo trùng nhau, nên benchmark này không đo khả năng tổng quát hóa trên toàn bộ bài báo chưa từng thấy.
+- Ghi số tham số, lượng token encoder xử lý, mức cắt context, thời gian và VRAM. Baseline và M2 dùng cùng giới hạn token **mỗi cặp**, còn tổng compute khác vì M2 encode nhiều cặp và có thêm pretraining reranker.
 
-Với mỗi cặp backbone–hệ thống, chạy smoke thật **24 train / 12 dev** và giữ cap 256/96, M2 20/5:
+## 4. Output để tải qua Open OnDemand
 
-- Baseline và M2 đều forward/backward được; loss hữu hạn; optimizer cập nhật tham số dự kiến.
-- Reranker/verifier của M2 đều cập nhật, gold không được chèn vào selection; NEI không có evidence BCE.
-- M2 qua được những claim dài/nhiều candidates nhất, không chỉ mẫu ngắn.
-- Reload và resume qua một điểm gián đoạn; raw/prepared prediction dùng cùng preprocessing.
-- Lưu peak GPU allocated/reserved, giây/claim, thời gian dev và kích thước checkpoint. Cross-GPU có thể có sai khác số học nhỏ; lưu số đo thực tế.
+Trong `runs/backbone-mbert/` hoặc `runs/backbone-xlmr/`:
 
-OOM hoặc lỗi CUDA phải dừng và lưu diagnostics. Không tự freeze encoder, giảm token/evidence limits, đổi sang LoRA hoặc CPU rồi gộp với hàng chạy cấu hình ban đầu. Smoke score chỉ là pipeline check.
+- **`status.json` và `slurm-<job-id>.log`** cho biết job đang ở đâu. Khi Python báo lỗi, xem thêm `failure.json`. Nếu scheduler hết giờ hoặc hủy job, xem trạng thái Slurm và dòng cuối log.
+- **`plan.json`**, **`tuning_trials.json`** (khi bật tuning), **`selected_hyperparameters.json`** và **`job_timings.json`** ghi cấu hình, revision, hash, môi trường, dev scores và thời gian. `jobs/` có history và metadata từng phase. Runner giữ best và state cần cho resume; last dư được dọn sau khi job con đã ghi ledger.
+- **`REPORT.md`**, **`summary.csv`**, **`per_seed.csv`** là bảng để đọc và đưa vào báo cáo. **`comparison.json`** thêm chênh lệch và khoảng tin cậy ghép theo seed. **`evaluation/`** chứa metrics chi tiết và predictions từng claim. `completion.json` phân biệt full benchmark đã xong với smoke.
+- **`download/results.zip`** được tạo tự động khi hoàn tất. Tải nó cùng **`download/results.zip.sha256`** qua Open OnDemand → Files. ZIP gồm bảng, metrics, log, cấu hình, histories và prediction gọn với ID, xác suất, ranking và vị trí evidence. ZIP giữ checkpoint SHA-256, còn weights nằm trên server.
+- **`selected_checkpoints.json`** và **`download/checkpoint_locations.json`** liệt kê đúng đường dẫn, kích thước và hash của các `*_best.pt`. Muốn giữ weights, tải file `.pt` tương ứng qua Files và đối chiếu với **`checkpoints.sha256`**. Với full run có sáu checkpoint được chọn cho mỗi backbone.
 
-## 8. Bước 5 — Tuning dev, khóa cấu hình, chạy ba seed
+Nếu job đã dừng và cần gửi log hoặc kết quả đang dở, tạo `download/diagnostics.zip`. Lệnh tương tự cũng tạo lại ZIP kết quả đã hoàn tất với log mới nhất.
 
-Chốt một search plan trước khi đọc test:
+```bash
+python -m vifactcheck benchmark export --run runs/backbone-mbert
+```
 
-| Hệ thống | Search seed 42/dev đề xuất | Checkpoint criterion |
-|---|---|---|
-| Baseline | LR `{1e-5, 2e-5}` với cùng epoch policy; chọn best dev Macro-F1 | Hòa điểm chọn epoch sớm hơn, rồi thứ tự search |
-| M2 | Giữ search hai bước v2: hai LR qua M1, rồi lambda `{0.1,0.5,1.0}` cho M2 tại LR thắng; mỗi lambda dùng cùng warmup end | Best dev Macro-F1 trong trần epoch mới đã khóa; giữ warmup candidates theo protocol |
+Để kiểm tra file trên Mac sau khi tải, chạy `shasum -a 256 -c results.zip.sha256` trong thư mục chứa cả ZIP lẫn checksum.
 
-Hai hệ thống có cùng search cho LR nhưng **không cùng số trial hoặc GPU hours**: M2 có thêm search lambda và phase chuẩn bị. Phải công bố cả hai ngân sách; không gọi đây là so sánh compute-matched. Nếu nhóm muốn giới hạn khác vì deadline, chốt và ghi lại trước các run, không quyết định sau khi xem test.
+Khi cả hai backbone đã hoàn tất, tạo bảng chung:
 
-Tái sử dụng checkpoint thắng tuning làm seed 42 của chính study mới. Chạy seeds 13/2026 với hyperparameters đã khóa cho **từng backbone**. Không retune mỗi seed. Lưu tất cả trial, kể cả trial kém; không bỏ backbone chỉ vì dev/test của nó không thuận lợi.
+```bash
+python -m vifactcheck benchmark compare \
+  --runs runs/backbone-mbert runs/backbone-xlmr \
+  --output runs/backbone-comparison
+```
 
-Các lệnh `python -m vifactcheck tune` hiện chỉ là tuning cho pipeline PhoBERT; chúng không train baseline mới và không tự chuẩn bị registry cho các backbone khác. [Protocol v2](../protocol/v2.md) mô tả lệnh lịch sử. Không chạy `full` để thực hiện thiết kế hai-hệ-thống này: full worker hiện điều phối M0/M1/M2, thêm A1/A2 khi yêu cầu.
-
-## 9. Bước 6 — Đánh giá và bàn giao
-
-Hoàn tất tuning và các run retained, seal checkpoint/config/hash trước final test. Mỗi checkpoint được chọn đánh giá trên đúng **1.447 test IDs**. Báo cáo:
-
-- Macro-F1, accuracy, per-label precision/recall/F1 và confusion matrix; mean ± **sample SD** trên ba seeds, không phải ensemble.
-- Chênh lệch M2−baseline trong từng backbone/seed, paired article-bootstrap CI; không coi ba bản test lặp qua seeds là ba tập test độc lập.
-- M2 retrieval trên các claim S/R có aligned gold hợp lệ, kèm count/coverage; test hiện có 539 eligible S/R trong 976 S/R, trong khi classification dùng đủ 1.447. Baseline classifier không có sentence ranking nên ghi retrieval là N/A.
-- Context/truncation, selected epoch/stage, tham số, tổng compute, latency và GPU memory. So sánh timing trên cùng hardware/workload hoặc ghi khác hardware, không suy hiệu năng P100 từ laptop.
-
-Mỗi job bàn giao một thư mục gồm `config`, model/tokenizer/data/source revisions và hashes, environment lock, history/log, selection metadata, checkpoint SHA-256, dev metrics, final per-claim test predictions và metrics. Baseline checkpoint chứa encoder + trained classifier; M2 chứa đủ hai encoder + heads + attention. Checkpoint chỉ có encoder không đủ để dự đoán verdict: các PLM artifacts ViFactCheck đã kiểm tra trước đây thiếu classifier head.
-
-Chỉ gửi compact reports/configs/predictions và checksum qua repo/Release; lưu weights thành asset riêng khi được yêu cầu. Không đưa token, mật khẩu, raw datasets, model cache hay môi trường vào ZIP. Repo private nên người nhận cần quyền đọc.
-
-## 10. Phân công và mốc trước deadline
-
-| Mốc | Laptop / người dùng | Server P100 / teammate |
-|---|---|---|
-| 17–19/11 | Audit loss, chuẩn bị/review runner và khóa protocol; không launch long run local | Ghi driver/VRAM/OS, setup Conda, smoke và chạy pilot hội tụ sau preflight |
-| 19–23/11 | PhoBERT-v2 baseline + M2 khi adapter đã sẵn sàng; chuẩn bị method/analysis | mBERT baseline + M2; XLM-R chỉ khi ETA qua gate |
-| 24–25/11 | Kiểm tra manifests, tổng hợp controls đã có | Hoàn tất retained seeds, seal artifacts, đánh giá test |
-| 26–28/11 | Cùng hoàn thành draft, per-label/errors và review | Cùng kiểm tra số liệu, citations, reproducibility |
-| 29/11 | Mục tiêu nộp nội bộ | Mục tiêu nộp nội bộ |
-| 30/11 | Buffer cho deadline thật và múi giờ của venue | Buffer |
-
-Sau epoch/trial đầu, tính ETA riêng trên từng máy, gồm dev và save overhead. Ưu tiên một cặp baseline–M2 đủ ba seed trên mỗi máy trước khi thêm backbone. Dừng thêm job tùy chọn sau 23/11; khóa kết quả chính ngày 25/11. Nếu một hàng chỉ có seed 42, ghi rõ exploratory và để riêng bảng ba seed.
-
-## Nguồn và tài liệu liên quan
-
-- [Protocol và checkpoint selection v2](../protocol/v2.md); [báo cáo study đã hoàn tất](../../reports/experiments/listwise-best5-v2-three-seeds-20261112/REPORT.md).
-- [Hướng dẫn Conda/P100](server-conda.md).
-- Model cards: [PhoBERT/PhoBERT-v2](https://huggingface.co/vinai/phobert-base-v2), [mBERT](https://huggingface.co/google-bert/bert-base-multilingual-cased), [XLM-R](https://huggingface.co/FacebookAI/xlm-roberta-base). Pin revision khi chuẩn bị run.
+Đọc `runs/backbone-comparison/REPORT.md` hoặc tải `summary.csv` và `per_seed.csv`. Khi chỉ có mBERT hoàn tất, bảng của mBERT đã dùng được và ghi rõ phạm vi backbone.

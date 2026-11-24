@@ -18,7 +18,7 @@ from .config import ALL_MODELS, PROTOCOL_VERSION, TrainConfig
 from .data import has_evidence_supervision, load_split, smoke_subset, stratified_subset
 from .io import read_json, sha256, write_json, write_jsonl
 from .metrics import classification_metrics, error_stage, retrieval_metrics
-from .model import PairTokenizer, VerificationSystem, evidence_loss
+from .model import PairTokenizer, VerificationSystem, evidence_loss, tokenizer_for
 
 
 def seed_everything(seed):
@@ -114,13 +114,16 @@ def evaluate(system, rows, output=None, progress=None):
         torch.cuda.synchronize()
     started = time.perf_counter()
     predictions = []
+    baseline = getattr(system, "mode", None) == "BASELINE"
+    benchmark = getattr(system.config, "backbone", None) is not None
     for row in rows:
         prediction = system.prediction(row)
         prediction["gold_label_id"] = row["label"]
         prediction["article_id"] = row["article_id"]
         prediction["alignment"] = row["alignment"]
         prediction["claim"] = row.get("claim", row["claim_segmented"])
-        prediction["error_stage"] = error_stage(row, prediction["ranking"], prediction["label_id"])
+        if not baseline:
+            prediction["error_stage"] = error_stage(row, prediction["ranking"], prediction["label_id"])
         predictions.append(prediction)
         if progress and (len(predictions) % 25 == 0 or len(predictions) == len(rows)):
             progress({"event": "evaluation", "completed_claims": len(predictions), "total_claims": len(rows)})
@@ -129,11 +132,27 @@ def evaluate(system, rows, output=None, progress=None):
     inference_seconds = time.perf_counter() - started
     rankings = [p["ranking"] for p in predictions]
     selected_metadata = [meta for p in predictions for meta in p["truncation"]]
-    candidate_metadata = [system.tokenizer.encode(r["claim_segmented"], r["sentences"][i]["segmented"])[1] for r in rows for i in r["candidate_ids"][:system.config.candidate_count]]
+    candidate_metadata = []
+    if not baseline:
+        for row in rows:
+            for i in row["candidate_ids"][:system.config.candidate_count]:
+                pair = system.pair_text(row, i) if benchmark else (row["claim_segmented"], row["sentences"][i]["segmented"])
+                candidate_metadata.append(system.tokenizer.encode(*pair)[1])
     elapsed = time.perf_counter() - started
-    metrics = {"classification": classification_metrics([r["label"] for r in rows], [p["label_id"] for p in predictions]), "retrieval": retrieval_metrics(rows, rankings), "bm25_retrieval": retrieval_metrics(rows, [r["candidate_ids"] for r in rows]), "error_stages": dict(Counter(p["error_stage"] for p in predictions)), "truncation": {"claim_count": len(rows), "claim_truncated_count": sum(any(m["claim_truncated"] for m in p["truncation"]) for p in predictions), "candidate_pair_count": len(candidate_metadata), "candidate_sentence_truncated_count": sum(m["sentence_truncated"] for m in candidate_metadata), "selected_pair_count": len(selected_metadata), "selected_sentence_truncated_count": sum(m["sentence_truncated"] for m in selected_metadata)}, "cost": {"evaluation_seconds": elapsed, "seconds_per_claim": elapsed / len(rows), "peak_cuda_allocated_mib": torch.cuda.max_memory_allocated() / 1024**2 if system.config.device == "cuda" else None, "peak_cuda_reserved_mib": torch.cuda.max_memory_reserved() / 1024**2 if system.config.device == "cuda" else None}}
+    metrics = {"classification": classification_metrics([r["label"] for r in rows], [p["label_id"] for p in predictions]), "retrieval": None if baseline else retrieval_metrics(rows, rankings), "bm25_retrieval": None if baseline else retrieval_metrics(rows, [r["candidate_ids"] for r in rows]), "error_stages": None if baseline else dict(Counter(p["error_stage"] for p in predictions)), "truncation": {"claim_count": len(rows), "claim_truncated_count": sum(any(m["claim_truncated"] for m in p["truncation"]) for p in predictions), "candidate_pair_count": len(candidate_metadata), "candidate_sentence_truncated_count": sum(m["sentence_truncated"] for m in candidate_metadata), "selected_pair_count": len(selected_metadata), "selected_sentence_truncated_count": sum(m["sentence_truncated"] for m in selected_metadata)}, "cost": {"evaluation_seconds": elapsed, "seconds_per_claim": elapsed / len(rows), "peak_cuda_allocated_mib": torch.cuda.max_memory_allocated() / 1024**2 if system.config.device == "cuda" else None, "peak_cuda_reserved_mib": torch.cuda.max_memory_reserved() / 1024**2 if system.config.device == "cuda" else None}}
     metrics["cost"]["prepared_input_inference_seconds"] = inference_seconds
     metrics["cost"]["prepared_input_seconds_per_claim"] = inference_seconds / len(rows)
+    if benchmark:
+        ranked_tokens = sum(m["pair_tokens"] for m in candidate_metadata)
+        verifier_tokens = sum(m["pair_tokens"] for m in selected_metadata)
+        metrics["cost"].update(parameters=sum(p.numel() for p in system.parameters()),
+                               ranker_input_tokens=ranked_tokens,
+                               verifier_input_tokens=verifier_tokens,
+                               total_input_tokens=ranked_tokens + verifier_tokens)
+        metrics["truncation"].update(
+            context_unit="article" if baseline else "sentence",
+            verifier_context_tokens_original=sum(m["sentence_original_tokens"] for m in selected_metadata),
+            verifier_context_tokens_kept=sum(m["context_tokens_kept"] for m in selected_metadata))
     if output:
         write_json(str(output) + "_metrics.json", metrics)
         write_jsonl(str(output) + "_predictions.jsonl", predictions)
@@ -378,7 +397,7 @@ def phase(system, train, dev, directory, name, stage, epochs, source=None, progr
         if epoch_observer is not None and progress:
             progress({**epoch_metadata, "event": "epoch_complete"})
         print(f"{name}: validation {'MRR' if stage == 'reranker' else 'Macro-F1'}={score:.4f}", flush=True)
-    if epoch_observer is not None:
+    if epoch_observer is not None or config.backbone is not None:
         # last.pt is authoritative if power was lost before the JSON journal.
         # Recreate it even when resuming an already-completed phase.
         write_json(directory / f"{name}_history.json", history)
@@ -395,7 +414,7 @@ def training_cost(config, output, mode, parent=None):
     """Include shared phases for model cost comparisons, without double warmup."""
     output, parent = Path(output), Path(parent) if parent else Path(output)
     files = [(output / f"{mode.lower()}_history.json", "continuation" if mode in ("M1", "M2", "A2") else None)]
-    if mode != "M0":
+    if mode not in ("M0", "BASELINE"):
         files.insert(0, (parent / "reranker_history.json", None))
     if mode in ("M1", "M2", "A2"):
         files.insert(1, (parent / "warmup_history.json", None))
@@ -510,7 +529,8 @@ def run_experiment(config, output, models=("M0", "M1", "M2"), progress=None, ini
             raise ValueError("Output directory belongs to different experiment")
     write_json(config_path, metadata)
     seed_everything(config.seed)
-    tokenizer = PairTokenizer(config.model_path, config.max_length, config.claim_max_tokens)
+    tokenizer = (tokenizer_for(config) if config.backbone is not None
+                 else PairTokenizer(config.model_path, config.max_length, config.claim_max_tokens))
     results = {}
     # Each construction starts from identical verifier initialization. The warm
     # checkpoint contains both models plus the verifier optimizer and RNG state.
