@@ -13,17 +13,43 @@ Xem [phân công ba backbone của nhóm](backbone-work-plan.md) để biết ph
 
 ## 2. Chạy mBERT từ terminal trên server
 
-Chuẩn bị pretrained assets. Bước này có thể chạy trong terminal thường.
+Nếu đã có `data/prepared/`, bắt đầu ở đây trong terminal Open OnDemand. Thứ tự là **checkout → tải mBERT → smoke → full mBERT → quyết định XLM-R → tải kết quả**.
+
+### 2.1 Kiểm tra checkout, Conda và dữ liệu
+
+Nếu checkout vẫn ở `release/v2`, chuyển sang nhánh benchmark trước lần chạy đầu tiên:
+
+```bash
+cd ~/vi-factcheck-system
+git fetch origin
+git switch --track origin/feat/p100-backbone-benchmark
+```
+
+Nếu đã ở nhánh benchmark, tiếp tục từ đoạn bên dưới. Nếu đã bắt đầu job, giữ đúng commit của lần chạy đó khi resume.
 
 ```bash
 cd ~/vi-factcheck-system
 conda activate vifactcheck
 export PYTHONNOUSERSITE=1
+git rev-parse --short HEAD
+ls -lh data/prepared/{manifest.json,train.jsonl,dev.jsonl,test.jsonl}
+df -h .
+python -m vifactcheck benchmark --help
+```
 
+Cần thấy bốn file dữ liệu và các lệnh con `prepare`, `smoke`, `run`, `export`, `compare`. Full run dùng `runs/` trong repo theo lệnh dưới đây, nên kiểm tra dung lượng của ổ đó nếu bạn đặt `runs/` ở ổ khác.
+
+### 2.2 Tải pretrained assets mBERT
+
+```bash
 python -m vifactcheck benchmark prepare --backbone mbert
 ```
 
-Submit smoke bằng Slurm. Batch launcher lấy Python và Java từ Conda env bạn truyền vào, ghi log vào thư mục output và tiếp tục chạy khi đóng tab terminal.
+Lệnh chạy trong terminal thường và ghi model, tokenizer cùng checksum vào `.cache/backbones/mbert/`. Runner lấy dữ liệu chung từ `data/prepared/`.
+
+### 2.3 Submit smoke mBERT trên một P100
+
+Batch launcher lấy Python và Java từ Conda env bạn truyền vào, ghi log vào thư mục output và tiếp tục chạy khi đóng tab terminal. Ghi lại job ID mà `sbatch` trả về.
 
 ```bash
 sbatch --partition=p100 --gres=gpu:tesla_p100-pcie-16gb:1 \
@@ -34,11 +60,17 @@ sbatch --partition=p100 --gres=gpu:tesla_p100-pcie-16gb:1 \
 Smoke chạy probe M2 với tám claim có workload token lớn nhất, sau đó train Baseline và M2 trên 24 train/12 dev. Nó kiểm tra loss hữu hạn, cập nhật weights, gradient verdict tới reranker và prediction sau khi reload. `completion.json` phải ghi `"status": "passed"` trước khi submit full. Điểm smoke lấy từ dev để kiểm tra pipeline.
 
 ```bash
+squeue -u "$USER"
 cat runs/backbone-mbert-smoke/status.json
 cat runs/backbone-mbert-smoke/completion.json
 ```
 
-Submit full benchmark. `--time=08:00:00` là ví dụ thời lượng cấp cho **một job**, chỉnh theo giới hạn partition. Khi hết giờ, submit lại cùng lệnh, thư mục output, mã nguồn, dữ liệu và Conda env. Runner tiếp tục từ epoch đã checkpoint gần nhất và bỏ qua các job con đã hoàn thành sau khi kiểm tra hash. Epoch chưa kịp lưu sẽ chạy lại.
+Nếu chưa có `completion.json`, kiểm tra hàng đợi và log trước khi submit job mới. Nếu job lỗi, đọc `failure.json` và `slurm-<job-id>.log` trong thư mục smoke. Trước khi Python khởi động, lỗi của launcher có thể nằm ở `slurm-<job-id>.out` tại gốc repo.
+
+### 2.4 Chốt chính sách rồi submit full mBERT
+
+Lệnh mặc định tune trên dev ở seed 42, sau đó dùng tham số đã chọn để chạy seeds 13 và 2026. Nếu cả nhóm đã chốt dùng cấu hình cố định để tiết kiệm thời gian, xem cờ `--fixed-hyperparameters` ở mục 3 trước khi submit. `--time=08:00:00` là ví dụ thời lượng cấp cho **một job Slurm**. Chọn thời lượng mà partition cho phép.
+
 
 ```bash
 sbatch --partition=p100 --gres=gpu:tesla_p100-pcie-16gb:1 \
@@ -46,9 +78,41 @@ sbatch --partition=p100 --gres=gpu:tesla_p100-pcie-16gb:1 \
   run mbert runs/backbone-mbert "$CONDA_PREFIX"
 ```
 
-Dùng `squeue -u "$USER"` để xem job. Mở `runs/backbone-mbert/status.json` để xem seed, phase, epoch và số claim đã xử lý. `job_timings.json` có thời gian quan sát theo job đã xong và train seconds tính từ lịch sử epoch. Một attempt được resume có thể chỉ đo phần còn lại, nên đối chiếu history và thời gian Slurm khi ước lượng XLM-R. Dùng `sacct -j JOB_ID` nếu cụm bật tính năng accounting.
+### 2.5 Theo dõi, resume và xác nhận mBERT đã xong
 
-Khi còn thời gian, lặp lại các lệnh với `--backbone xlmr` ở bước prepare, `xlmr` trong batch launcher, và thư mục riêng `runs/backbone-xlmr-smoke` / `runs/backbone-xlmr`. Cần một smoke đạt riêng cho XLM-R.
+```bash
+squeue -u "$USER"
+cat runs/backbone-mbert/status.json
+cat runs/backbone-mbert/job_timings.json
+```
+
+`status.json` cho biết seed, phase, epoch và số claim đã xử lý. `job_timings.json` có thời gian quan sát theo job đã xong và train seconds tính từ lịch sử epoch. Một attempt được resume có thể chỉ đo phần còn lại, nên đối chiếu history và thời gian Slurm khi ước lượng XLM-R. Dùng `sacct -j JOB_ID` nếu cụm bật tính năng accounting.
+
+- Nếu Slurm hết giờ, đợi job cũ kết thúc rồi submit lại cùng thư mục output, mã nguồn, dữ liệu, Conda env và tùy chọn benchmark. Có thể đổi thời lượng cấp của Slurm. Runner tiếp tục từ epoch đã checkpoint gần nhất và bỏ qua các job con đã hoàn thành sau khi kiểm tra hash. Epoch chưa kịp lưu sẽ chạy lại.
+- Nếu Python báo lỗi, đọc `failure.json` và log trước khi chạy lại. Có thể đóng gói diagnostics sau khi job đã dừng theo mục 4.
+- Khi hoàn tất, `runs/backbone-mbert/completion.json` ghi `"status": "complete"`, `"split": "test"` và `"evaluation_count": 6`. Kiểm tra có cả Baseline và M2 trên ba seed trong `per_seed.csv`.
+
+### 2.6 Chạy XLM-R nếu còn kịp hạn
+
+Dùng thời gian đo từ mBERT, thời gian chờ Slurm và mốc chốt số liệu để quyết định. XLM-R dùng thư mục riêng và cần smoke riêng:
+
+```bash
+python -m vifactcheck benchmark prepare --backbone xlmr
+
+sbatch --partition=p100 --gres=gpu:tesla_p100-pcie-16gb:1 \
+  --time=00:30:00 scripts/benchmark-p100.sbatch \
+  smoke xlmr runs/backbone-xlmr-smoke "$CONDA_PREFIX"
+```
+
+Khi `runs/backbone-xlmr-smoke/completion.json` ghi `"status": "passed"`, submit full với cùng chính sách hyperparameter đã chọn cho mBERT:
+
+```bash
+sbatch --partition=p100 --gres=gpu:tesla_p100-pcie-16gb:1 \
+  --time=08:00:00 scripts/benchmark-p100.sbatch \
+  run xlmr runs/backbone-xlmr "$CONDA_PREFIX"
+```
+
+Theo dõi và resume như mBERT, dùng đường dẫn `runs/backbone-xlmr/`. Khi full hoàn tất, lấy ZIP cho từng backbone rồi gộp bảng theo mục 4.
 
 ## 3. Protocol ghi trong báo cáo
 
@@ -67,7 +131,7 @@ Trong `runs/backbone-mbert/` hoặc `runs/backbone-xlmr/`:
 - **`status.json` và `slurm-<job-id>.log`** cho biết job đang ở đâu. Khi Python báo lỗi, xem thêm `failure.json`. Nếu scheduler hết giờ hoặc hủy job, xem trạng thái Slurm và dòng cuối log.
 - **`plan.json`**, **`tuning_trials.json`** (khi bật tuning), **`selected_hyperparameters.json`** và **`job_timings.json`** ghi cấu hình, revision, hash, môi trường, dev scores và thời gian. `jobs/` có history và metadata từng phase. Runner giữ best và state cần cho resume; last dư được dọn sau khi job con đã ghi ledger.
 - **`REPORT.md`**, **`summary.csv`**, **`per_seed.csv`** là bảng để đọc và đưa vào báo cáo. **`comparison.json`** thêm chênh lệch và khoảng tin cậy ghép theo seed. **`evaluation/`** chứa metrics chi tiết và predictions từng claim. `completion.json` phân biệt full benchmark đã xong với smoke.
-- **`download/results.zip`** được tạo tự động khi hoàn tất. Tải nó cùng **`download/results.zip.sha256`** qua Open OnDemand → Files. ZIP gồm bảng, metrics, log, cấu hình, histories và prediction gọn với ID, xác suất, ranking và vị trí evidence. ZIP giữ checkpoint SHA-256, còn weights nằm trên server.
+- **`download/results.zip`** được tạo tự động khi hoàn tất. Tải nó cùng **`download/results.zip.sha256`** qua Open OnDemand → Files. ZIP gồm bảng, metrics, log, cấu hình, histories và prediction gọn với ID, xác suất, ranking và vị trí evidence. ZIP giữ checkpoint SHA-256, còn weights nằm trên server. Trên Mac, lưu cặp ZIP và checksum của mỗi backbone vào một thư mục riêng vì hai run dùng cùng tên file.
 - **`selected_checkpoints.json`** và **`download/checkpoint_locations.json`** liệt kê đúng đường dẫn, kích thước và hash của các `*_best.pt`. Muốn giữ weights, tải file `.pt` tương ứng qua Files và đối chiếu với **`checkpoints.sha256`**. Với full run có sáu checkpoint được chọn cho mỗi backbone.
 
 Nếu job đã dừng và cần gửi log hoặc kết quả đang dở, tạo `download/diagnostics.zip`. Lệnh tương tự cũng tạo lại ZIP kết quả đã hoàn tất với log mới nhất.
