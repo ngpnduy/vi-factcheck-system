@@ -1,4 +1,4 @@
-"""Resumable Baseline/M2 benchmark with five verifier epochs per system."""
+"""Resumable backbone benchmark with five verifier epochs per system."""
 from dataclasses import replace
 import importlib.metadata
 import os
@@ -112,7 +112,8 @@ def run_benchmark(args):
 
 def run_locked(args, output):
     smoke = args.benchmark_action == "smoke"
-    fixed = smoke or args.fixed_hyperparameters
+    control = "M0" if args.control == "m0" else "BASELINE"
+    fixed = smoke or control == "M0" or args.fixed_hyperparameters
     if args.device == "cuda" and not torch.cuda.is_available():
         raise RuntimeError("PyTorch cannot access CUDA in this job")
     if not smoke and args.device != "cuda":
@@ -133,7 +134,7 @@ def run_locked(args, output):
     git = subprocess.run(["git", "rev-parse", "HEAD"], cwd=source, text=True, capture_output=True)
     seeds = [42] if smoke else list(SEEDS)
     plan = {
-        "kind": "smoke" if smoke else "benchmark", "config": config.to_dict(), "seeds": seeds,
+        "kind": "smoke" if smoke else "benchmark", "config": config.to_dict(), "seeds": seeds, "control": control,
         "hyperparameter_policy": "fixed-before-training" if fixed else "seed42-dev-search",
         "search": None if fixed else {"learning_rates": list(LEARNING_RATES), "lambdas": list(LAMBDAS)},
         "checkpoint_selection": "highest dev Macro-F1 over all verifier epochs, earliest on ties",
@@ -163,7 +164,7 @@ def run_locked(args, output):
 
     if (output / "completion.json").is_file():
         return export_locked(output)
-    state = {"status": "running", "backbone": args.backbone, "kind": plan["kind"],
+    state = {"status": "running", "backbone": args.backbone, "kind": plan["kind"], "control": control,
              "job_id": os.environ.get("SLURM_JOB_ID")}
     timings_path = output / "job_timings.json"
     timings = read_json(timings_path) if timings_path.is_file() else {}
@@ -197,9 +198,9 @@ def run_locked(args, output):
 
     trial_rows = {"baseline_lr": [], "m1_lr": [], "m2_lambda": []}
     if fixed:
-        selected = [(seed, job(f"seed-{seed}/baseline", replace(config, seed=seed), "BASELINE"),
+        selected = [(seed, job(f"seed-{seed}/{control.lower()}", replace(config, seed=seed), control),
                      job(f"seed-{seed}/m2", replace(config, seed=seed), "M2")) for seed in seeds]
-        choices = {"baseline_lr": FIXED_LR, "m2_lr": FIXED_LR, "evidence_lambda": FIXED_LAMBDA}
+        choices = {f"{control.lower()}_lr": FIXED_LR, "m2_lr": FIXED_LR, "evidence_lambda": FIXED_LAMBDA}
     else:
         def trial(key, parameter, value, cfg, mode, parent=None):
             path, result = job(f"tuning/{key}-{value:g}", cfg, mode, parent)
@@ -230,8 +231,8 @@ def run_locked(args, output):
 
     write_json(output / "selected_hyperparameters.json", {"policy": plan["hyperparameter_policy"], **choices})
     checkpoints = {}
-    for seed, baseline, m2 in selected:
-        for mode, (directory, result) in (("BASELINE", baseline), ("M2", m2)):
+    for seed, control_result, m2 in selected:
+        for mode, (directory, result) in ((control, control_result), ("M2", m2)):
             checkpoint = Path(result["checkpoint"])
             checksum = sha256(checkpoint)
             if checksum != result["selection"]["checkpoint_sha256"]:

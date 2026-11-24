@@ -32,6 +32,9 @@ def check_predictions(predictions, rows, mode):
                 prediction["label_id"] != max(range(3), key=lambda i: probabilities[LABELS[i]])):
             raise ValueError(f"Invalid prediction for {row['id']}")
         ranking = prediction["ranking"]
+        if mode == "M0" and (ranking != row["candidate_ids"] or
+                              [s["id"] for s in prediction["selected_sentences"]] != ranking[:5]):
+            raise ValueError(f"M0 did not use the prepared BM25 order for {row['id']}")
         if mode == "M2" and (sorted(ranking) != sorted(row["candidate_ids"]) or
                               [s["id"] for s in prediction["selected_sentences"]] != ranking[:5]):
             raise ValueError(f"M2 did not select from the prepared BM25 candidates for {row['id']}")
@@ -39,9 +42,10 @@ def check_predictions(predictions, rows, mode):
             raise ValueError(f"Baseline emitted a sentence ranking for {row['id']}")
 
 
-def summary_markdown(path, rows, purpose):
+def summary_markdown(path, rows, purpose, control):
+    control_label = "Baseline" if control == "BASELINE" else control
     lines = [f"# {purpose}", "",
-             "| Backbone | System | Seeds | Macro-F1 (mean ± SD) | Accuracy (mean ± SD) | Δ Macro-F1 vs Baseline |",
+             f"| Backbone | System | Seeds | Macro-F1 (mean ± SD) | Accuracy (mean ± SD) | Δ Macro-F1 vs {control_label} |",
              "| --- | --- | ---: | ---: | ---: | ---: |"]
     for row in rows:
         def score(metric):
@@ -59,9 +63,11 @@ def write_report(output, plan, rows, checkpoints, split):
 
     per_seed, aggregate, contrasts = [], [], {}
     backbone = plan["assets"]["backbone"]
+    control = plan.get("control", "BASELINE")
+    modes = (control, "M2")
     for seed in plan["seeds"]:
         predictions_by_mode = {}
-        for mode in ("BASELINE", "M2"):
+        for mode in modes:
             prefix = output / "evaluation" / f"seed-{seed}" / f"{mode.lower()}_{split}"
             metrics = read_json(str(prefix) + "_metrics.json")
             predictions = read_jsonl(str(prefix) + "_predictions.jsonl")
@@ -87,8 +93,8 @@ def write_report(output, plan, rows, checkpoints, split):
                 "retrieval_mrr": metrics["retrieval"]["mrr"] if metrics["retrieval"] else None,
             })
         if split == "test":
-            contrasts[str(seed)] = paired_article_bootstrap(predictions_by_mode["M2"], predictions_by_mode["BASELINE"])
-    for mode in ("BASELINE", "M2"):
+            contrasts[str(seed)] = paired_article_bootstrap(predictions_by_mode["M2"], predictions_by_mode[control])
+    for mode in modes:
         selected = [row for row in per_seed if row["system"] == mode]
         result = {"backbone": backbone, "system": mode, "split": split, "seed_count": len(selected)}
         for metric in ("macro_f1", "accuracy"):
@@ -101,9 +107,9 @@ def write_report(output, plan, rows, checkpoints, split):
     write_csv(output / "per_seed.csv", per_seed)
     write_csv(output / "summary.csv", aggregate)
     title = "Smoke check on development data" if split == "dev" else "Three-seed test results"
-    summary_markdown(output / "REPORT.md", aggregate, title)
+    summary_markdown(output / "REPORT.md", aggregate, title, control)
     write_json(output / "comparison.json", {"summary": aggregate, "per_seed": per_seed,
-                                           "m2_minus_baseline_paired_article_bootstrap": contrasts})
+                                           f"m2_minus_{control.lower()}_paired_article_bootstrap": contrasts})
 
 
 def compare_runs(runs, destination):
@@ -119,20 +125,21 @@ def compare_runs(runs, destination):
         if backbone in backbones:
             raise ValueError(f"Duplicate backbone: {backbone}")
         backbones.add(backbone)
+        control = plan.get("control", "BASELINE")
         signatures.append((plan["data_manifest"]["prepared_file_sha256"], plan["seeds"],
-                           plan["hyperparameter_policy"], plan["search"],
+                           plan["hyperparameter_policy"], plan["search"], control,
                            {k: v for k, v in plan["config"].items()
                             if k not in ("model_path", "data_path", "backbone", "device")}))
         report = read_json(run / "comparison.json")
         summary.extend(report["summary"])
         details.extend(report["per_seed"])
     if any(signature != signatures[0] for signature in signatures[1:]):
-        raise ValueError("Runs use different data, seeds, training constraints, or tuning policies")
+        raise ValueError("Runs use different controls, data, seeds, training constraints, or tuning policies")
     destination = Path(destination).resolve()
     destination.mkdir(parents=True, exist_ok=True)
     write_csv(destination / "summary.csv", summary)
     write_csv(destination / "per_seed.csv", details)
-    summary_markdown(destination / "REPORT.md", summary, "Backbone comparison on the official test split")
+    summary_markdown(destination / "REPORT.md", summary, "Backbone comparison on the official test split", control)
     return {"report": str(destination / "REPORT.md"), "backbones": sorted(backbones)}
 
 

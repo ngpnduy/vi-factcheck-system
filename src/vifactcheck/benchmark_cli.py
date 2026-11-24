@@ -2,7 +2,7 @@
 
 
 def add_benchmark_parser(commands):
-    command = commands.add_parser("benchmark", help="Baseline and listwise M2 on mBERT or XLM-R")
+    command = commands.add_parser("benchmark", help="M0 and listwise M2 on mBERT or XLM-R")
     actions = command.add_subparsers(dest="benchmark_action", required=True)
     for action in ("prepare", "smoke", "run"):
         parser = actions.add_parser(action)
@@ -13,9 +13,11 @@ def add_benchmark_parser(commands):
         parser.add_argument("--data", default="data/prepared")
         parser.add_argument("--output", required=True)
         parser.add_argument("--device", choices=("cpu", "cuda"), default="cuda")
+        parser.add_argument("--control", choices=("m0", "claim-article"), default="m0",
+                            help="Control model alongside M2 (default: m0)")
     actions.choices["run"].add_argument(
         "--fixed-hyperparameters", action="store_true",
-        help="Use LR 1e-5 and M2 lambda 0.1 for all three seeds without search")
+        help="Use LR 1e-5 and M2 lambda 0.1 without search (automatic with M0)")
     export = actions.add_parser("export", help="Pack completed results or partial diagnostics without weights")
     export.add_argument("--run", required=True)
     compare = actions.add_parser("compare", help="Combine completed backbone reports")
