@@ -18,6 +18,9 @@ def add_benchmark_parser(commands):
     actions.choices["run"].add_argument(
         "--fixed-hyperparameters", action="store_true",
         help="Use LR 1e-5 and M2 lambda 0.1 without search (automatic with M0)")
+    actions.choices["run"].add_argument(
+        "--single-seed", action="store_true",
+        help="Train and evaluate both systems on seed 42 only")
     export = actions.add_parser("export", help="Pack completed results or partial diagnostics without weights")
     export.add_argument("--run", required=True)
     compare = actions.add_parser("compare", help="Combine completed backbone reports")

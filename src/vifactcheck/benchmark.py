@@ -132,7 +132,7 @@ def run_locked(args, output):
         raise ValueError("Run requires the pinned official prepared dataset and split counts")
     source = Path(__file__).resolve().parent
     git = subprocess.run(["git", "rev-parse", "HEAD"], cwd=source, text=True, capture_output=True)
-    seeds = [42] if smoke else list(SEEDS)
+    seeds = [42] if smoke or getattr(args, "single_seed", False) else list(SEEDS)
     plan = {
         "kind": "smoke" if smoke else "benchmark", "config": config.to_dict(), "seeds": seeds, "control": control,
         "hyperparameter_policy": "fixed-before-training" if fixed else "seed42-dev-search",
@@ -224,7 +224,7 @@ def run_locked(args, output):
         baseline_lr, weight = LEARNING_RATES[baseline_index], LAMBDAS[m2_index]
         choices = {"baseline_lr": baseline_lr, "m2_lr": m2_lr, "evidence_lambda": weight}
         selected = [(42, baseline_trials[baseline_index], m2_trials[m2_index])]
-        for seed in SEEDS[1:]:
+        for seed in seeds[1:]:
             selected.append((seed,
                              job(f"seed-{seed}/baseline", replace(config, seed=seed, learning_rate=baseline_lr), "BASELINE"),
                              job(f"seed-{seed}/m2", replace(m2_config, seed=seed, evidence_lambda=weight), "M2")))

@@ -106,7 +106,7 @@ def write_report(output, plan, rows, checkpoints, split):
         aggregate.append(result)
     write_csv(output / "per_seed.csv", per_seed)
     write_csv(output / "summary.csv", aggregate)
-    title = "Smoke check on development data" if split == "dev" else "Three-seed test results"
+    title = "Smoke check on development data" if split == "dev" else "Results on the official test split"
     summary_markdown(output / "REPORT.md", aggregate, title, control)
     write_json(output / "comparison.json", {"summary": aggregate, "per_seed": per_seed,
                                            f"m2_minus_{control.lower()}_paired_article_bootstrap": contrasts})
