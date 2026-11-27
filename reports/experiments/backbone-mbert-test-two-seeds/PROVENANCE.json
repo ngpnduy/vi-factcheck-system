@@ -1,0 +1,88 @@
+{
+  "study": "ViFactCheck mBERT M0/M2 checkpoint evaluation on the official test split",
+  "inference_source_commit": "dc5879042b89508ae1c9bc58bf14fcce684630b0",
+  "dataset_revision": "2df623632299a3459ad95feeff9ac67d7205a42a",
+  "prepared_test_sha256": "470cdcfffe0ce0275eac2c7a1aabc20d9b9217bff1110392b68b968e62cde96a",
+  "source_archive": {
+    "filename": "backbone-mbert-test-two-seeds.zip",
+    "sha256": "470eaf9f636db4d79ef543f8ac0a208c5699a961d9c94c6a716f3a679d0d6a44"
+  },
+  "inference_artifact_sha256": {
+    "seed-42/m0_test_metrics.json": "a6f3aab798d24ab962278137990bf53a47c980d41db6c7e1235d6ca01c1b4997",
+    "seed-42/m0_test_predictions.jsonl": "df6d11eeebfd11e7eccd3d6200cff2727f14cd87a2d3949afcd1c064f98eb947",
+    "seed-42/m2_test_metrics.json": "2cf63d70fc3c825549296e37b623a5577ebab20da36ae8991d0fa5ced710cfe1",
+    "seed-42/m2_test_predictions.jsonl": "6941646687c912ad0da80de360fca53719db3ee7037935cdc78bebce79053ead",
+    "seed-13/m0_test_metrics.json": "85c1b3a384df923b5486052fe1194f29acce9a88510b3e5b893fe15621cf1901",
+    "seed-13/m0_test_predictions.jsonl": "a195af1f3ee0af9b4413d086839f252ae0c30bac5b9063e5d8a15b7c95cc3952",
+    "seed-13/m2_test_metrics.json": "2f455b049b731ff437e70204ad9e23ca523bdc20763a93340882cc8a2ec7375e",
+    "seed-13/m2_test_predictions.jsonl": "7e479ff60f0fc6644619225d7cb993c4d0c734215ea09d1d08be801b190a8a8c"
+  },
+  "selections": {
+    "42/M0": {
+      "inference_checkpoint_sha256": "f9caf17f0d77a9f9bcb9e6ebb5bb45ee950317e096e0e8ae12fd21b7401ae5ae",
+      "selected_stage": "m0",
+      "selected_global_epoch": 5,
+      "training_completion_metadata_available": true,
+      "paper_scope": "primary_seed42"
+    },
+    "42/M2": {
+      "inference_checkpoint_sha256": "1a6b0c7dbf3f5270a2307f8e665b572c1abe9b22cde8797e631ea7d8e6dd4799",
+      "selected_stage": "continuation",
+      "selected_global_epoch": 4,
+      "training_completion_metadata_available": true,
+      "paper_scope": "primary_seed42"
+    },
+    "13/M0": {
+      "inference_checkpoint_sha256": "8f1882ab92a1d135f59cdd76daa0ca7651e33947f187643d0ae53b89dc8dd0f8",
+      "selected_stage": "m0",
+      "selected_global_epoch": 3,
+      "training_completion_metadata_available": true,
+      "paper_scope": "supplementary_seed13"
+    },
+    "13/M2": {
+      "inference_checkpoint_sha256": "356be646d775177415d270763af3b48b3859ccebba68f4a58c7ee6446404b4c4",
+      "selected_stage": null,
+      "selected_global_epoch": null,
+      "training_completion_metadata_available": false,
+      "paper_scope": "supplementary_seed13",
+      "earlier_local_warmup_checkpoint_sha256": "80261b1d4c73deca97501357195ceb4327c7f2b06d7e4ec68370bf9fbd68b0d1",
+      "earlier_training_failure": {
+        "status": "failed",
+        "time_utc": "2026-11-25T21:29:56.015561+00:00",
+        "exception": "AssertionError",
+        "message": "Verification loss failed to reach the reranker"
+      },
+      "note": "The earlier local warmup checkpoint has a different SHA-256 from the inference checkpoint. The latter's stage and post-training check remain unverified."
+    }
+  },
+  "verification": {
+    "inference_evaluations": 4,
+    "claims_per_test": 1447,
+    "paired_ids_labels_articles": true,
+    "classification_metrics_recomputed": true,
+    "retrieval_metrics_recomputed": true
+  },
+  "seed42_m2_minus_m0_paired_article_bootstrap": {
+    "iterations": 2000,
+    "bootstrap_seed": 2026,
+    "claim_count": 1447,
+    "article_count": 758,
+    "method": "paired article-cluster percentile bootstrap; conditional on this training sample and seed",
+    "metrics": {
+      "macro_f1": {
+        "difference": 0.10412795355322557,
+        "ci95": [
+          0.07457177881805939,
+          0.13337279195119944
+        ]
+      },
+      "refuted_f1": {
+        "difference": 0.11267262621053231,
+        "ci95": [
+          0.07172680092813448,
+          0.15424803916582383
+        ]
+      }
+    }
+  }
+}

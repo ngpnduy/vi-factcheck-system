@@ -1,0 +1,112 @@
+{
+  "classification": {
+    "count": 1447,
+    "accuracy": 0.6800276434001382,
+    "macro_f1": 0.6797015582153604,
+    "per_label": {
+      "SUPPORTED": {
+        "precision": 0.70917225950783,
+        "recall": 0.6240157480314961,
+        "f1": 0.6638743455497382,
+        "support": 508
+      },
+      "REFUTED": {
+        "precision": 0.67590618336887,
+        "recall": 0.6773504273504274,
+        "f1": 0.6766275346851655,
+        "support": 468
+      },
+      "NOT_ENOUGH_INFO": {
+        "precision": 0.6591337099811676,
+        "recall": 0.7430997876857749,
+        "f1": 0.6986027944111777,
+        "support": 471
+      }
+    },
+    "confusion_matrix": [
+      [
+        317,
+        90,
+        101
+      ],
+      [
+        71,
+        317,
+        80
+      ],
+      [
+        59,
+        62,
+        350
+      ]
+    ],
+    "label_order": [
+      "SUPPORTED",
+      "REFUTED",
+      "NOT_ENOUGH_INFO"
+    ]
+  },
+  "retrieval": {
+    "count": 539,
+    "alignment_coverage": 0.5922598479612993,
+    "alignment_status_counts": {
+      "valid": 857,
+      "unmatched": 579,
+      "ambiguous": 11
+    },
+    "hit@5": 0.9814471243042672,
+    "sentence_recall@5": 0.947526283240569,
+    "complete_gold@5": 0.9128014842300557,
+    "hit@20": 1.0,
+    "sentence_recall@20": 0.9974025974025974,
+    "complete_gold@20": 0.9907235621521335,
+    "mrr": 0.9529979091203581
+  },
+  "bm25_retrieval": {
+    "count": 539,
+    "alignment_coverage": 0.5922598479612993,
+    "alignment_status_counts": {
+      "valid": 857,
+      "unmatched": 579,
+      "ambiguous": 11
+    },
+    "hit@5": 0.9777365491651205,
+    "sentence_recall@5": 0.9460420531849104,
+    "complete_gold@5": 0.9072356215213359,
+    "hit@20": 1.0,
+    "sentence_recall@20": 0.9974025974025974,
+    "complete_gold@20": 0.9907235621521335,
+    "mrr": 0.9433306695366064
+  },
+  "error_stages": {
+    "correct": 984,
+    "alignment_unavailable": 191,
+    "verification_with_complete_gold": 130,
+    "nei_verification_error": 121,
+    "selection_incomplete_gold": 19,
+    "bm25_incomplete_gold": 2
+  },
+  "truncation": {
+    "claim_count": 1447,
+    "claim_truncated_count": 19,
+    "candidate_pair_count": 22962,
+    "candidate_sentence_truncated_count": 36,
+    "selected_pair_count": 7231,
+    "selected_sentence_truncated_count": 14,
+    "context_unit": "sentence",
+    "verifier_context_tokens_original": 336599,
+    "verifier_context_tokens_kept": 335479
+  },
+  "cost": {
+    "evaluation_seconds": 1212.2562320157886,
+    "seconds_per_claim": 0.8377721022914918,
+    "peak_cuda_allocated_mib": 1616.005859375,
+    "peak_cuda_reserved_mib": 1636.0,
+    "prepared_input_inference_seconds": 1202.060010690242,
+    "prepared_input_seconds_per_claim": 0.8307256466414942,
+    "parameters": 359255812,
+    "ranker_input_tokens": 2131003,
+    "verifier_input_tokens": 674400,
+    "total_input_tokens": 2805403
+  }
+}

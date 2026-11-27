@@ -1,0 +1,194 @@
+{
+  "assets": {
+    "dataset_id": "tranthaihoa/vifactcheck",
+    "dataset_revision": "2df623632299a3459ad95feeff9ac67d7205a42a",
+    "model_id": "vinai/phobert-base",
+    "model_revision": "01daacda68afe13d83023d16ec647239e344a1e6",
+    "segmenter_revision": "62bbc58fe5d113c898eae112656be97dcf50b3a0",
+    "files": [
+      {
+        "path": "dataset/train.parquet",
+        "url": "https://huggingface.co/datasets/tranthaihoa/vifactcheck/resolve/2df623632299a3459ad95feeff9ac67d7205a42a/data/train-00000-of-00001.parquet",
+        "sha256": "ff054bc61afb59e3c9aa1dd402f0eb44700a30866c75ee6c66e117517bd510e8",
+        "bytes": 8071153
+      },
+      {
+        "path": "dataset/dev.parquet",
+        "url": "https://huggingface.co/datasets/tranthaihoa/vifactcheck/resolve/2df623632299a3459ad95feeff9ac67d7205a42a/data/dev-00000-of-00001.parquet",
+        "sha256": "16b6d8b244ec07be1a6d80fcb389486c2f26e5c10cdc66f6cab72bd159920454",
+        "bytes": 1225466
+      },
+      {
+        "path": "dataset/test.parquet",
+        "url": "https://huggingface.co/datasets/tranthaihoa/vifactcheck/resolve/2df623632299a3459ad95feeff9ac67d7205a42a/data/test-00000-of-00001.parquet",
+        "sha256": "d797eb5a3797f12c052d4c8dbdda0b9cf7174f3dfce91050f95354b044816214",
+        "bytes": 2484723
+      },
+      {
+        "path": "phobert/config.json",
+        "url": "https://huggingface.co/vinai/phobert-base/resolve/01daacda68afe13d83023d16ec647239e344a1e6/config.json",
+        "sha256": "71df79a67a65b1ee472938d0dff77297c0d77e20fef1af41e0013b1d384efb0d",
+        "bytes": 557
+      },
+      {
+        "path": "phobert/vocab.txt",
+        "url": "https://huggingface.co/vinai/phobert-base/resolve/01daacda68afe13d83023d16ec647239e344a1e6/vocab.txt",
+        "sha256": "dffd7543c401fb6567253ae7c3313004532c33d062525250049c616544bad777",
+        "bytes": 895321
+      },
+      {
+        "path": "phobert/bpe.codes",
+        "url": "https://huggingface.co/vinai/phobert-base/resolve/01daacda68afe13d83023d16ec647239e344a1e6/bpe.codes",
+        "sha256": "9dfe53fb8abbddd3387da99641c36e00bee757a3679aad9cf0a7cdc4b30f6ef8",
+        "bytes": 1135173
+      },
+      {
+        "path": "phobert/pytorch_model.bin",
+        "url": "https://huggingface.co/vinai/phobert-base/resolve/01daacda68afe13d83023d16ec647239e344a1e6/pytorch_model.bin",
+        "sha256": "a0b0f0912c710147fbaac015b0a4011216a0061a56c03b840b639e40d3bb49cc",
+        "bytes": 542923308
+      },
+      {
+        "path": "vncorenlp/VnCoreNLP-1.2.jar",
+        "url": "https://raw.githubusercontent.com/vncorenlp/VnCoreNLP/62bbc58fe5d113c898eae112656be97dcf50b3a0/VnCoreNLP-1.2.jar",
+        "sha256": "9e2811cdbc2ddfc71d04be5dc36e185c88dcd1ad4d5d69e4ff2e1369dccf7793",
+        "bytes": 27412703
+      },
+      {
+        "path": "vncorenlp/models/wordsegmenter/vi-vocab",
+        "url": "https://raw.githubusercontent.com/vncorenlp/VnCoreNLP/62bbc58fe5d113c898eae112656be97dcf50b3a0/models/wordsegmenter/vi-vocab",
+        "sha256": "0a47c5b55bbce163029d37730a67b9479740388695c29c106c112b815613eaa5",
+        "bytes": 526544
+      },
+      {
+        "path": "vncorenlp/models/wordsegmenter/wordsegmenter.rdr",
+        "url": "https://raw.githubusercontent.com/vncorenlp/VnCoreNLP/62bbc58fe5d113c898eae112656be97dcf50b3a0/models/wordsegmenter/wordsegmenter.rdr",
+        "sha256": "9e62f96bd93e37a24f364238e8d8ae986fa5dad6dbc9f4eae622ab3651b7fa06",
+        "bytes": 128508
+      }
+    ]
+  },
+  "splits": {
+    "train": {
+      "source_count": 5062,
+      "valid_count": 5062,
+      "rejected_count": 0,
+      "labels": {
+        "0": 1751,
+        "1": 1658,
+        "2": 1653
+      },
+      "alignment": {
+        "valid": 2952,
+        "unmatched": 2064,
+        "ambiguous": 46
+      },
+      "alignment_by_label": {
+        "0": {
+          "valid": 933,
+          "unmatched": 810,
+          "ambiguous": 8
+        },
+        "1": {
+          "valid": 940,
+          "unmatched": 708,
+          "ambiguous": 10
+        },
+        "2": {
+          "unmatched": 546,
+          "valid": 1079,
+          "ambiguous": 28
+        }
+      }
+    },
+    "dev": {
+      "source_count": 723,
+      "valid_count": 723,
+      "rejected_count": 0,
+      "labels": {
+        "1": 244,
+        "0": 256,
+        "2": 223
+      },
+      "alignment": {
+        "unmatched": 293,
+        "valid": 425,
+        "ambiguous": 5
+      },
+      "alignment_by_label": {
+        "0": {
+          "unmatched": 117,
+          "valid": 138,
+          "ambiguous": 1
+        },
+        "1": {
+          "unmatched": 110,
+          "valid": 133,
+          "ambiguous": 1
+        },
+        "2": {
+          "valid": 154,
+          "ambiguous": 3,
+          "unmatched": 66
+        }
+      }
+    },
+    "test": {
+      "source_count": 1447,
+      "valid_count": 1447,
+      "rejected_count": 0,
+      "labels": {
+        "1": 468,
+        "2": 471,
+        "0": 508
+      },
+      "alignment": {
+        "valid": 857,
+        "unmatched": 579,
+        "ambiguous": 11
+      },
+      "alignment_by_label": {
+        "0": {
+          "valid": 283,
+          "unmatched": 221,
+          "ambiguous": 4
+        },
+        "1": {
+          "valid": 256,
+          "unmatched": 210,
+          "ambiguous": 2
+        },
+        "2": {
+          "valid": 318,
+          "unmatched": 148,
+          "ambiguous": 5
+        }
+      }
+    }
+  },
+  "cross_split_unique_overlap": {
+    "train-dev": {
+      "claims": 1,
+      "articles": 495
+    },
+    "train-test": {
+      "claims": 1,
+      "articles": 753
+    },
+    "dev-test": {
+      "claims": 0,
+      "articles": 360
+    }
+  },
+  "gold_matching": "exact NFC and whitespace-normalized snippets; no fuzzy supervision",
+  "bm25": {
+    "k1": 1.5,
+    "b": 0.75,
+    "candidate_count": 20
+  },
+  "prepared_file_sha256": {
+    "train": "eeb8d4c88a757fe3eca23302ccdb0bae7eb020747fa9e78ffd8dd9b3584de834",
+    "dev": "311da983fcf3b9196b40cad5fd2bd00804a88a9370eafc0748019c02c55570f9",
+    "test": "470cdcfffe0ce0275eac2c7a1aabc20d9b9217bff1110392b68b968e62cde96a"
+  }
+}
