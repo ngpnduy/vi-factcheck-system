@@ -1,0 +1,33 @@
+{
+  "commit": "3966dc4014c93c16bca1ad964e90acb79ce67308",
+  "files": {
+    "PROVENANCE.json": {
+      "sha256": "577f7bea53189149f65266f1599fff0d36b7318e8c8c7dd4b8b04c30811483e1"
+    },
+    "checkpoints.sha256": {
+      "sha256": "45676694e42f6815def4546c143756b895d2be0bfca6f8c79bb854db9614f1cd"
+    },
+    "data-manifest.json": {
+      "sha256": "710461a47514d5921dda30f8e6870ddaf4ae2c3824b5ae19fd729f8df7323f87"
+    },
+    "inference-commit.txt": {
+      "sha256": "94838f7ec0a58ddab51cc0387534dd65c375333170c8a837a0a2c14be104b1f1"
+    },
+    "seed-13/m0_test_metrics.json": {
+      "sha256": "85c1b3a384df923b5486052fe1194f29acce9a88510b3e5b893fe15621cf1901"
+    },
+    "seed-13/m2_test_metrics.json": {
+      "sha256": "2f455b049b731ff437e70204ad9e23ca523bdc20763a93340882cc8a2ec7375e"
+    },
+    "seed-42/m0_test_metrics.json": {
+      "sha256": "a6f3aab798d24ab962278137990bf53a47c980d41db6c7e1235d6ca01c1b4997"
+    },
+    "seed-42/m2_test_metrics.json": {
+      "sha256": "2cf63d70fc3c825549296e37b623a5577ebab20da36ae8991d0fa5ced710cfe1"
+    },
+    "test-data.sha256": {
+      "sha256": "3555c356d8c1926ec0739a66cd87991fe97ee1b0a60607ea13ca37f3d6c60a27"
+    }
+  },
+  "note": "Existing tracked publication files retained. Missing datasets, predictions and weights are not reconstructed."
+}

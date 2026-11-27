@@ -1,0 +1,373 @@
+"""Explicit claim-level training and resumable experiment phases."""
+from collections import Counter
+import gc
+import hashlib
+import importlib.metadata
+import math
+import os
+from pathlib import Path
+import random
+import shutil
+import time
+
+import numpy as np
+import torch
+from transformers.optimization import Adafactor
+
+from .config import TrainConfig
+from .data import load_split, smoke_subset, stratified_subset
+from .io import read_json, sha256, write_json, write_jsonl
+from .metrics import classification_metrics, error_stage, retrieval_metrics
+from .model import PairTokenizer, VerificationSystem, evidence_loss
+
+
+def seed_everything(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+    torch.backends.cudnn.benchmark = False
+    torch.backends.cudnn.deterministic = True
+    torch.use_deterministic_algorithms(True, warn_only=True)
+
+
+def rng_state():
+    return {"python": random.getstate(), "numpy": np.random.get_state(), "torch": torch.get_rng_state(), "cuda": torch.cuda.get_rng_state_all() if torch.cuda.is_available() else []}
+
+
+def restore_rng(state):
+    random.setstate(state["python"])
+    np.random.set_state(state["numpy"])
+    torch.set_rng_state(state["torch"])
+    if torch.cuda.is_available() and state["cuda"]:
+        torch.cuda.set_rng_state_all(state["cuda"])
+
+
+def load_checkpoint(path):
+    # Only locally generated trusted checkpoints. mmap avoids another full CPU
+    # copy of the two encoders on the 16 GB laptop.
+    return torch.load(path, map_location="cpu", weights_only=False, mmap=True)
+
+
+def fingerprint(module):
+    digest = hashlib.sha256()
+    for name, value in module.state_dict().items():
+        digest.update(name.encode())
+        digest.update(value.detach().cpu().contiguous().numpy().tobytes())
+    return digest.hexdigest()
+
+
+def save_checkpoint(path, payload):
+    path = Path(path)
+    temporary = path.with_suffix(".tmp")
+    torch.save(payload, temporary)
+    os.replace(temporary, path)
+
+
+def copy_checkpoint(source, destination):
+    source, destination = Path(source), Path(destination)
+    if destination.exists():
+        destination.unlink()
+    try:
+        os.link(source, destination)
+    except OSError:
+        shutil.copy2(source, destination)
+
+
+def make_optimizer(system, config):
+    # Stable parameter ordering allows the common verifier optimizer state to
+    # load into both branches. Frozen parameters have no gradients and acquire
+    # no optimizer state; M2 can then start updating the same reranker entries.
+    return Adafactor(list(system.parameters()), lr=config.learning_rate, scale_parameter=False, relative_step=False, warmup_init=False, beta1=None, weight_decay=0.0, clip_threshold=1.0)
+
+
+def evaluate(system, rows, output=None, progress=None):
+    if not rows:
+        raise ValueError("Evaluation split is empty")
+    if system.config.device == "cuda":
+        torch.cuda.synchronize()
+    started = time.perf_counter()
+    predictions = []
+    for row in rows:
+        prediction = system.prediction(row)
+        prediction["gold_label_id"] = row["label"]
+        prediction["article_id"] = row["article_id"]
+        prediction["alignment"] = row["alignment"]
+        prediction["claim"] = row.get("claim", row["claim_segmented"])
+        prediction["error_stage"] = error_stage(row, prediction["ranking"], prediction["label_id"])
+        predictions.append(prediction)
+        if progress and (len(predictions) % 25 == 0 or len(predictions) == len(rows)):
+            progress({"event": "evaluation", "completed_claims": len(predictions), "total_claims": len(rows)})
+    if system.config.device == "cuda":
+        torch.cuda.synchronize()
+    inference_seconds = time.perf_counter() - started
+    rankings = [p["ranking"] for p in predictions]
+    selected_metadata = [meta for p in predictions for meta in p["truncation"]]
+    candidate_metadata = [system.tokenizer.encode(r["claim_segmented"], r["sentences"][i]["segmented"])[1] for r in rows for i in r["candidate_ids"][:system.config.candidate_count]]
+    elapsed = time.perf_counter() - started
+    metrics = {"classification": classification_metrics([r["label"] for r in rows], [p["label_id"] for p in predictions]), "retrieval": retrieval_metrics(rows, rankings), "bm25_retrieval": retrieval_metrics(rows, [r["candidate_ids"] for r in rows]), "error_stages": dict(Counter(p["error_stage"] for p in predictions)), "truncation": {"claim_count": len(rows), "claim_truncated_count": sum(any(m["claim_truncated"] for m in p["truncation"]) for p in predictions), "candidate_pair_count": len(candidate_metadata), "candidate_sentence_truncated_count": sum(m["sentence_truncated"] for m in candidate_metadata), "selected_pair_count": len(selected_metadata), "selected_sentence_truncated_count": sum(m["sentence_truncated"] for m in selected_metadata)}, "cost": {"evaluation_seconds": elapsed, "seconds_per_claim": elapsed / len(rows), "peak_cuda_allocated_mib": torch.cuda.max_memory_allocated() / 1024**2 if system.config.device == "cuda" else None, "peak_cuda_reserved_mib": torch.cuda.max_memory_reserved() / 1024**2 if system.config.device == "cuda" else None}}
+    metrics["cost"]["prepared_input_inference_seconds"] = inference_seconds
+    metrics["cost"]["prepared_input_seconds_per_claim"] = inference_seconds / len(rows)
+    if output:
+        write_json(str(output) + "_metrics.json", metrics)
+        write_jsonl(str(output) + "_predictions.jsonl", predictions)
+    return metrics
+
+
+def training_rows(config):
+    train, dev = load_split(config.data_path, "train"), load_split(config.data_path, "dev")
+    if config.smoke:
+        train, dev = smoke_subset(train, 8, config.seed), smoke_subset(dev, 4, config.seed)
+    elif config.train_per_label is not None:
+        train = stratified_subset(train, config.train_per_label, config.seed)
+    return train, dev
+
+
+def evaluate_ranker(system, rows, progress=None):
+    from .model import stable_topk
+    system.eval()
+    rankings = []
+    with torch.no_grad():
+        for row in rows:
+            candidates, scores = system.rank_scores(row, gradients=False)
+            _, ordered = stable_topk(scores, candidates, len(candidates))
+            rankings.append([candidates[i] for i in ordered])
+            if progress and (len(rankings) % 25 == 0 or len(rankings) == len(rows)):
+                progress({"event": "evaluation", "completed_claims": len(rankings), "total_claims": len(rows)})
+    return {"retrieval": retrieval_metrics(rows, rankings)}
+
+
+def phase(system, train, dev, directory, name, stage, epochs, source=None, progress=None):
+    directory = Path(directory)
+    directory.mkdir(parents=True, exist_ok=True)
+    last_path, best_path = directory / f"{name}_last.pt", directory / f"{name}_best.pt"
+    config = system.config
+    system.configure_training(stage)
+    optimizer = make_optimizer(system, config)
+    scaler = torch.amp.GradScaler("cuda", enabled=config.device == "cuda" and config.mixed_precision)
+    completed, best_score, history = 0, -math.inf, []
+    data_signature = hashlib.sha256("\n".join(r["id"] for r in train + dev).encode()).hexdigest()
+    source_hash = sha256(source) if source else None
+    checkpoint = None
+    if last_path.exists():
+        checkpoint = load_checkpoint(last_path)
+        if TrainConfig(**checkpoint["config"]).to_dict() != config.to_dict() or checkpoint["data_signature"] != data_signature or checkpoint["source_checkpoint_sha256"] != source_hash:
+            raise ValueError("Existing run has different configuration/data/source; choose a new output directory")
+        completed, best_score, history = checkpoint["completed_epochs"], checkpoint["best_score"], checkpoint["history"]
+    elif source:
+        checkpoint = load_checkpoint(source)
+    if checkpoint:
+        system.load_state_dict(checkpoint["model"])
+        if checkpoint["stage"] == stage or (checkpoint["stage"] == "warmup" and stage == "continuation"):
+            optimizer.load_state_dict(checkpoint["optimizer"])
+            scaler.load_state_dict(checkpoint["scaler"])
+        restore_rng(checkpoint["rng"])
+        del checkpoint
+    system.configure_training(stage)
+    if config.device == "cuda":
+        torch.cuda.reset_peak_memory_stats()
+    for epoch in range(completed, epochs):
+        system.configure_training(stage)
+        order = list(range(len(train)))
+        # Local RNG gives the same sample order across M0/M1/M2, regardless of
+        # dropout calls or extra reranker forward passes.
+        order_epoch = epoch + (config.warmup_epochs if stage == "continuation" else 0)
+        random.Random(config.seed + order_epoch).shuffle(order)
+        if stage == "reranker":
+            from .data import has_evidence_supervision
+            order = [i for i in order if has_evidence_supervision(train[i])]
+        if not order:
+            raise ValueError("No eligible examples for this training phase")
+        started, total, evidence_count, optimizer_steps = time.perf_counter(), 0.0, 0, 0
+        optimizer.zero_grad(set_to_none=True)
+        if progress:
+            progress({"phase": name, "event": "training", "epoch": epoch + 1, "total_epochs": epochs, "completed_claims": 0, "total_claims": len(order)})
+        for group_start in range(0, len(order), config.accumulation_steps):
+            group = order[group_start:group_start + config.accumulation_steps]
+            # Warm up to the configured explicit LR over the first 10% of
+            # optimizer updates of this phase; no relative Adafactor schedule.
+            schedule_epochs = config.reranker_epochs if stage == "reranker" else config.warmup_epochs + config.continuation_epochs
+            total_updates = math.ceil(len(order) / config.accumulation_steps) * schedule_epochs
+            update = order_epoch * math.ceil(len(order) / config.accumulation_steps) + group_start // config.accumulation_steps + 1
+            lr = config.learning_rate * min(1.0, update / max(1, math.ceil(total_updates * 0.1)))
+            for params in optimizer.param_groups:
+                params["lr"] = lr
+            for index in group:
+                row = train[index]
+                if stage == "reranker":
+                    candidates, scores = system.rank_scores(row, gradients=True)
+                    loss = evidence_loss(scores, row, candidates)
+                    evidence_count += 1
+                else:
+                    result = system(row, training_stage=stage)
+                    loss = -result["log_probabilities"][row["label"]]
+                    if result["evidence_loss"] is not None:
+                        loss = loss + config.evidence_lambda * result["evidence_loss"]
+                        evidence_count += 1
+                if not torch.isfinite(loss):
+                    raise FloatingPointError(f"Nonfinite loss at {row['id']}")
+                total += float(loss.detach())
+                scaler.scale(loss / len(group)).backward()
+                del loss
+                if stage == "reranker":
+                    del scores
+                else:
+                    del result
+            scaler.step(optimizer)
+            scaler.update()
+            optimizer.zero_grad(set_to_none=True)
+            optimizer_steps += 1
+            if progress:
+                progress({"phase": name, "event": "training", "epoch": epoch + 1, "total_epochs": epochs, "completed_claims": min(group_start + len(group), len(order)), "total_claims": len(order), "epoch_training_seconds": time.perf_counter() - started})
+            print(f"{name} epoch {epoch + 1}/{epochs}: {min(group_start + len(group), len(order))}/{len(order)} claims", flush=True)
+        training_seconds = time.perf_counter() - started
+        training_memory = {"allocated_mib": torch.cuda.max_memory_allocated() / 1024**2, "reserved_mib": torch.cuda.max_memory_reserved() / 1024**2} if config.device == "cuda" else None
+        validation_progress = (lambda event: progress({**event, "phase": name, "event": "validation", "epoch": epoch + 1, "total_epochs": epochs})) if progress else None
+        validation = evaluate_ranker(system, dev, validation_progress) if stage == "reranker" else evaluate(system, dev, progress=validation_progress)
+        score = validation["retrieval"]["mrr"] if stage == "reranker" else validation["classification"]["macro_f1"]
+        if score is None:
+            raise ValueError("Validation has no aligned evidence for reranker selection")
+        history.append({"epoch": epoch + 1, "average_loss": total / len(order), "evidence_supervised_claims": evidence_count, "optimizer_steps": optimizer_steps, "training_seconds": training_seconds, "peak_training_cuda": training_memory, "validation": validation})
+        improved = score > best_score
+        best_score = max(score, best_score)
+        payload = {"format_version": 1, "model": system.state_dict(), "optimizer": optimizer.state_dict(), "scaler": scaler.state_dict(), "rng": rng_state(), "config": config.to_dict(), "mode": system.mode, "phase": name, "stage": stage, "completed_epochs": epoch + 1, "best_score": best_score, "history": history, "data_signature": data_signature, "source_checkpoint_sha256": source_hash}
+        if progress:
+            progress({"phase": name, "event": "checkpoint", "epoch": epoch + 1, "checkpoint_model_bytes": sum(t.numel() * t.element_size() for t in payload["model"].values())})
+        save_checkpoint(last_path, payload)
+        if improved:
+            copy_checkpoint(last_path, best_path)
+        write_json(directory / f"{name}_history.json", history)
+        print(f"{name}: validation {'MRR' if stage == 'reranker' else 'Macro-F1'}={score:.4f}", flush=True)
+    if not best_path.exists():
+        raise RuntimeError("Best checkpoint missing")
+    payload = load_checkpoint(best_path)
+    system.load_state_dict(payload["model"])
+    del payload, optimizer
+    return best_path
+
+
+def isolated_joint_gradient(system, row):
+    state = rng_state()
+    system.configure_training("continuation")
+    output = system(row, training_stage="continuation")
+    loss = -output["log_probabilities"][row["label"]]
+    gradient = torch.autograd.grad(loss, system.reranker.head.weight)[0]
+    norm = float(gradient.norm())
+    restore_rng(state)
+    system.zero_grad(set_to_none=True)
+    if norm <= 0 or not math.isfinite(norm):
+        raise AssertionError("Verification loss failed to reach the reranker")
+    return {"verification_only_reranker_head_gradient_norm": norm, "all_reranker_parameters_trainable": all(p.requires_grad for p in system.reranker.parameters()), "all_verifier_parameters_trainable": all(p.requires_grad for p in system.verifier.parameters())}
+
+
+def run_experiment(config, output, models=("M0", "M1", "M2"), progress=None):
+    output = Path(output)
+    output.mkdir(parents=True, exist_ok=True)
+    if config.device == "cuda" and not torch.cuda.is_available():
+        raise RuntimeError("CUDA requested but unavailable; use --device cpu explicitly")
+    if not models or any(m not in ("M0", "M1", "M2") for m in models):
+        raise ValueError("Choose M0, M1, and/or M2")
+    train, dev = training_rows(config)
+    selected_ids = {"train": [r["id"] for r in train], "dev": [r["id"] for r in dev]}
+    metadata = {"config": config.to_dict(), "models": list(models), "data_manifest": read_json(Path(config.data_path) / "manifest.json"), "subset_ids": selected_ids, "packages": {p: importlib.metadata.version(p) for p in ("torch", "transformers", "numpy", "rank-bm25", "scikit-learn")}, "hardware": {"device": config.device, "gpu": torch.cuda.get_device_name() if config.device == "cuda" else None}, "purpose": "pipeline validation only; scores are not research results" if config.smoke else "full training"}
+    config_path = output / "experiment.json"
+    if config.train_per_label is not None:
+        metadata["purpose"] = "reduced-data single-seed pilot; not full proposal reproduction"
+    if config_path.exists():
+        previous = read_json(config_path)
+        if TrainConfig(**previous["config"]).to_dict() != metadata["config"] or previous["subset_ids"] != selected_ids or previous["data_manifest"] != metadata["data_manifest"]:
+            raise ValueError("Output directory belongs to different experiment")
+    write_json(config_path, metadata)
+    seed_everything(config.seed)
+    tokenizer = PairTokenizer(config.model_path, config.max_length, config.claim_max_tokens)
+    results = {}
+    # Each construction starts from identical verifier initialization. The warm
+    # checkpoint contains both models plus the verifier optimizer and RNG state.
+    if any(m in models for m in ("M1", "M2")):
+        system = VerificationSystem(config, "M1", tokenizer)
+        initial_verifier_hash = fingerprint(system.verifier)
+        reranker_best = phase(system, train, dev, output, "reranker", "reranker", config.reranker_epochs, progress=progress)
+        warmup_best = phase(system, train, dev, output, "warmup", "warmup", config.warmup_epochs, source=reranker_best, progress=progress)
+        warmup_hash = sha256(warmup_best)
+        del system
+        gc.collect()
+        if config.device == "cuda":
+            torch.cuda.empty_cache()
+        for mode in (m for m in models if m != "M0"):
+            seed_everything(config.seed)
+            system = VerificationSystem(config, mode, tokenizer)
+            checkpoint = load_checkpoint(warmup_best)
+            system.load_state_dict(checkpoint["model"])
+            del checkpoint
+            start_rank_hash = fingerprint(system.reranker)
+            checks = {"shared_warmup_checkpoint_sha256": warmup_hash, "verifier_initial_sha256": initial_verifier_hash}
+            if mode == "M2" and config.train_per_label is not None:
+                from .pilot import backbone_probes
+                initial_probes = backbone_probes(system)
+            if mode == "M2" and (config.smoke or config.train_per_label is not None):
+                checks.update(isolated_joint_gradient(system, next(r for r in train if len(r["candidate_ids"]) > 1)))
+            best = phase(system, train, dev, output, mode.lower(), "continuation", config.continuation_epochs, source=warmup_best, progress=progress)
+            end_rank_hash = fingerprint(system.reranker)
+            if mode == "M2" and config.train_per_label is not None:
+                end_probes = backbone_probes(system)
+                checks["first_last_attention_query_changed"] = {key: initial_probes[key] != end_probes[key] for key in initial_probes}
+                if not all(checks["first_last_attention_query_changed"].values()):
+                    raise AssertionError("M2 did not update first/last attention queries in both encoders")
+            checks["reranker_unchanged"] = start_rank_hash == end_rank_hash
+            if mode == "M1" and not checks["reranker_unchanged"]:
+                raise AssertionError("M1 changed frozen reranker parameters")
+            if mode == "M2" and (config.smoke or config.train_per_label is not None) and checks["reranker_unchanged"]:
+                raise AssertionError("M2 failed to update its reranker")
+            metrics = evaluate(system, dev, output / f"{mode.lower()}_dev", progress=(lambda event: progress({**event, "phase": f"{mode.lower()}_dev"})) if progress else None)
+            write_json(output / f"{mode.lower()}_checks.json", checks)
+            results[mode] = {"checkpoint": str(best), "metrics": metrics, "checks": checks}
+            del system
+            gc.collect()
+            if config.device == "cuda":
+                torch.cuda.empty_cache()
+    if "M0" in models:
+        seed_everything(config.seed)
+        system = VerificationSystem(config, "M0", tokenizer)
+        initial_hash = fingerprint(system.verifier)
+        if "initial_verifier_hash" in locals() and initial_hash != initial_verifier_hash:
+            raise AssertionError("M0 verifier initialization differs from M1/M2")
+        best = phase(system, train, dev, output, "m0", "m0", config.warmup_epochs + config.continuation_epochs, progress=progress)
+        metrics = evaluate(system, dev, output / "m0_dev", progress=(lambda event: progress({**event, "phase": "m0_dev"})) if progress else None)
+        results["M0"] = {"checkpoint": str(best), "metrics": metrics, "checks": {"verifier_initial_sha256": initial_hash}}
+        write_json(output / "m0_checks.json", results["M0"]["checks"])
+        del system
+        gc.collect()
+        if config.device == "cuda":
+            torch.cuda.empty_cache()
+    write_json(output / "summary.json", results)
+    return results
+
+
+def system_from_checkpoint(path, device=None):
+    checkpoint = load_checkpoint(path)
+    config = TrainConfig(**checkpoint["config"])
+    if device:
+        config.device = device
+    system = VerificationSystem(config, checkpoint["mode"])
+    system.load_state_dict(checkpoint["model"])
+    system.eval()
+    del checkpoint
+    return system
+
+
+def resume_checkpoint(path):
+    checkpoint = load_checkpoint(path)
+    config = TrainConfig(**checkpoint["config"])
+    name, stage, source_hash, mode = checkpoint["phase"], checkpoint["stage"], checkpoint["source_checkpoint_sha256"], checkpoint["mode"]
+    del checkpoint
+    directory = Path(path).parent
+    if Path(path).name != f"{name}_last.pt":
+        raise ValueError("Resume requires the phase's *_last.pt checkpoint")
+    source = directory / ("reranker_best.pt" if stage == "warmup" else "warmup_best.pt") if source_hash else None
+    epochs = config.reranker_epochs if stage == "reranker" else config.warmup_epochs if stage == "warmup" else config.continuation_epochs if stage == "continuation" else config.warmup_epochs + config.continuation_epochs
+    train, dev = training_rows(config)
+    system = VerificationSystem(config, mode)
+    best = phase(system, train, dev, directory, name, stage, epochs, source=source)
+    evaluate(system, dev, directory / f"{name}_resumed_dev")
+    return best

@@ -1,0 +1,7 @@
+{
+  "shared_warmup_checkpoint_sha256": "36f9d6b5567e9d16c93d8b3f45ec189c93972bbae6812050554ae2bc554d1d82",
+  "verifier_initial_sha256": "42aa89506b12a1ea1b8226737af39e4dbef2fe8f7dc423368bf3505cd7d13db6",
+  "reranker_initial_sha256": "e48a9751e4a5c6b0e6ec78b952ce07de79a9d16a4ae02031f386c96d962a68bb",
+  "reranker_unchanged": true,
+  "reranker_final_sha256": "e48a9751e4a5c6b0e6ec78b952ce07de79a9d16a4ae02031f386c96d962a68bb"
+}

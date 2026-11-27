@@ -1,4 +1,23 @@
-# ViFactCheck — pipeline thí nghiệm v2
+# ViFactCheck — các phiên bản và kết quả thí nghiệm
+
+
+## Bố cục thống nhất
+
+Code đang phát triển được kế thừa từ `feat/p100-backbone-benchmark` tại commit
+`3966dc4`, tiếp nối `release/v2` và dòng phát triển từ Rush.
+
+| Thư mục | Vai trò |
+|---|---|
+| `src/vifactcheck/`, `scripts/`, `tests/` | Pipeline hiện tại và công cụ chạy/kiểm tra |
+| [versions/](versions/README.md) | Bốn snapshot code lịch sử, môi trường, hướng dẫn và commit gốc |
+| [reports/experiments/](reports/README.md) | Kết quả pilot, listwise một seed, v2 ba seed và benchmark mBERT |
+| `reports/diagnostics/` | Phân tích hội tụ; phân biệt với kết quả training mới |
+| `docs/` | Protocol và hướng dẫn cho code hiện tại |
+| `data/`, `.cache/`, `runs/` | Dữ liệu, model tải về và output cục bộ; không đưa vào Git |
+
+Xem [bảng phiên bản–kết quả](versions/README.md) để chọn đúng code cho từng đợt
+chạy. Các thư mục `rush/` hoặc `research/` còn tồn tại cục bộ có thể là dữ liệu/cache
+của checkout cũ; không tự xóa hay dùng làm source chính.
 
 Repo này có **một pipeline chính** tại [`src/vifactcheck/`](src/vifactcheck/): BM25 chọn câu trong bài báo, PhoBERT rerank tối đa 20 câu thành 5 câu, rồi verifier dự đoán `SUPPORTED`, `REFUTED` hoặc `NOT_ENOUGH_INFO`. Các cấu hình M0, M1, A1, M2, A2 và protocol v2 được giải thích trong [hướng dẫn thí nghiệm](docs/protocol/v2.md).
 

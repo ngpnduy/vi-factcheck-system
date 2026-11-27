@@ -1,0 +1,40 @@
+{
+  "base_branch": "release/v2",
+  "base_commit": "2045e642bda9be40347f27a8c9ea319904f48077",
+  "working_branch": "research/convergence-and-backbones",
+  "full_suite": {
+    "passed": 119,
+    "skipped": 1,
+    "seconds": 165.08,
+    "skip_reason": "Cached VnCoreNLP/Java unavailable at repository-default test path"
+  },
+  "final_audit_regressions": {
+    "passed": 15,
+    "seconds": 0.67
+  },
+  "checks": [
+    "15-epoch tiny-model resumed weights and checkpoint selection match uninterrupted run",
+    "diagnostic observer preserves RNG and original five-epoch LR prefix",
+    "NEI evidence loss exclusion and correct BCE denominators",
+    "completed checkpoint restores missing history JSON",
+    "read-only preflight refuses low disk and foreign run identity",
+    "real PhoBERT and official train/dev pass hashes/counts; expected storage gate at 3.84 GiB; no output created",
+    "historical and tiny diagnostic CSV plotting inspected",
+    "active Markdown links and git diff --check"
+  ],
+  "protected_experiment_files": {
+    "count": 247,
+    "byte_identical_to_git_blobs": 242,
+    "legacy_checkout_eol_only": [
+      "reports/experiments/listwise-seed42/README.md",
+      "reports/experiments/listwise-seed42/REPORT.md",
+      "reports/experiments/pilot-900-seed42/README.md",
+      "reports/experiments/pilot-900-seed42/REPORT.md",
+      "reports/experiments/pilot-900-seed42/results.csv"
+    ],
+    "tracked_content_changes": 0
+  },
+  "phobert_long_training_started": false,
+  "p100_server_execution_verified": false,
+  "baseline_and_generic_backbone_training_implemented": false
+}

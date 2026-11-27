@@ -1,0 +1,24 @@
+{
+  "verified_utc": "2026-11-13T10:02:17.199682+00:00",
+  "study": "listwise-best5-v2-three-seeds-20261112",
+  "cleanup_commit": "39d80f8fccb4d119b357e82cc0f4ad80706fb02e",
+  "executed_source_commit": "baa0bdc80379d26e661bd1dcf5e37b3b48ba14a8",
+  "active_and_moved_markdown_files_checked": 16,
+  "missing_local_links": [],
+  "archive_crc": "passed",
+  "archive_sha256": "3f080be1cdd890e57754c6979ef1c0ec5ad6db1bf2402dfd14d470462094d903",
+  "archive_bytes": 43899261,
+  "archive_files": 319,
+  "compact_file_count": 241,
+  "compact_total_bytes": 1109395,
+  "forbidden_archive_files": [],
+  "secret_token_pattern_matches": [],
+  "secret_scan_review_note": "An initial substring scan matched sk- inside a public tuoitre.vn Elon Musk article URL. Token-boundary scanning and field review confirmed it is a public article slug, not a credential; original bytes were preserved.",
+  "verification": {
+    "test_sets": 15,
+    "claims_per_test": 1447,
+    "paired_bootstrap_records": 12,
+    "all_metrics_and_sample_sd_recomputed": true
+  },
+  "weights_and_datasets_uploaded": false
+}

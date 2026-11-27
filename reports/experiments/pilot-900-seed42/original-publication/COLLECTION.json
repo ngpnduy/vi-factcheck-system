@@ -1,0 +1,163 @@
+{
+  "commit": "a7ee344c5ac861b8c02edcecda789075eec24840",
+  "files": {
+    "M0-M1-M2-pilot-900-seed42-results.zip.sha256": {
+      "sha256": "e808d261942a3b933a777456802fcb60c18b3bd4975b541e4a95959167b7bce6",
+      "git_path": "rush/results/pilot-900-seed42/M0-M1-M2-pilot-900-seed42-results.zip.sha256",
+      "git_blob": "9d772c72e05dc79b24f5539ae870f0faf96df233"
+    },
+    "M0-M1-M2-pilot-report.html": {
+      "sha256": "f01f3e2eb2f9e8892e722d05a736be198969c9c1ef653f098642fa1a5bc5a1f8",
+      "git_path": "rush/results/pilot-900-seed42/M0-M1-M2-pilot-report.html",
+      "git_blob": "07d1bef0db5cfdaa452356d0f99d1451cc147867"
+    },
+    "README.md": {
+      "sha256": "d252c4d65eff02499998eca0df450a4837ae27b8f1c2e1a686a34e6e14d2b928",
+      "git_path": "rush/results/pilot-900-seed42/README.md",
+      "git_blob": "baefcc3077136bb52ceb01ec16bd94d4208d6726"
+    },
+    "REPORT.md": {
+      "sha256": "3b025ad1d0996de9585fb7e1eea9be4cf76101b1c044139187b4f526f19575d3",
+      "git_path": "rush/results/pilot-900-seed42/REPORT.md",
+      "git_blob": "fc8421001d17b8e739a1396aeb9e4219aa4688f2"
+    },
+    "comparison.json": {
+      "sha256": "23615dafb041f585994738d0252bff1637f45d25faa22ca80a3734419dddf7d4",
+      "git_path": "rush/results/pilot-900-seed42/comparison.json",
+      "git_blob": "bf02a63f74ea9b322ac04e120d9a32a1173e2fef"
+    },
+    "completion.json": {
+      "sha256": "1f0c5ab70796861673183e7aad4d856a944327f7965102a641fdb1235958c451",
+      "git_path": "rush/results/pilot-900-seed42/completion.json",
+      "git_blob": "ffd3fc16de931ec92d5a56096dd2676c826a4856"
+    },
+    "experiment.json": {
+      "sha256": "de2adf4ebb86500c4f3e8d6261c21724167ce402d77793b9a2c7df32717de47c",
+      "git_path": "rush/results/pilot-900-seed42/experiment.json",
+      "git_blob": "f1ba6b8372786294c6679682de3b41ec00cd8515"
+    },
+    "m0_checks.json": {
+      "sha256": "c4e843d743096193df5670b122630c1389d8b4990376c8c297bd9c87d6389a77",
+      "git_path": "rush/results/pilot-900-seed42/m0_checks.json",
+      "git_blob": "c72a3d0db38b9dc31537e7f3e06ac5e5c568a5c3"
+    },
+    "m0_dev_metrics.json": {
+      "sha256": "e23bd2aee5df9fb6288fe52863a58848e0ff71fb2fb0f6740c7f48f6810e83d8",
+      "git_path": "rush/results/pilot-900-seed42/m0_dev_metrics.json",
+      "git_blob": "0356964731b2104fd6c74e1e7374b05327a68407"
+    },
+    "m0_example_prediction.json": {
+      "sha256": "de8ea0eb1d6c7e751078793dad0c98332e581087552ccb6fbfda342ed072cf02",
+      "git_path": "rush/results/pilot-900-seed42/m0_example_prediction.json",
+      "git_blob": "786677d57cfce24b07d51b6699709ee2b13df13b"
+    },
+    "m0_history.json": {
+      "sha256": "b85f0419409aad70a1a6e5bd13d15f5f35fa16c2c9e20837deed458da5da85d6",
+      "git_path": "rush/results/pilot-900-seed42/m0_history.json",
+      "git_blob": "ee7d9ba5ffc5eb5ec83def84d7ffe57ddb6687b0"
+    },
+    "m0_test_metrics.json": {
+      "sha256": "6efccf899ed26e11ded7e37613bd90ae3cd8b43c33f6253d6fe7935a66ae54a9",
+      "git_path": "rush/results/pilot-900-seed42/m0_test_metrics.json",
+      "git_blob": "579ded1e696565cb2255337bdfb4cb6f070a504f"
+    },
+    "m1_checks.json": {
+      "sha256": "f0827a7d4c06ff03d8c77d6a01c1de6afcc128a20e6d1b5cfae3a2e854f4f722",
+      "git_path": "rush/results/pilot-900-seed42/m1_checks.json",
+      "git_blob": "996c512cdaad16e53976d9a019077a3974665f88"
+    },
+    "m1_dev_metrics.json": {
+      "sha256": "e99ba4237c3eb788d549a3f55d1c1e6932c651cc421893f6b9700a2eff1fe225",
+      "git_path": "rush/results/pilot-900-seed42/m1_dev_metrics.json",
+      "git_blob": "b2633fb8d9c2ef9f84a60bcaefbd53eb4214d44d"
+    },
+    "m1_example_prediction.json": {
+      "sha256": "69e7173e868b27c0eade9ee141ea2cd70023b1183a257c5c8cac9913dc52a15c",
+      "git_path": "rush/results/pilot-900-seed42/m1_example_prediction.json",
+      "git_blob": "8bb27367ee96f6c68b3c6543ea9944fcc0534ba9"
+    },
+    "m1_history.json": {
+      "sha256": "ec57751ec16f61f533e66cd95261af065bbd627d3634091cb79b871501824d17",
+      "git_path": "rush/results/pilot-900-seed42/m1_history.json",
+      "git_blob": "046cbbd13010ab722610fb48a1337395049b17c8"
+    },
+    "m1_test_metrics.json": {
+      "sha256": "7ab8e73bfa42a154c6d9d88fd29f875c8abaf74843afda2ddf2df4e6530cbd91",
+      "git_path": "rush/results/pilot-900-seed42/m1_test_metrics.json",
+      "git_blob": "743a79194ca0f7b25345cdce06beb1fd0c18b02a"
+    },
+    "m2_checks.json": {
+      "sha256": "a2d3ac51b99be63348dbd22edab314567fdbddfd2424d74b6576f5b566ff4438",
+      "git_path": "rush/results/pilot-900-seed42/m2_checks.json",
+      "git_blob": "2af9469298171e6d742aa155b158ea6296582a44"
+    },
+    "m2_dev_metrics.json": {
+      "sha256": "5b692452aecfe290ae56d944ce69bc1d21fb5cfc2407e1b2dd0bcef278ba1fe8",
+      "git_path": "rush/results/pilot-900-seed42/m2_dev_metrics.json",
+      "git_blob": "70397c363a02247e129bc76ab0541fab35535e49"
+    },
+    "m2_example_prediction.json": {
+      "sha256": "e5f91dac21f9345516dd91ad9dd9ddc6790e9a67c56fc4876a9c542423341da1",
+      "git_path": "rush/results/pilot-900-seed42/m2_example_prediction.json",
+      "git_blob": "dd2296d47c07fb2f581586e7322c1997354ad2dd"
+    },
+    "m2_history.json": {
+      "sha256": "f8381172efb236413f4a45cef693a6f9b2513d1dde12e2d547605f31e294b0f9",
+      "git_path": "rush/results/pilot-900-seed42/m2_history.json",
+      "git_blob": "c2732dbb6990301134f37fd9cc285f70873d1e48"
+    },
+    "m2_test_metrics.json": {
+      "sha256": "00f2250aebf198227e8a74072615b0aec8ff1c2d5b5e512366b46c5af8d3f466",
+      "git_path": "rush/results/pilot-900-seed42/m2_test_metrics.json",
+      "git_blob": "62837674a897bc65a764cd2c41b604ebca055bc7"
+    },
+    "paired_bootstrap.json": {
+      "sha256": "8db91441d0671de03a32e3bd82ee4c1384a2bcad9ca0aa41f6b1b1fc68d33785",
+      "git_path": "rush/results/pilot-900-seed42/paired_bootstrap.json",
+      "git_blob": "6de3da19bbd71f4a027f09656637c0b0b2536664"
+    },
+    "pilot_spec.json": {
+      "sha256": "27a853d19e279a99e2d7af9c229df504da4332cfd42890302192b091c6e32379",
+      "git_path": "rush/results/pilot-900-seed42/pilot_spec.json",
+      "git_blob": "58274ef9b9f7a5d242553060fee86a1b962dc891"
+    },
+    "reranker_history.json": {
+      "sha256": "cadaf653331a176facc38fdaa5bc988a85d98b1cb8b2f7a35b6169aa554d46b0",
+      "git_path": "rush/results/pilot-900-seed42/reranker_history.json",
+      "git_blob": "c657055a6f7a4187e90634f3a103e5c03578d8c3"
+    },
+    "results.csv": {
+      "sha256": "f2f079dcb80eb0ad5b3ed9e00efaa7888d48ea03a3074e98a7e42b708c477b1b",
+      "git_path": "rush/results/pilot-900-seed42/results.csv",
+      "git_blob": "877a0b926c5911682baec03092b4029b09963d37"
+    },
+    "summary.json": {
+      "sha256": "73136d2a3b8d4e24dbf04a8e5cc22e9190597b2884d7631a78cd72f84509f43e",
+      "git_path": "rush/results/pilot-900-seed42/summary.json",
+      "git_blob": "fad5a7f9b963d15219f0680dd786c099fd78a35c"
+    },
+    "training_complete.json": {
+      "sha256": "c4dc6728f3c888027631746b01f9bb804134ca5a71b187de21cb868cdb3900a2",
+      "git_path": "rush/results/pilot-900-seed42/training_complete.json",
+      "git_blob": "a670c7e159a12a135022ba70ef38f93f1e3f84d9"
+    },
+    "warmup_history.json": {
+      "sha256": "f84a2dcfcceec22eec8107d112b821cece00cad7958fc5a4f59900ca2335ddff",
+      "git_path": "rush/results/pilot-900-seed42/warmup_history.json",
+      "git_blob": "7a3191891ef9fddadcb94f878a26ba3fd649a049"
+    }
+  },
+  "omitted": [
+    {
+      "path": "rush/results/pilot-900-seed42/.gitattributes",
+      "git_blob": "0458257e072a7c633f835528f4aa0da5a6291690",
+      "url": "https://github.com/ngpnduy/vi-factcheck-system/blob/a7ee344c5ac861b8c02edcecda789075eec24840/rush/results/pilot-900-seed42/.gitattributes"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/M0-M1-M2-pilot-900-seed42-results.zip",
+      "git_blob": "d9951f817056b2d33b257517b7d0aa2ed380d70e",
+      "url": "https://github.com/ngpnduy/vi-factcheck-system/blob/a7ee344c5ac861b8c02edcecda789075eec24840/rush/results/pilot-900-seed42/M0-M1-M2-pilot-900-seed42-results.zip"
+    }
+  ],
+  "note": "Files copied byte-for-byte from Git. ZIPs remain at original URLs; predictions/weights not tracked in Git are not recreated."
+}

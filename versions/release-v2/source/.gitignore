@@ -1,0 +1,32 @@
+# Python and local environments
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+build/
+dist/
+
+# Local secrets and downloaded assets
+.env
+.cache/
+data/
+runs/
+outputs/
+# Runtime leftovers from the pre-release layout; source now lives under src/.
+/research/
+/exports/
+*.log
+
+# Editor and OS files
+.DS_Store
+.vscode/
+.idea/
+
+# Model weights and downloadable result archives
+*.pt
+*.pth
+*.safetensors
+*.bin
+*.zip

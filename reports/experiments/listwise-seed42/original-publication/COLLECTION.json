@@ -1,0 +1,358 @@
+{
+  "commit": "a7ee344c5ac861b8c02edcecda789075eec24840",
+  "files": {
+    "EXPORT_MANIFEST.json": {
+      "sha256": "2e8b869c58320f370d04574563fe3f24dd0cb82f38715584257b834f026791d0",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/EXPORT_MANIFEST.json",
+      "git_blob": "6214b21e32377e74a8f233b21ac3aba8f05fdb85"
+    },
+    "README.md": {
+      "sha256": "8c347f21885083e2c4b7946edbec6d559d1ddd95833aef7751ef05b7a96f6ac9",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/README.md",
+      "git_blob": "2aeaa52bda4f86aacafcf020d5e1ea440fef0a46"
+    },
+    "REPORT.md": {
+      "sha256": "92d5e73997c0016e16615ff503d97201e8ea382b36faee604de50eab22ffb3fa",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/REPORT.md",
+      "git_blob": "43dfe5e1bfea48a78ebaa1fba97b638184d2168b"
+    },
+    "ViFactCheck-five-models-listwise-seed42-results.zip.sha256": {
+      "sha256": "b96e551ff99d21a388b7e8468a77d02e0807784c7d5bdfd6ea38e4ffa450cee3",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/ViFactCheck-five-models-listwise-seed42-results.zip.sha256",
+      "git_blob": "4421d88c7cfc4411434989cf26ddb4a2c9d807e0"
+    },
+    "comparison.json": {
+      "sha256": "e620a35f2c4131a76fbc28c7794a4f90cc7d137c2692fb1a630b5e9fde6d8071",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/comparison.json",
+      "git_blob": "9977daddfb87f754d830cd00c2c2fc955602835b"
+    },
+    "completion.json": {
+      "sha256": "a760e726f6635cb0f8f8f5563a2ae9d82492695702c8f9c841ec2f389662ac54",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/completion.json",
+      "git_blob": "b48573ea29f76bb06aa780f26a3dc65c06b76173"
+    },
+    "models/a1_checks.json": {
+      "sha256": "a50bcb8e4d23d360638ff0c617c5df9e2c3e990ceff65241f63b817bbe20056b",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/a1_checks.json",
+      "git_blob": "4827312472330a2a5ba6cdeeec330be9b5184d33"
+    },
+    "models/a1_dev_metrics.json": {
+      "sha256": "04e703c38a976114b47842801de164cb97f8806490be12168ffeedf5dfacc241",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/a1_dev_metrics.json",
+      "git_blob": "e1628e79553e33fe0ca59fd8e980de816ffcf0c4"
+    },
+    "models/a1_example_prediction.json": {
+      "sha256": "ba20d197091c7cbf60f0156fd34b57dd5c647b08ffaea670a8510fc3a0b06fd3",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/a1_example_prediction.json",
+      "git_blob": "5d2ec1d93c379bad8f4541cca563a50d6587d682"
+    },
+    "models/a1_test_complete.json": {
+      "sha256": "8c074be0b9ecd4a18ea0bbaf16bb33a8967855486ba41aa07050424ceedbc709",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/a1_test_complete.json",
+      "git_blob": "98f90c8b3a9bbc24e0ca446111d48d2de3cdb929"
+    },
+    "models/a1_test_metrics.json": {
+      "sha256": "faa766311a134e50e65de458d86a26a676c95ef61edf1f753ca6eb621d114bd6",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/a1_test_metrics.json",
+      "git_blob": "47ea2b76b0be496fbc4c6cda457c3eb9bf0ae954"
+    },
+    "models/a2_checks.json": {
+      "sha256": "fcd47f67d0fd3acca4c181906b4a09e662705b5cb153d5bb17869616e375579c",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/a2_checks.json",
+      "git_blob": "c7b59b0cfe1a7c1573ab4239030c997f5536a857"
+    },
+    "models/a2_dev_metrics.json": {
+      "sha256": "8d298de08847d7d84317d04fc953348d6723655f162fd6b5d39761cfa57c1760",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/a2_dev_metrics.json",
+      "git_blob": "f36724422c410c79faf6ea2811ecc2f4ad173cbc"
+    },
+    "models/a2_example_prediction.json": {
+      "sha256": "1d298b27811f5778ae0eb15bf7fc947b4411212ef8f52cd55dd8824a813b4142",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/a2_example_prediction.json",
+      "git_blob": "cb631cb66e533534092fe56bd94349462d0b68b0"
+    },
+    "models/a2_test_complete.json": {
+      "sha256": "8a629922b821f6bca1211d804b5c1315c6f644ccdc4e84e7d9103b68eaca56d0",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/a2_test_complete.json",
+      "git_blob": "e9fe23946cec175dfb61fb3d3ec7ca1d3def8044"
+    },
+    "models/a2_test_metrics.json": {
+      "sha256": "8bd522e6a475d698f1f2b0f0e2c991eb6eaed7134db16c24020c6e51c9a849c2",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/a2_test_metrics.json",
+      "git_blob": "53af069f87c898e45f02bd8f263bfdf7381a4de6"
+    },
+    "models/experiment.json": {
+      "sha256": "053555f190638e845b2953cab8e2e323ae3617ade555648dae3ec6a3aca2980a",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/experiment.json",
+      "git_blob": "b3cf5d63ee9f1ef53c50deb07da20ca58759e5e3"
+    },
+    "models/m0_checks.json": {
+      "sha256": "c4e843d743096193df5670b122630c1389d8b4990376c8c297bd9c87d6389a77",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/m0_checks.json",
+      "git_blob": "c72a3d0db38b9dc31537e7f3e06ac5e5c568a5c3"
+    },
+    "models/m0_dev_metrics.json": {
+      "sha256": "606a5271df7aa2e2ef3b923a4671d0d05343d07820473c14deaf49cacfabef1d",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/m0_dev_metrics.json",
+      "git_blob": "45a60eb15f99730cd13d96c005511093df7fa046"
+    },
+    "models/m0_example_prediction.json": {
+      "sha256": "0393bc9dd2e8c498f730c3e355d9dd1cee932cb0717ea3c0af91e819e6644a7f",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/m0_example_prediction.json",
+      "git_blob": "af22b4eacf153166be716ea1a5a01cebc60e4cc6"
+    },
+    "models/m0_test_complete.json": {
+      "sha256": "cb70e9e3a0b84b84c85606cc0e988b542785cca18783fe4d7851b824bd523110",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/m0_test_complete.json",
+      "git_blob": "a1c582b5d444a41df6bda4d56e71704ac6f3cf55"
+    },
+    "models/m0_test_metrics.json": {
+      "sha256": "8b55ac956009a72cc2e2510affed00cc8252a79d7918d2002157e5dbcc443baa",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/m0_test_metrics.json",
+      "git_blob": "e7cda32b9c6af3bdbd497e81bedebe10f1ad227a"
+    },
+    "models/m1_checks.json": {
+      "sha256": "b7a33542a167c92ae36eaa9e488be26fa9eb25b3e67a400dce16a79bfd19a171",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/m1_checks.json",
+      "git_blob": "f535db6b18ffec83bfd077c63575fb908f58e525"
+    },
+    "models/m1_dev_metrics.json": {
+      "sha256": "b960bea359da2a6b0a5ac2f50e00eb6e89646b080a37461fd5847b8b2d48cf92",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/m1_dev_metrics.json",
+      "git_blob": "49467b09fc48d23ab339b3a3175456410f50a4b2"
+    },
+    "models/m1_example_prediction.json": {
+      "sha256": "3974fb7fdb87da44e35399498311e1dd7f55df78723aff5a146501f17b84dd75",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/m1_example_prediction.json",
+      "git_blob": "298d68a4af3d8cbba3732d740ab6356d531f9747"
+    },
+    "models/m1_test_complete.json": {
+      "sha256": "b11423b27e68da03702151f74e67ca1750c09aec2d3b3eb839dfc359830b2909",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/m1_test_complete.json",
+      "git_blob": "42d069d75dbcd76555c13fc2d80ec30311529bf0"
+    },
+    "models/m1_test_metrics.json": {
+      "sha256": "1650c18669310a2aa1ee4af5277896fcad9cf165f5e331fc070046fcfa17967d",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/m1_test_metrics.json",
+      "git_blob": "72d7e124b107314fbf59c10fb1734e6b45a77b5f"
+    },
+    "models/m2_checks.json": {
+      "sha256": "dff842e561266639ad0299ad431cd140f387fc83a270640408ae121b06d8e53a",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/m2_checks.json",
+      "git_blob": "93312661f4d76932cf5f2305eb8f3900c9e8d8c6"
+    },
+    "models/m2_dev_metrics.json": {
+      "sha256": "c1c43dadcb63d8f7c9a4cea68c1895a9de874b4e302efb5dbcff405b35b469f1",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/m2_dev_metrics.json",
+      "git_blob": "79d6b1a0674be061f23f3a79c22f80a95e41d5cc"
+    },
+    "models/m2_example_prediction.json": {
+      "sha256": "8667cb811a4d5b532e6f94d8727cf7d710cd74783584b4fc4a32851d322a9988",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/m2_example_prediction.json",
+      "git_blob": "9e79ad944eb20125d9f8a6f75c9468703f36e7af"
+    },
+    "models/m2_test_complete.json": {
+      "sha256": "b82b6577251b953d1e53115d63d43e4ef1730d969d11978a6cd0e15188c74b9f",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/m2_test_complete.json",
+      "git_blob": "94ef10cc84a9d2177396e9b5965d727a8da2ad39"
+    },
+    "models/m2_test_metrics.json": {
+      "sha256": "e27f75d09b30888a94767251063bc42ab48e3bee1412bff07634acb680a44624",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/m2_test_metrics.json",
+      "git_blob": "bc47975b31aea5902f845625a1b270eca61db7e8"
+    },
+    "models/summary.json": {
+      "sha256": "4c9256328184396fba1fa2bddd8a960c6b9948bf9f3f101e45a9b1e251537931",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/summary.json",
+      "git_blob": "fa4c6b9e4b00d3dfa10b2a1b2ff1b9d4bb28abfe"
+    },
+    "models/training_complete.json": {
+      "sha256": "0a4efe5fa972208789dcc8c4be9c90d07100a3906dd4042de84a48ffc835de8a",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/models/training_complete.json",
+      "git_blob": "57c00347c5b0227decd31fdd83c7bcd68a50e648"
+    },
+    "paired_bootstrap.json": {
+      "sha256": "f9b4cf58f0bd164407d2b6d1ea52dbdafca16df1f43219cd101d2b6c4e0f315a",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/paired_bootstrap.json",
+      "git_blob": "99344467b0328e3d6c15c5125dab934f33759f49"
+    },
+    "resource_check.json": {
+      "sha256": "1b0cc8dbe7a3bacf19adb550cd638df1fe095d09d52350653d0ef2454f40f564",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/resource_check.json",
+      "git_blob": "e004bd306293d8d6140dd12b9663451542ebe484"
+    },
+    "results.csv": {
+      "sha256": "73801548df851d0e9f66db8bb0272e8590374733ef2e4344b29705c6e426eb4b",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/results.csv",
+      "git_blob": "cf6bf929b6c06caeb9e7eefaf2ef4e0c74a1e10e"
+    },
+    "runtime_memory.json": {
+      "sha256": "fb5ff5db0a832420aa19e9809de31aafd07b02469d459bb95f9c5c9989bf3866",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/runtime_memory.json",
+      "git_blob": "2666b1c57f4e036fa0e3872da456c5834b13f223"
+    },
+    "single_seed_plan.json": {
+      "sha256": "9e7f1fbff7c0187a01f9fcb5d164489cfb8ce460004a7f686c46f74e5a7b2f73",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/single_seed_plan.json",
+      "git_blob": "6b8a828600ddc9279eaf72e7f153412d6277b903"
+    },
+    "training/baseline/checkpoint_cleanup.json": {
+      "sha256": "706c43948662f412dafd8c9f0070453671208eee22146e4cf1ef8fb6e4bfb73f",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/baseline/checkpoint_cleanup.json",
+      "git_blob": "ed93832826087085bd9e7b7987c02feba5299746"
+    },
+    "training/baseline/experiment.json": {
+      "sha256": "f0463669e2051c38cb4b70344e7a81b3e9559d2ddac199709006d413a2089a36",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/baseline/experiment.json",
+      "git_blob": "39640d322f8eca8da46b398d39317ad3e42091d6"
+    },
+    "training/baseline/m0_checks.json": {
+      "sha256": "c4e843d743096193df5670b122630c1389d8b4990376c8c297bd9c87d6389a77",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/baseline/m0_checks.json",
+      "git_blob": "c72a3d0db38b9dc31537e7f3e06ac5e5c568a5c3"
+    },
+    "training/baseline/m0_dev_metrics.json": {
+      "sha256": "606a5271df7aa2e2ef3b923a4671d0d05343d07820473c14deaf49cacfabef1d",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/baseline/m0_dev_metrics.json",
+      "git_blob": "45a60eb15f99730cd13d96c005511093df7fa046"
+    },
+    "training/baseline/m0_history.json": {
+      "sha256": "8718925a8b83edd1a0afaf0f028a67bce2c7a06326979bd09a3590932a046542",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/baseline/m0_history.json",
+      "git_blob": "a62cb40cd9a50458a6750fe5218799a27aadb4a0"
+    },
+    "training/baseline/summary.json": {
+      "sha256": "8547b34176cd406faf8a08b1f2d47b0b3960acbc379a6ff590c7772d87e8ac84",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/baseline/summary.json",
+      "git_blob": "e570b5d201213ea8aac785f5e5771ace545415e6"
+    },
+    "training/baseline/training_complete.json": {
+      "sha256": "2519afdca24bfde3a1d93d7fd98a267d4fb0e7f62e19037fa01e410fd7e05865",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/baseline/training_complete.json",
+      "git_blob": "edf6124505130e40770f278ddd0e3a8344da1407"
+    },
+    "training/joint-ablations/a1_checks.json": {
+      "sha256": "a50bcb8e4d23d360638ff0c617c5df9e2c3e990ceff65241f63b817bbe20056b",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/joint-ablations/a1_checks.json",
+      "git_blob": "4827312472330a2a5ba6cdeeec330be9b5184d33"
+    },
+    "training/joint-ablations/a1_dev_metrics.json": {
+      "sha256": "04e703c38a976114b47842801de164cb97f8806490be12168ffeedf5dfacc241",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/joint-ablations/a1_dev_metrics.json",
+      "git_blob": "e1628e79553e33fe0ca59fd8e980de816ffcf0c4"
+    },
+    "training/joint-ablations/a1_history.json": {
+      "sha256": "b25d66eaac11e7840cf2cadd8ecab63f7f86ea7997d00997cf18eafe662e66e6",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/joint-ablations/a1_history.json",
+      "git_blob": "dc33a72ba1967fce51700a779c0119f2ae349640"
+    },
+    "training/joint-ablations/a2_checks.json": {
+      "sha256": "fcd47f67d0fd3acca4c181906b4a09e662705b5cb153d5bb17869616e375579c",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/joint-ablations/a2_checks.json",
+      "git_blob": "c7b59b0cfe1a7c1573ab4239030c997f5536a857"
+    },
+    "training/joint-ablations/a2_dev_metrics.json": {
+      "sha256": "8d298de08847d7d84317d04fc953348d6723655f162fd6b5d39761cfa57c1760",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/joint-ablations/a2_dev_metrics.json",
+      "git_blob": "f36724422c410c79faf6ea2811ecc2f4ad173cbc"
+    },
+    "training/joint-ablations/a2_history.json": {
+      "sha256": "4794fc3ecfef137a15fb130ad3285c796da7a39e14af103538ebbcde6bbe76b6",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/joint-ablations/a2_history.json",
+      "git_blob": "f4e4c18b38dd46f21ae1af1fa40537dea00a9733"
+    },
+    "training/joint-ablations/checkpoint_cleanup.json": {
+      "sha256": "ff1f0b3081be03ef3d4469d24271b5e2f5c60ab23b9c712cb53ee4af27a5e49d",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/joint-ablations/checkpoint_cleanup.json",
+      "git_blob": "fa1128f1246a5de3cd81b4cd6b30d5a65b0dc5ad"
+    },
+    "training/joint-ablations/experiment.json": {
+      "sha256": "84380cc46b587253cdc5f8a1c953a6bbf4f127fbf7877285b9891f7f40a71624",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/joint-ablations/experiment.json",
+      "git_blob": "8a5ffdfe7788f471c6c85bc225d3cf67983efcfa"
+    },
+    "training/joint-ablations/m2_checks.json": {
+      "sha256": "dff842e561266639ad0299ad431cd140f387fc83a270640408ae121b06d8e53a",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/joint-ablations/m2_checks.json",
+      "git_blob": "93312661f4d76932cf5f2305eb8f3900c9e8d8c6"
+    },
+    "training/joint-ablations/m2_dev_metrics.json": {
+      "sha256": "c1c43dadcb63d8f7c9a4cea68c1895a9de874b4e302efb5dbcff405b35b469f1",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/joint-ablations/m2_dev_metrics.json",
+      "git_blob": "79d6b1a0674be061f23f3a79c22f80a95e41d5cc"
+    },
+    "training/joint-ablations/m2_history.json": {
+      "sha256": "0ff65b74f42e74d59f1be42e39ed52bd9037a2fbb3171f6808b488c0b9d24e0b",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/joint-ablations/m2_history.json",
+      "git_blob": "57e84a03de5524c379df309383064aa23fd8ed0e"
+    },
+    "training/joint-ablations/summary.json": {
+      "sha256": "69085e1b1382ed079b6a62040115b020835181ff1726f9848931d9773e9ee975",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/joint-ablations/summary.json",
+      "git_blob": "ced0e0911291bbd2621c218420a9d12889c8ece2"
+    },
+    "training/joint-ablations/training_complete.json": {
+      "sha256": "9c1b48cad625daf8186f4d2d715019848f195c8d0db89e0e7127683f02b1821b",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/joint-ablations/training_complete.json",
+      "git_blob": "e2d98da1ae5e62245ba394850aa010695a237ee9"
+    },
+    "training/weighted-parent/checkpoint_cleanup.json": {
+      "sha256": "5809371015eca08899cad2115d819ce1273c804c5105b63b7713a774c57ec56d",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/weighted-parent/checkpoint_cleanup.json",
+      "git_blob": "4fea7e07182818c79c5f4450c2a1b322e1e25a09"
+    },
+    "training/weighted-parent/experiment.json": {
+      "sha256": "a1a2ffe87701b92e614c3092cb5e986c56de44799da3050c22d556acfa0b4298",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/weighted-parent/experiment.json",
+      "git_blob": "672064fa839f56f4cd52ef79a390f74eb77ad511"
+    },
+    "training/weighted-parent/m1_checks.json": {
+      "sha256": "b7a33542a167c92ae36eaa9e488be26fa9eb25b3e67a400dce16a79bfd19a171",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/weighted-parent/m1_checks.json",
+      "git_blob": "f535db6b18ffec83bfd077c63575fb908f58e525"
+    },
+    "training/weighted-parent/m1_dev_metrics.json": {
+      "sha256": "b960bea359da2a6b0a5ac2f50e00eb6e89646b080a37461fd5847b8b2d48cf92",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/weighted-parent/m1_dev_metrics.json",
+      "git_blob": "49467b09fc48d23ab339b3a3175456410f50a4b2"
+    },
+    "training/weighted-parent/m1_history.json": {
+      "sha256": "7130ec5fdbc23d56976e7ad850cbe2a009989247b796d46af0e22073d710da94",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/weighted-parent/m1_history.json",
+      "git_blob": "ef5badd42c6f19d6ec6c4c2acce55d59686ad742"
+    },
+    "training/weighted-parent/reranker_history.json": {
+      "sha256": "a2b708e4ba62b2d27c93041d4106cfc2f05db10af240bb822a3641e282b3e723",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/weighted-parent/reranker_history.json",
+      "git_blob": "8608cc5a5e431599482c49f9e26119258139beba"
+    },
+    "training/weighted-parent/summary.json": {
+      "sha256": "2e67b5b55cdd0f0dac3369645f655c555a229ae603bbba7b1969a904980e52a5",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/weighted-parent/summary.json",
+      "git_blob": "a4c69deec53ead3e52f54dbdce64d031272a10a0"
+    },
+    "training/weighted-parent/training_complete.json": {
+      "sha256": "e89deeb3c0e7f9194e4c9d93100f9548a34d93145716a65dcc26d347c02776e8",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/weighted-parent/training_complete.json",
+      "git_blob": "1228c80a783cb09669a9be27cc1288c62558f09c"
+    },
+    "training/weighted-parent/warmup_history.json": {
+      "sha256": "9c39c39ac5d558c2c1e6bf3a74327abbacb3db4d4106375927ed27272488eadc",
+      "git_path": "rush/results/full-five-listwise-seed42-20261030/training/weighted-parent/warmup_history.json",
+      "git_blob": "f70e82be00440676021f0e5476b4287864d62284"
+    }
+  },
+  "omitted": [
+    {
+      "path": "rush/results/full-five-listwise-seed42-20261030/.gitattributes",
+      "git_blob": "883436c6dc977dbc31ddf7d778ef43b4e79f37e1",
+      "url": "https://github.com/ngpnduy/vi-factcheck-system/blob/a7ee344c5ac861b8c02edcecda789075eec24840/rush/results/full-five-listwise-seed42-20261030/.gitattributes"
+    },
+    {
+      "path": "rush/results/full-five-listwise-seed42-20261030/ViFactCheck-five-models-listwise-seed42-results.zip",
+      "git_blob": "4ba8c8a53ac18193e8999057c811dffeccc22921",
+      "url": "https://github.com/ngpnduy/vi-factcheck-system/blob/a7ee344c5ac861b8c02edcecda789075eec24840/rush/results/full-five-listwise-seed42-20261030/ViFactCheck-five-models-listwise-seed42-results.zip"
+    }
+  ],
+  "note": "Files copied byte-for-byte from Git. ZIPs remain at original URLs; predictions/weights not tracked in Git are not recreated."
+}

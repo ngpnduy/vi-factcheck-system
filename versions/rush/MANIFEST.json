@@ -1,0 +1,306 @@
+{
+  "commit": "cec939d87a5bb137b556b2125c0be3ee23690150",
+  "source_prefix": "rush/",
+  "files": {
+    ".gitattributes": {
+      "sha256": "5af93eb64d1eba0f5015ca984f9d2bb36df716ba6bd03a21929be101a2e78183",
+      "git_path": "rush/.gitattributes",
+      "git_blob": "84fcf7ebfa5134dc1255cb0f913b09dbb82f1a7d"
+    },
+    ".gitignore": {
+      "sha256": "1253fa5296317d9b3003388b097a88e7304e8dfe2db9f6a2275673b75bbb7a84",
+      "git_path": "rush/.gitignore",
+      "git_blob": "a6a452925631886b8aa7f525cc23223b181f4b85"
+    },
+    "FULL_PIPELINE.md": {
+      "sha256": "c4d3574a7a8f47ed3fbe90298b6f36c48a9137f41d47451d76068edb537ba6d5",
+      "git_path": "rush/FULL_PIPELINE.md",
+      "git_blob": "47a858c97dff2768ca9fdc62d331d399d83e481c"
+    },
+    "FULL_PIPELINE_VALIDATION.md": {
+      "sha256": "3018872577adddc911f9891b4f1262a8889e69484e296bbd0a61da1d03c4d7db",
+      "git_path": "rush/FULL_PIPELINE_VALIDATION.md",
+      "git_blob": "24bfeca9ea5fe34cfae1ec608c562a3d42ceee74"
+    },
+    "PROVENANCE.json": {
+      "sha256": "1147438d8c5fbd03ac5cf48bc9268b1a9aee19f6cca1680d404b3a2d2e2332c2",
+      "git_path": "rush/PROVENANCE.json",
+      "git_blob": "de0f49df1ffeeacb018039ba1e21c14683d81169"
+    },
+    "README.md": {
+      "sha256": "10e71062329469e4862e89976a92a76b66cf97e8fa9fc5dba419863a94ebdc59",
+      "git_path": "rush/README.md",
+      "git_blob": "7435f49f47d6aed3cb47d9907a1d8dc1efa91180"
+    },
+    "VALIDATION.md": {
+      "sha256": "8e07aaab4a372c0869c082d95b05bf79eb778ed661eeba5d7cd18775f488de1c",
+      "git_path": "rush/VALIDATION.md",
+      "git_blob": "07c039813f45dda9017332ae537df54f4245f8bf"
+    },
+    "docs/BRANCH_NOTES.md": {
+      "sha256": "df03866760a2f7f1ed723882d6f0fa97a43f39c03fe2e6cf2fcae293be01ebf7",
+      "git_path": "rush/docs/BRANCH_NOTES.md",
+      "git_blob": "b1d1a7827f824d662770acffe2b4fe6767a789db"
+    },
+    "examples/claim.json": {
+      "sha256": "adba2739b1ca1c48a0c3ba5ba21d5d8b62e7e5d33254cc0628a2229d26cf19a1",
+      "git_path": "rush/examples/claim.json",
+      "git_blob": "8fc7d1cd3eb3f169edeaf5825f8f7146a969983a"
+    },
+    "pyproject.toml": {
+      "sha256": "06de8cbfb0bf526b9648d3721640bd9f660164ab9f1f9642249ca0c13f312d5c",
+      "git_path": "rush/pyproject.toml",
+      "git_blob": "0a88c02a28b6fa919472880fa42adc65805791de"
+    },
+    "requirements-tested.txt": {
+      "sha256": "b19f7dd4af22004c74cc49fec0da05d3813a2ee70f714ac9f08a04c8c0ef8ee5",
+      "git_path": "rush/requirements-tested.txt",
+      "git_blob": "f3a11cc25587c2e617ebae2a5d2858b9aeea4357"
+    },
+    "scripts/setup.ps1": {
+      "sha256": "8c418c80b192c444fb33473fa0dc705f17d33dbd77ca244e953056d7f51fc0f8",
+      "git_path": "rush/scripts/setup.ps1",
+      "git_blob": "1e28f7bfc718921ddd668e321d98b6b6465869b8"
+    },
+    "scripts/start_full.ps1": {
+      "sha256": "73d9c5239c59bc522b9cdf6c7f66dfa42f3e24bf3c14582dcf4069319499b359",
+      "git_path": "rush/scripts/start_full.ps1",
+      "git_blob": "39063597a4afbdeea309246541b07edc03e538d2"
+    },
+    "tests/test_assets.py": {
+      "sha256": "695ef3ce9cbe91f59588f31a1be5f9526c14ca5e548a28d15db8a0724e0de605",
+      "git_path": "rush/tests/test_assets.py",
+      "git_blob": "a3f19f618444cd44cb10d18768f8ad0a381d8529"
+    },
+    "tests/test_full.py": {
+      "sha256": "2d01cd78924173d3a14cdb548a013acf0cf046acc145349923da54a7994f44d7",
+      "git_path": "rush/tests/test_full.py",
+      "git_blob": "361c2520bb86bd047c4388f85bd5b18a15e21b26"
+    },
+    "tests/test_metrics_model.py": {
+      "sha256": "556e37acc66a40b0cfbf19e0ea8b4d15d4c93fad8c88792dffb1719f2ff21ebf",
+      "git_path": "rush/tests/test_metrics_model.py",
+      "git_blob": "b96784d68b1d2436464393a68d81ff00bd3f16a2"
+    },
+    "tests/test_pilot.py": {
+      "sha256": "874bf725576333e3a2a2b7d8359659fb9b97bededa59dc7fd9fae9bcc6c2465f",
+      "git_path": "rush/tests/test_pilot.py",
+      "git_blob": "545d367e1ec65ffc322dec9d7cb67216b29511b1"
+    },
+    "tests/test_text_data.py": {
+      "sha256": "cffda8011f3723b2f76e5d3ed43af817fea029acd8ebef74cca7c3c0ebef56bf",
+      "git_path": "rush/tests/test_text_data.py",
+      "git_blob": "3ed78f88780c2d79390945f69a807043818ff652"
+    },
+    "tests/test_training.py": {
+      "sha256": "b291ba06721f22ecac5205bb3314d1d1876c0886b04f873991d9c44cfaf73aca",
+      "git_path": "rush/tests/test_training.py",
+      "git_blob": "9e59b839289815221dd03dfdd9ca27214d9567fd"
+    },
+    "vifactcheck/__init__.py": {
+      "sha256": "e8a6520d4213e806147567f59d27abfeb58a639da99d46c90e150ddb532df725",
+      "git_path": "rush/vifactcheck/__init__.py",
+      "git_blob": "057d3e6c6fa670491f4bcb222a6fe12fa35153f9"
+    },
+    "vifactcheck/__main__.py": {
+      "sha256": "6d8b7d7846a845059d7a3107143f11131f63c5511d669b44085b15ec5e3d2279",
+      "git_path": "rush/vifactcheck/__main__.py",
+      "git_blob": "4e28416e104515e90fca4b69cc60d0c61fd15d61"
+    },
+    "vifactcheck/assets.py": {
+      "sha256": "d93f04cfe24001a5a8d3bb1640fe5c9ef193118b85160b2f597d44716a2e22d7",
+      "git_path": "rush/vifactcheck/assets.py",
+      "git_blob": "8c25f526ff8adab27d727c5f8233cd6ca0103c55"
+    },
+    "vifactcheck/cli.py": {
+      "sha256": "158a710d35c3281791c01a8fab8c399f2125f3eb92456543b111da217f03764e",
+      "git_path": "rush/vifactcheck/cli.py",
+      "git_blob": "45b0916f62398926e8f2ed887beb42114e5e5dea"
+    },
+    "vifactcheck/config.py": {
+      "sha256": "e1307d6bea35f7f45fbf2c4f4d2640b3d8ba856f05998de26404134ce09b10fc",
+      "git_path": "rush/vifactcheck/config.py",
+      "git_blob": "9e896c4bce8a62efbc0cbe55f50dc8103140bcf3"
+    },
+    "vifactcheck/data.py": {
+      "sha256": "e3b329b2be877a894b57526ffd47368617ac02615d4a3f3d15e404cf6a85624a",
+      "git_path": "rush/vifactcheck/data.py",
+      "git_blob": "a77b0680347517e45c5385606caff3dfe48b07b0"
+    },
+    "vifactcheck/full.py": {
+      "sha256": "1e9d76083e3b511abb960002c7557883c0d8d1a913914862abcef6d4fcc1c9ce",
+      "git_path": "rush/vifactcheck/full.py",
+      "git_blob": "17c9642d9bb4dd0a0d7ed0b19c5a2b613099e24f"
+    },
+    "vifactcheck/full_reporting.py": {
+      "sha256": "8a496068e535e0350e21ebe569d06df4b97d8855f4e929463601d241ee9e6bd7",
+      "git_path": "rush/vifactcheck/full_reporting.py",
+      "git_blob": "b5b3c9ec3c06fc074704ce6b444054c1293203c1"
+    },
+    "vifactcheck/io.py": {
+      "sha256": "5a4a6ba1d994aa0ea58059122a05d0fc140d5ebc9ef3b544fc50789c7335ff4f",
+      "git_path": "rush/vifactcheck/io.py",
+      "git_blob": "f6262bcdb5ed45967d4fab440265595b68b06f64"
+    },
+    "vifactcheck/metrics.py": {
+      "sha256": "a2a1aa8d78ee0a2c0c7c14345c0d25efdee0172b4d32a6430dc215bc6b9e4393",
+      "git_path": "rush/vifactcheck/metrics.py",
+      "git_blob": "9177d84fbe816de773bb4f4f393c4f30435972c4"
+    },
+    "vifactcheck/model.py": {
+      "sha256": "81acf8000b511f0ddda042c2139aa21e784a7ca533587c25288ad81724c6e379",
+      "git_path": "rush/vifactcheck/model.py",
+      "git_blob": "18284a86b3c3243ca7c54dbb1765f462c9b43ad3"
+    },
+    "vifactcheck/pilot.py": {
+      "sha256": "ef091c59a44e3d24c334a78a867b0a14382e8a7b3f589eb64f8e6b195653523b",
+      "git_path": "rush/vifactcheck/pilot.py",
+      "git_blob": "1a17443da60e13a7f39cb1e4019c070e267f03d6"
+    },
+    "vifactcheck/reporting.py": {
+      "sha256": "d4ea6c7472214ec1af8d622033b6ea03c114086f2de476ecd4ed249681b8b951",
+      "git_path": "rush/vifactcheck/reporting.py",
+      "git_blob": "8af8929babce19d6987bf13fd9cfa3d46249d60c"
+    },
+    "vifactcheck/text.py": {
+      "sha256": "40f8ff648368e0b63abdf0308c7aefd2d570eb74613cd3ab14432b1fc9b76311",
+      "git_path": "rush/vifactcheck/text.py",
+      "git_blob": "f638c242607245f514667f6ce0bde1a8f56e773f"
+    },
+    "vifactcheck/training.py": {
+      "sha256": "fa6272116d4c6838c939bcd57d89a7b80e87a9f2670c49e1684e38d4c83a68b1",
+      "git_path": "rush/vifactcheck/training.py",
+      "git_blob": "511217d3871948fd9911b4c3228d5a80bb3add4a"
+    }
+  },
+  "excluded": [
+    {
+      "path": "rush/docs/Proposal_v2.docx",
+      "git_blob": "ce50d1743b424ec2b498b7800c7a23ac1aaf1657"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/.gitattributes",
+      "git_blob": "0458257e072a7c633f835528f4aa0da5a6291690"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/M0-M1-M2-pilot-900-seed42-results.zip",
+      "git_blob": "d9951f817056b2d33b257517b7d0aa2ed380d70e"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/M0-M1-M2-pilot-900-seed42-results.zip.sha256",
+      "git_blob": "9d772c72e05dc79b24f5539ae870f0faf96df233"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/M0-M1-M2-pilot-report.html",
+      "git_blob": "07d1bef0db5cfdaa452356d0f99d1451cc147867"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/README.md",
+      "git_blob": "baefcc3077136bb52ceb01ec16bd94d4208d6726"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/REPORT.md",
+      "git_blob": "fc8421001d17b8e739a1396aeb9e4219aa4688f2"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/comparison.json",
+      "git_blob": "bf02a63f74ea9b322ac04e120d9a32a1173e2fef"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/completion.json",
+      "git_blob": "ffd3fc16de931ec92d5a56096dd2676c826a4856"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/experiment.json",
+      "git_blob": "f1ba6b8372786294c6679682de3b41ec00cd8515"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/m0_checks.json",
+      "git_blob": "c72a3d0db38b9dc31537e7f3e06ac5e5c568a5c3"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/m0_dev_metrics.json",
+      "git_blob": "0356964731b2104fd6c74e1e7374b05327a68407"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/m0_example_prediction.json",
+      "git_blob": "786677d57cfce24b07d51b6699709ee2b13df13b"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/m0_history.json",
+      "git_blob": "ee7d9ba5ffc5eb5ec83def84d7ffe57ddb6687b0"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/m0_test_metrics.json",
+      "git_blob": "579ded1e696565cb2255337bdfb4cb6f070a504f"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/m1_checks.json",
+      "git_blob": "996c512cdaad16e53976d9a019077a3974665f88"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/m1_dev_metrics.json",
+      "git_blob": "b2633fb8d9c2ef9f84a60bcaefbd53eb4214d44d"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/m1_example_prediction.json",
+      "git_blob": "8bb27367ee96f6c68b3c6543ea9944fcc0534ba9"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/m1_history.json",
+      "git_blob": "046cbbd13010ab722610fb48a1337395049b17c8"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/m1_test_metrics.json",
+      "git_blob": "743a79194ca0f7b25345cdce06beb1fd0c18b02a"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/m2_checks.json",
+      "git_blob": "2af9469298171e6d742aa155b158ea6296582a44"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/m2_dev_metrics.json",
+      "git_blob": "70397c363a02247e129bc76ab0541fab35535e49"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/m2_example_prediction.json",
+      "git_blob": "dd2296d47c07fb2f581586e7322c1997354ad2dd"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/m2_history.json",
+      "git_blob": "c2732dbb6990301134f37fd9cc285f70873d1e48"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/m2_test_metrics.json",
+      "git_blob": "62837674a897bc65a764cd2c41b604ebca055bc7"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/paired_bootstrap.json",
+      "git_blob": "6de3da19bbd71f4a027f09656637c0b0b2536664"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/pilot_spec.json",
+      "git_blob": "58274ef9b9f7a5d242553060fee86a1b962dc891"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/reranker_history.json",
+      "git_blob": "c657055a6f7a4187e90634f3a103e5c03578d8c3"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/results.csv",
+      "git_blob": "877a0b926c5911682baec03092b4029b09963d37"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/summary.json",
+      "git_blob": "fad5a7f9b963d15219f0680dd786c099fd78a35c"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/training_complete.json",
+      "git_blob": "a670c7e159a12a135022ba70ef38f93f1e3f84d9"
+    },
+    {
+      "path": "rush/results/pilot-900-seed42/warmup_history.json",
+      "git_blob": "7a3191891ef9fddadcb94f878a26ba3fd649a049"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+# Hướng dẫn đọc dự án
+
+1. [Hướng dẫn chi tiết ViFactCheck](learning_guide_vi.md): verdict, dữ liệu, pipeline, ablation, loss, training, metrics và kết quả v2.
+2. [Thuật ngữ](thuat-ngu-vifactcheck.md): tra cứu khái niệm fact checking và NLP.
+3. [Quy trình viết bài báo](quy-trinh-ra-bao.md): hướng dẫn phương pháp cho nhóm nghiên cứu.
+4. [Kế hoạch baseline–M2 theo backbone](backbone-benchmark.md): các bước triển khai, tuning, phân công và bàn giao trước deadline.
+5. [Setup Conda/P100](server-conda.md): môi trường server, kiểm tra CUDA, smoke và chuẩn bị pilot hội tụ.
+6. [Pilot hội tụ 15 epoch](../protocol/convergence.md): loss đã ghi nhận, cách chạy dài hơn và cách diễn giải dev curves.
+
+Kết quả chính thức nằm tại [reports](../../reports/README.md); protocol chạy mô hình ở [docs/protocol](../protocol/v2.md).

@@ -3,3 +3,7 @@
 *.zip binary
 # Published v2 metadata retains original CRLF bytes for hash verification.
 reports/experiments/listwise-best5-v2-three-seeds-20261112/** -text whitespace=cr-at-eol
+
+# Preserve historical source and publication bytes across platforms.
+versions/** -text
+reports/experiments/*/original-publication/** -text

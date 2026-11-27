@@ -1,0 +1,2 @@
+# Preserve the exact experiment source bytes recorded in PROVENANCE.json.
+vifactcheck/*.py -text

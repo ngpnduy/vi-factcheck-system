@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "description": "Snapshot code và tài liệu theo phiên bản; kết quả tập trung tại reports/experiments. Không bao gồm dataset, pretrained assets, environments hay checkpoint weights.",
+  "versions": [
+    {
+      "id": "rush",
+      "commit": "cec939d87a5bb137b556b2125c0be3ee23690150",
+      "source": "versions/rush/source",
+      "manifest": "versions/rush/MANIFEST.json",
+      "note": "M0/M1/M2; pilot 900 claim và runner full data. Snapshot đầu nhánh; provenance pilot lưu riêng trong PROVENANCE.json."
+    },
+    {
+      "id": "listwise-seed42",
+      "commit": "a7ee344c5ac861b8c02edcecda789075eec24840",
+      "source": "versions/listwise-seed42/source",
+      "manifest": "versions/listwise-seed42/MANIFEST.json",
+      "note": "M0/M1/A1/M2/A2, kết quả full data seed 42. Commit chạy c07b0b1 được ghi trong EXPORT_MANIFEST của kết quả."
+    },
+    {
+      "id": "listwise-v2",
+      "commit": "baa0bdc80379d26e661bd1dcf5e37b3b48ba14a8",
+      "source": "versions/listwise-v2/source",
+      "manifest": "versions/listwise-v2/MANIFEST.json",
+      "note": "Snapshot commit thực thi của thí nghiệm năm cấu hình × ba seed; publication ở 0af01fd."
+    },
+    {
+      "id": "release-v2",
+      "commit": "4a314fabd4f19eea28f1bb33e6a0712bc5305a3b",
+      "source": "versions/release-v2/source",
+      "manifest": "versions/release-v2/MANIFEST.json",
+      "note": "Bố cục src/vifactcheck và công cụ hội tụ; có code chuẩn bị chạy 15 epoch, chưa có kết quả 15 epoch trong Git."
+    }
+  ],
+  "active_source": {
+    "path": "src/vifactcheck",
+    "base_commit": "3966dc4014c93c16bca1ad964e90acb79ce67308",
+    "branch": "origin/feat/p100-backbone-benchmark"
+  },
+  "remote_branches": {
+    "origin": "f930a630ae5ce1d93b182d772ccd4cc389c842e6",
+    "origin/Rush-version": "cec939d87a5bb137b556b2125c0be3ee23690150",
+    "origin/feat/p100-backbone-benchmark": "3966dc4014c93c16bca1ad964e90acb79ce67308",
+    "origin/listwise-best5-three-seeds": "0af01fd05d8647f12d96a0f304a823993844a556",
+    "origin/release/v2": "4a314fabd4f19eea28f1bb33e6a0712bc5305a3b",
+    "origin/research/convergence-and-backbones": "baac3430eec7128b591754d4f754064469b84ba3",
+    "origin/slides-listwise-seed42": "a7ee344c5ac861b8c02edcecda789075eec24840"
+  },
+  "results": [
+    {
+      "id": "pilot-900-seed42",
+      "path": "reports/experiments/pilot-900-seed42/original-publication",
+      "collection": "reports/experiments/pilot-900-seed42/original-publication/COLLECTION.json"
+    },
+    {
+      "id": "listwise-seed42",
+      "path": "reports/experiments/listwise-seed42/original-publication",
+      "collection": "reports/experiments/listwise-seed42/original-publication/COLLECTION.json"
+    },
+    {
+      "id": "listwise-best5-v2-three-seeds-20261112",
+      "path": "reports/experiments/listwise-best5-v2-three-seeds-20261112",
+      "collection": "reports/experiments/listwise-best5-v2-three-seeds-20261112/COLLECTION.json"
+    },
+    {
+      "id": "backbone-mbert-test-two-seeds",
+      "path": "reports/experiments/backbone-mbert-test-two-seeds",
+      "collection": "reports/experiments/backbone-mbert-test-two-seeds/COLLECTION.json"
+    }
+  ]
+}
