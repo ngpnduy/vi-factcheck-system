@@ -1,0 +1,97 @@
+{
+  "summary": [
+    {
+      "backbone": "xlmr",
+      "system": "M0",
+      "split": "test",
+      "seed_count": 1,
+      "macro_f1_mean": 0.5503791424765864,
+      "macro_f1_sd": null,
+      "accuracy_mean": 0.5673807878369039,
+      "accuracy_sd": null,
+      "paired_macro_f1_delta_mean": null
+    },
+    {
+      "backbone": "xlmr",
+      "system": "M2",
+      "split": "test",
+      "seed_count": 1,
+      "macro_f1_mean": 0.6858100537480724,
+      "macro_f1_sd": null,
+      "accuracy_mean": 0.6890117484450587,
+      "accuracy_sd": null,
+      "paired_macro_f1_delta_mean": 0.135430911271486
+    }
+  ],
+  "per_seed": [
+    {
+      "backbone": "xlmr",
+      "system": "M0",
+      "seed": 42,
+      "split": "test",
+      "claims": 1447,
+      "macro_f1": 0.5503791424765864,
+      "accuracy": 0.5673807878369039,
+      "selected_epoch": 4,
+      "selected_stage": "m0",
+      "checkpoint_sha256": "e08610dc194454d228df0dde23af978a0ba84522869f9311890d7cf20791fb76",
+      "parameters": 277455363,
+      "total_input_tokens": 2726123,
+      "context_truncated_pairs": 16,
+      "context_tokens_kept": 355527,
+      "prepared_input_seconds_per_claim": 0.11712287550080251,
+      "training_seconds": 15757.881943967193,
+      "peak_training_allocated_mib": 4002.306640625,
+      "peak_training_reserved_mib": 4556.0,
+      "retrieval_eligible_claims": 539,
+      "retrieval_mrr": 0.9433306695366064
+    },
+    {
+      "backbone": "xlmr",
+      "system": "M2",
+      "seed": 42,
+      "split": "test",
+      "claims": 1447,
+      "macro_f1": 0.6858100537480724,
+      "accuracy": 0.6890117484450587,
+      "selected_epoch": 5,
+      "selected_stage": "continuation",
+      "checkpoint_sha256": "c47d64582ad90dce26b1d8b5a1ce7a982b84567db0afe066554f9b17c5c55bc6",
+      "parameters": 559636228,
+      "total_input_tokens": 2711884,
+      "context_truncated_pairs": 21,
+      "context_tokens_kept": 341288,
+      "prepared_input_seconds_per_claim": 0.4823550003713979,
+      "training_seconds": 80498.84625391662,
+      "peak_training_allocated_mib": 6301.7783203125,
+      "peak_training_reserved_mib": 6550.0,
+      "retrieval_eligible_claims": 539,
+      "retrieval_mrr": 0.947530031296265
+    }
+  ],
+  "m2_minus_m0_paired_article_bootstrap": {
+    "42": {
+      "iterations": 2000,
+      "bootstrap_seed": 2026,
+      "claim_count": 1447,
+      "article_count": 758,
+      "method": "paired article-cluster percentile bootstrap; conditional on this training sample and seed",
+      "metrics": {
+        "macro_f1": {
+          "difference": 0.135430911271486,
+          "ci95": [
+            0.10637566966978616,
+            0.16446422986978576
+          ]
+        },
+        "refuted_f1": {
+          "difference": 0.21871212121212125,
+          "ci95": [
+            0.1697993710133643,
+            0.2705360269395924
+          ]
+        }
+      }
+    }
+  }
+}

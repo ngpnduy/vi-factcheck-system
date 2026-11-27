@@ -1,0 +1,3 @@
+backbone,system,split,seed_count,macro_f1_mean,macro_f1_sd,accuracy_mean,accuracy_sd,paired_macro_f1_delta_mean
+xlmr,M0,test,1,0.5503791424765864,,0.5673807878369039,,
+xlmr,M2,test,1,0.6858100537480724,,0.6890117484450587,,0.135430911271486

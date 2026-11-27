@@ -1,0 +1,16 @@
+{
+  "seed-42/m0": {
+    "observed_seconds_this_attempt": 3215.1224644333124,
+    "training_seconds": 15757.881943967193,
+    "peak_training_allocated_mib": 4002.306640625,
+    "peak_training_reserved_mib": 4556.0,
+    "note": "Includes shared preparation for per-model comparison; do not sum model costs for workflow time"
+  },
+  "seed-42/m2": {
+    "observed_seconds_this_attempt": 83565.81175341085,
+    "training_seconds": 80498.84625391662,
+    "peak_training_allocated_mib": 6301.7783203125,
+    "peak_training_reserved_mib": 6550.0,
+    "note": "Includes shared preparation for per-model comparison; do not sum model costs for workflow time"
+  }
+}

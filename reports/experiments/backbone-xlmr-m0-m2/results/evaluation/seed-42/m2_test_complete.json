@@ -1,0 +1,7 @@
+{
+  "checkpoint_sha256": "c47d64582ad90dce26b1d8b5a1ce7a982b84567db0afe066554f9b17c5c55bc6",
+  "files": {
+    "m2_test_metrics.json": "a96d808d3f3e5816eaed1ba214a5ea698c3b5744356addfddd8f7f145c9a1fe1",
+    "m2_test_predictions.jsonl": "510971ea89a00076ae84a1e35c99d7f03b1c84e5b80fbb21caa01f315769d407"
+  }
+}

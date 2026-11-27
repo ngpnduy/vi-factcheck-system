@@ -1,0 +1,13 @@
+{
+  "protocol_version": 2,
+  "completed_utc": "2026-11-27T14:38:00.590020+00:00",
+  "artifacts": {
+    "summary.json": "06bb1ebd9fbeedd07e537d506c40ca4c4ec152e70f892579f9de7b1f7dc608a2",
+    "experiment.json": "85f6a27286d46e92d58187698d974ef7c6b20e0e3a332c0354c78f8eb60cc30e",
+    "m2_best.pt": "c47d64582ad90dce26b1d8b5a1ce7a982b84567db0afe066554f9b17c5c55bc6",
+    "m2_dev_metrics.json": "793b7b06187664219e89030f0089a9ff636b4ca376ccf8858daffe5de531550f",
+    "m2_dev_predictions.jsonl": "fc7f9abc214fab6b6b62eac5012babde3bbc38bd78b360df54c5cd2c1049c221",
+    "m2_checks.json": "96483eea5bf54ba1e7792f7d912aeb6d8207e2f11294d2a914eccc1dc67f4c0b",
+    "m2_selection.json": "7d4263ca43ce09f383f2c38a1b2c24b9eb1f9d5eb52cff34d6a2bdabf287fe3a"
+  }
+}

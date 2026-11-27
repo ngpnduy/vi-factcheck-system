@@ -1,0 +1,6 @@
+{
+  "policy": "fixed-before-training",
+  "m0_lr": 1e-05,
+  "m2_lr": 1e-05,
+  "evidence_lambda": 0.1
+}

@@ -1,0 +1,10 @@
+{
+  "status": "complete",
+  "backbone": "xlmr",
+  "kind": "benchmark",
+  "control": "M0",
+  "job_id": "1878",
+  "event": "complete",
+  "updated_utc": "2026-11-27T14:53:17.453526+00:00",
+  "completed_training_jobs": 2
+}
