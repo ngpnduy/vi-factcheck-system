@@ -1,0 +1,359 @@
+{
+  "kind": "benchmark",
+  "config": {
+    "protocol_version": 2,
+    "seed": 42,
+    "learning_rate": 1e-05,
+    "evidence_lambda": 0.1,
+    "reranker_epochs": 3,
+    "warmup_epochs": 3,
+    "continuation_epochs": 2,
+    "accumulation_steps": 8,
+    "max_length": 256,
+    "claim_max_tokens": 96,
+    "candidate_count": 20,
+    "evidence_count": 5,
+    "device": "cuda",
+    "mixed_precision": true,
+    "gradient_checkpointing": true,
+    "model_path": "/home/thanhpnc/vi-factcheck-system/.cache/backbones/xlmr/e73636d4f797dec63c3081bb6ed5c7b0bb3f2089",
+    "data_path": "/home/thanhpnc/vi-factcheck-system/data/prepared",
+    "smoke": false,
+    "train_per_label": null,
+    "optimizer": "adafactor",
+    "reranker_architecture": "listwise",
+    "listwise_layers": 1,
+    "listwise_heads": 8,
+    "listwise_feedforward": 1536,
+    "listwise_dropout": 0.1,
+    "backbone": "xlmr"
+  },
+  "seeds": [
+    42
+  ],
+  "control": "M0",
+  "hyperparameter_policy": "fixed-before-training",
+  "search": null,
+  "checkpoint_selection": "highest dev Macro-F1 over all verifier epochs, earliest on ties",
+  "ranking_selection": "highest dev MRR, earliest on ties",
+  "source_commit": "dc5879042b89508ae1c9bc58bf14fcce684630b0",
+  "source_sha256": {
+    "__init__.py": "e8a6520d4213e806147567f59d27abfeb58a639da99d46c90e150ddb532df725",
+    "__main__.py": "6d8b7d7846a845059d7a3107143f11131f63c5511d669b44085b15ec5e3d2279",
+    "assets.py": "d93f04cfe24001a5a8d3bb1640fe5c9ef193118b85160b2f597d44716a2e22d7",
+    "benchmark.py": "d2588e9871f504ff6071b253db4549bb8660126c9d142cbfea82429a3bdd41e8",
+    "benchmark_cli.py": "b4adbd74b6d65b937c5ae36add2184e9804761e0e00eda0fdc1b18ce0e8f308a",
+    "benchmark_report.py": "cc5f6fb4adb774fb278dceed1e150b5ee6bb22cd8eb2d9d01954c383cf545266",
+    "cli.py": "30f669fdfbaab815b50003874cebff37ab9881eca5e2567c41effe0fc353f706",
+    "config.py": "01772cfd11f3409d7bb0b3459a05e82fd73a40eea059bc66a0780e9419b41ab2",
+    "convergence.py": "951011afb19613b4b9369d245e46e9ecb3d78409ee4fd6eeb15be8827e5a65ca",
+    "data.py": "e3b329b2be877a894b57526ffd47368617ac02615d4a3f3d15e404cf6a85624a",
+    "full.py": "f67bafb5355283f8592a71caace803ce84ee0e14865ae71e683d340074076884",
+    "full_reporting.py": "55220c6ddd6f0031be959520d0e3fb84398609e3eee4e115ed2339dfd3dc622d",
+    "io.py": "77b6b13716d2c0b9a5c62b30dd99fd8c5156320e822ef51a82c00998601f460b",
+    "metrics.py": "a2a1aa8d78ee0a2c0c7c14345c0d25efdee0172b4d32a6430dc215bc6b9e4393",
+    "model.py": "db73f844a092cbbe4f5a040437202023722dbefb155067a279c3eb6c07c023ed",
+    "pilot.py": "232b898664450bbf4cd36f9aa78cf2a39216a1c4782dc0fc1e06980a448cba89",
+    "reporting.py": "d4ea6c7472214ec1af8d622033b6ea03c114086f2de476ecd4ed249681b8b951",
+    "text.py": "40f8ff648368e0b63abdf0308c7aefd2d570eb74613cd3ab14432b1fc9b76311",
+    "training.py": "d69ce1fb7deec1d0d581f3bf3c72b8cc36edf3cbc4f067ab64083fef09842220"
+  },
+  "assets": {
+    "backbone": "xlmr",
+    "model_id": "FacebookAI/xlm-roberta-base",
+    "revision": "e73636d4f797dec63c3081bb6ed5c7b0bb3f2089",
+    "files": {
+      "config.json": {
+        "sha256": "d66ed8cd4f2a93b358c245e50736fa389ed4f35c0bae7aad0b32abb20c62b579",
+        "bytes": 615
+      },
+      "tokenizer.json": {
+        "sha256": "a898ea75433890f6610f4e470b8ebeb0c21dce5c8dd61f892eb09eb5919d2e2c",
+        "bytes": 9096718
+      },
+      "tokenizer_config.json": {
+        "sha256": "994f46754c5bf4014f1aa92d34b1374319c3a6b3f702105cd5b742beaecd18ce",
+        "bytes": 25
+      },
+      "model.safetensors": {
+        "sha256": "6fd4797bc397c3b8b55d6bb5740366b57e6a3ce91c04c77f22aafc0c128e6feb",
+        "bytes": 1115567652
+      }
+    }
+  },
+  "data_manifest": {
+    "assets": {
+      "dataset_id": "tranthaihoa/vifactcheck",
+      "dataset_revision": "2df623632299a3459ad95feeff9ac67d7205a42a",
+      "model_id": "vinai/phobert-base",
+      "model_revision": "01daacda68afe13d83023d16ec647239e344a1e6",
+      "segmenter_revision": "62bbc58fe5d113c898eae112656be97dcf50b3a0",
+      "files": [
+        {
+          "path": "dataset/train.parquet",
+          "url": "https://huggingface.co/datasets/tranthaihoa/vifactcheck/resolve/2df623632299a3459ad95feeff9ac67d7205a42a/data/train-00000-of-00001.parquet",
+          "sha256": "ff054bc61afb59e3c9aa1dd402f0eb44700a30866c75ee6c66e117517bd510e8",
+          "bytes": 8071153
+        },
+        {
+          "path": "dataset/dev.parquet",
+          "url": "https://huggingface.co/datasets/tranthaihoa/vifactcheck/resolve/2df623632299a3459ad95feeff9ac67d7205a42a/data/dev-00000-of-00001.parquet",
+          "sha256": "16b6d8b244ec07be1a6d80fcb389486c2f26e5c10cdc66f6cab72bd159920454",
+          "bytes": 1225466
+        },
+        {
+          "path": "dataset/test.parquet",
+          "url": "https://huggingface.co/datasets/tranthaihoa/vifactcheck/resolve/2df623632299a3459ad95feeff9ac67d7205a42a/data/test-00000-of-00001.parquet",
+          "sha256": "d797eb5a3797f12c052d4c8dbdda0b9cf7174f3dfce91050f95354b044816214",
+          "bytes": 2484723
+        },
+        {
+          "path": "phobert/config.json",
+          "url": "https://huggingface.co/vinai/phobert-base/resolve/01daacda68afe13d83023d16ec647239e344a1e6/config.json",
+          "sha256": "71df79a67a65b1ee472938d0dff77297c0d77e20fef1af41e0013b1d384efb0d",
+          "bytes": 557
+        },
+        {
+          "path": "phobert/vocab.txt",
+          "url": "https://huggingface.co/vinai/phobert-base/resolve/01daacda68afe13d83023d16ec647239e344a1e6/vocab.txt",
+          "sha256": "dffd7543c401fb6567253ae7c3313004532c33d062525250049c616544bad777",
+          "bytes": 895321
+        },
+        {
+          "path": "phobert/bpe.codes",
+          "url": "https://huggingface.co/vinai/phobert-base/resolve/01daacda68afe13d83023d16ec647239e344a1e6/bpe.codes",
+          "sha256": "9dfe53fb8abbddd3387da99641c36e00bee757a3679aad9cf0a7cdc4b30f6ef8",
+          "bytes": 1135173
+        },
+        {
+          "path": "phobert/pytorch_model.bin",
+          "url": "https://huggingface.co/vinai/phobert-base/resolve/01daacda68afe13d83023d16ec647239e344a1e6/pytorch_model.bin",
+          "sha256": "a0b0f0912c710147fbaac015b0a4011216a0061a56c03b840b639e40d3bb49cc",
+          "bytes": 542923308
+        },
+        {
+          "path": "vncorenlp/VnCoreNLP-1.2.jar",
+          "url": "https://raw.githubusercontent.com/vncorenlp/VnCoreNLP/62bbc58fe5d113c898eae112656be97dcf50b3a0/VnCoreNLP-1.2.jar",
+          "sha256": "9e2811cdbc2ddfc71d04be5dc36e185c88dcd1ad4d5d69e4ff2e1369dccf7793",
+          "bytes": 27412703
+        },
+        {
+          "path": "vncorenlp/models/wordsegmenter/vi-vocab",
+          "url": "https://raw.githubusercontent.com/vncorenlp/VnCoreNLP/62bbc58fe5d113c898eae112656be97dcf50b3a0/models/wordsegmenter/vi-vocab",
+          "sha256": "0a47c5b55bbce163029d37730a67b9479740388695c29c106c112b815613eaa5",
+          "bytes": 526544
+        },
+        {
+          "path": "vncorenlp/models/wordsegmenter/wordsegmenter.rdr",
+          "url": "https://raw.githubusercontent.com/vncorenlp/VnCoreNLP/62bbc58fe5d113c898eae112656be97dcf50b3a0/models/wordsegmenter/wordsegmenter.rdr",
+          "sha256": "9e62f96bd93e37a24f364238e8d8ae986fa5dad6dbc9f4eae622ab3651b7fa06",
+          "bytes": 128508
+        }
+      ]
+    },
+    "splits": {
+      "train": {
+        "source_count": 5062,
+        "valid_count": 5062,
+        "rejected_count": 0,
+        "labels": {
+          "0": 1751,
+          "1": 1658,
+          "2": 1653
+        },
+        "alignment": {
+          "valid": 2952,
+          "unmatched": 2064,
+          "ambiguous": 46
+        },
+        "alignment_by_label": {
+          "0": {
+            "valid": 933,
+            "unmatched": 810,
+            "ambiguous": 8
+          },
+          "1": {
+            "valid": 940,
+            "unmatched": 708,
+            "ambiguous": 10
+          },
+          "2": {
+            "unmatched": 546,
+            "valid": 1079,
+            "ambiguous": 28
+          }
+        }
+      },
+      "dev": {
+        "source_count": 723,
+        "valid_count": 723,
+        "rejected_count": 0,
+        "labels": {
+          "1": 244,
+          "0": 256,
+          "2": 223
+        },
+        "alignment": {
+          "unmatched": 293,
+          "valid": 425,
+          "ambiguous": 5
+        },
+        "alignment_by_label": {
+          "0": {
+            "unmatched": 117,
+            "valid": 138,
+            "ambiguous": 1
+          },
+          "1": {
+            "unmatched": 110,
+            "valid": 133,
+            "ambiguous": 1
+          },
+          "2": {
+            "valid": 154,
+            "ambiguous": 3,
+            "unmatched": 66
+          }
+        }
+      },
+      "test": {
+        "source_count": 1447,
+        "valid_count": 1447,
+        "rejected_count": 0,
+        "labels": {
+          "1": 468,
+          "2": 471,
+          "0": 508
+        },
+        "alignment": {
+          "valid": 857,
+          "unmatched": 579,
+          "ambiguous": 11
+        },
+        "alignment_by_label": {
+          "0": {
+            "valid": 283,
+            "unmatched": 221,
+            "ambiguous": 4
+          },
+          "1": {
+            "valid": 256,
+            "unmatched": 210,
+            "ambiguous": 2
+          },
+          "2": {
+            "valid": 318,
+            "unmatched": 148,
+            "ambiguous": 5
+          }
+        }
+      }
+    },
+    "cross_split_unique_overlap": {
+      "train-dev": {
+        "claims": 1,
+        "articles": 495
+      },
+      "train-test": {
+        "claims": 1,
+        "articles": 753
+      },
+      "dev-test": {
+        "claims": 0,
+        "articles": 360
+      }
+    },
+    "gold_matching": "exact NFC and whitespace-normalized snippets; no fuzzy supervision",
+    "bm25": {
+      "k1": 1.5,
+      "b": 0.75,
+      "candidate_count": 20
+    },
+    "prepared_file_sha256": {
+      "train": "eeb8d4c88a757fe3eca23302ccdb0bae7eb020747fa9e78ffd8dd9b3584de834",
+      "dev": "311da983fcf3b9196b40cad5fd2bd00804a88a9370eafc0748019c02c55570f9",
+      "test": "470cdcfffe0ce0275eac2c7a1aabc20d9b9217bff1110392b68b968e62cde96a"
+    }
+  },
+  "environment": {
+    "python": "3.12.14",
+    "platform": "Linux-6.8.0-134-generic-x86_64-with-glibc2.39",
+    "cuda_build": "11.8",
+    "gpu": "Tesla P100-PCIE-16GB",
+    "vram_bytes": 17059545088,
+    "packages": {
+      "Jinja2": "3.1.6",
+      "MarkupSafe": "3.0.3",
+      "PyYAML": "6.0.4",
+      "Pygments": "2.21.0",
+      "annotated-doc": "0.0.7",
+      "anyio": "4.16.0",
+      "autocommand": "2.2.2",
+      "backports.tarfile": "1.2.0",
+      "certifi": "2026.11.20",
+      "click": "8.5.1",
+      "cloudpickle": "3.1.3",
+      "filelock": "4.2.4",
+      "fsspec": "2026.9.0",
+      "h11": "0.16.0",
+      "hf-xet": "1.8.0",
+      "httpcore": "1.0.9",
+      "httpx": "0.28.1",
+      "huggingface_hub": "1.19.0",
+      "idna": "3.20",
+      "importlib_metadata": "8.7.1",
+      "inflect": "7.3.1",
+      "iniconfig": "2.3.1",
+      "jaraco.collections": "5.1.0",
+      "jaraco.context": "6.1.0",
+      "jaraco.functools": "4.0.1",
+      "jaraco.text": "4.0.0",
+      "joblib": "1.6.0",
+      "markdown-it-py": "4.3.0",
+      "mdurl": "0.1.2",
+      "more-itertools": "10.8.0",
+      "mpmath": "1.3.0",
+      "networkx": "3.7",
+      "numpy": "2.3.5",
+      "nvidia-cublas-cu11": "11.11.3.6",
+      "nvidia-cuda-cupti-cu11": "11.8.87",
+      "nvidia-cuda-nvrtc-cu11": "11.8.89",
+      "nvidia-cuda-runtime-cu11": "11.8.89",
+      "nvidia-cudnn-cu11": "9.1.0.70",
+      "nvidia-cufft-cu11": "10.9.0.58",
+      "nvidia-curand-cu11": "10.3.0.86",
+      "nvidia-cusolver-cu11": "11.4.1.48",
+      "nvidia-cusparse-cu11": "11.7.5.86",
+      "nvidia-nccl-cu11": "2.21.5",
+      "nvidia-nvtx-cu11": "11.8.86",
+      "packaging": "24.2",
+      "pip": "26.2.1",
+      "platformdirs": "4.2.2",
+      "pluggy": "1.7.0",
+      "pyarrow": "19.0.1",
+      "pytest": "9.0.1",
+      "rank-bm25": "0.2.2",
+      "regex": "2026.11.23",
+      "rich": "15.0.0",
+      "safetensors": "0.8.0",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.18.1",
+      "setuptools": "80.9.0",
+      "shellingham": "1.5.4",
+      "sympy": "1.13.1",
+      "threadpoolctl": "3.8.0",
+      "tokenizers": "0.22.2",
+      "tomli": "2.0.1",
+      "torch": "2.6.0+cu118",
+      "tqdm": "4.70.1",
+      "transformers": "5.12.1",
+      "triton": "3.2.0",
+      "typeguard": "4.3.0",
+      "typer": "0.25.1",
+      "typing_extensions": "4.12.2",
+      "vifactcheck-reproduction": "0.1.0",
+      "wheel": "0.46.3",
+      "zipp": "3.19.2"
+    }
+  }
+}
